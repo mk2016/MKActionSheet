@@ -87,7 +87,7 @@ destructiveButtonIndex:(NSInteger)destructiveButtonIndex
 #pragma mark - ***** MKActionSheet ******
 @interface MKActionSheet()
 @property (nonatomic, strong) NSMutableArray* buttonTitles;
-@property (nonatomic, strong) UIWindow *window;
+@property (nonatomic, strong) UIWindow *bgWindow;
 @property (nonatomic, strong) UIView *shadeView;
 @property (nonatomic, strong) UIView *sheetView;
 @property (nonatomic, strong) UIView *blurView;
@@ -199,16 +199,18 @@ destructiveButtonIndex:(NSInteger)destructiveButtonIndex
 }
 
 - (void)show{
-    [self setupMainView];
-    self.window.hidden = NO;
-    [self.window addSubview:self];
+    if (self.blackgroundOpacity <= 0) {
+        self.blackgroundOpacity = 0.1f;
+    }
     
-    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismiss)];
-    [self.window addGestureRecognizer:tap];
+    [self setupMainView];
+    self.bgWindow.hidden = NO;
+    [self.bgWindow addSubview:self];
     
     [UIView animateWithDuration:self.animationDuration delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
         [self.shadeView setAlpha:self.blackgroundOpacity];
-        
+        [self.shadeView setUserInteractionEnabled:YES];
+
         CGRect frame = self.sheetView.frame;
         frame.origin.y = MKSCREEN_HEIGHT - frame.size.height;
         self.sheetView.frame = frame;
@@ -219,14 +221,15 @@ destructiveButtonIndex:(NSInteger)destructiveButtonIndex
 - (void)dismiss{
     [UIView animateWithDuration:self.animationDuration delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
         [self.shadeView setAlpha:0];
-        
+        [self.shadeView setUserInteractionEnabled:NO];
+
         CGRect frame = self.sheetView.frame;
         frame.origin.y += frame.size.height;
         self.sheetView.frame = frame;
         
     } completion:^(BOOL finished) {
         [self removeFromSuperview];
-        self.window.hidden = YES;
+        self.bgWindow.hidden = YES;
     }];
 }
 
@@ -247,7 +250,7 @@ destructiveButtonIndex:(NSInteger)destructiveButtonIndex
     [self addSubview:self.shadeView];
     
     UIColor *lineColor = MKCOLOR_RGBA(0.0f, 0.0f, 0.0f, 0.1f);
-    
+ 
  
     [self addSubview:self.sheetView];
     
@@ -361,14 +364,14 @@ destructiveButtonIndex:(NSInteger)destructiveButtonIndex
 }
 
 #pragma mark - ***** lazy ******
-- (UIWindow *)window{
-    if (!_window) {
-        _window = [[UIWindow alloc] initWithFrame:MKSCREEN_BOUNDS];
-        _window.windowLevel = UIWindowLevelStatusBar;
-        _window.backgroundColor = [UIColor clearColor];
-        _window.hidden = NO;
+- (UIWindow *)bgWindow{
+    if (!_bgWindow) {
+        _bgWindow = [[UIWindow alloc] initWithFrame:MKSCREEN_BOUNDS];
+        _bgWindow.windowLevel = UIWindowLevelStatusBar;
+        _bgWindow.backgroundColor = [UIColor clearColor];
+        _bgWindow.hidden = NO;
     }
-    return _window;
+    return _bgWindow;
 }
 
 - (UIView*)shadeView{
@@ -376,7 +379,10 @@ destructiveButtonIndex:(NSInteger)destructiveButtonIndex
         _shadeView = [[UIView alloc] init];
         [_shadeView setFrame:MKSCREEN_BOUNDS];
         [_shadeView setBackgroundColor:MKCOLOR_RGBA(0, 0, 0, 1)];
+        [_shadeView setUserInteractionEnabled:NO];
         [_shadeView setAlpha:0];
+        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismiss)];
+        [_shadeView addGestureRecognizer:tap];
     }
     return _shadeView;
 }
