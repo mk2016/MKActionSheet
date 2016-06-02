@@ -79,7 +79,7 @@
         
     }else if (indexPath.row == 3){
         
-        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"title" destructiveButtonIndex:3 buttonTitles:@"button31", @"button32",@"button33",@"button34", nil];
+        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"custom UI" destructiveButtonIndex:3 buttonTitles:@"button31", @"button32",@"button33",@"button34", nil];
         [sheet addButtonWithTitle:@"button99"];
         sheet.cancelTitle = @"remove";
         sheet.buttonTitleFont = [UIFont systemFontOfSize:20];
