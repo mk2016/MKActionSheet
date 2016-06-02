@@ -59,18 +59,13 @@
     [sheet showWithBlock:block];
 }
 
-+ (void)sheetWithTitle:(NSString *)title
-      buttonTitleArray:(NSArray *)buttonTitleArray
-destructiveButtonIndex:(NSInteger)destructiveButtonIndex
-                 block:(MKActionSheetBlock)block{
++ (void)sheetWithTitle:(NSString *)title buttonTitleArray:(NSArray *)buttonTitleArray destructiveButtonIndex:(NSInteger)destructiveButtonIndex block:(MKActionSheetBlock)block{
     
     MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:title buttonTitleArray:buttonTitleArray destructiveButtonIndex:destructiveButtonIndex];
     [sheet showWithBlock:block];
 }
 
-+ (void)sheetWithTitle:(NSString *)title
-      buttonTitleArray:(NSArray *)buttonTitleArray
-                 block:(MKActionSheetBlock)block{
++ (void)sheetWithTitle:(NSString *)title buttonTitleArray:(NSArray *)buttonTitleArray block:(MKActionSheetBlock)block{
     
     MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:title buttonTitleArray:buttonTitleArray];
     [sheet showWithBlock:block];
