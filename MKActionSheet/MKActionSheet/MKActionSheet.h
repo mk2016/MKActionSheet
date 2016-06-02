@@ -66,6 +66,7 @@ destructiveButtonIndex:(NSInteger)destructiveButtonIndex
 @property (nonatomic, assign) CGFloat animationDuration;    /*!< default: 0.3f */
 @property (nonatomic, assign) CGFloat blackgroundOpacity;   /*!< default: 0.3f */
 @property (nonatomic, assign) CGFloat blurOpacity;          /*!< default: 0.0f */
+@property (nonatomic, assign) CGFloat buttonOpacity;            /*!< 3-10 */
 
 /** init method */
 - (instancetype)initWithTitle:(NSString *)title

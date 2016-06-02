@@ -37,7 +37,8 @@
     [self.datasArray addObject:@"MKActionSheet by custom UI"];
     [self.datasArray addObject:@"MKActionSheetHelper by buttonTitles"];
     [self.datasArray addObject:@"MKActionSheetHelper by buttonTitleArray"];
-    
+    [self.datasArray addObject:@"change tableViewBackground View"];
+
 }
 
 #pragma mark - ***** UITableView delegate ******
@@ -79,14 +80,16 @@
     }else if (indexPath.row == 3){
         
         MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"title" destructiveButtonIndex:3 buttonTitles:@"button31", @"button32",@"button33",@"button34", nil];
+        [sheet addButtonWithTitle:@"button99"];
         sheet.cancelTitle = @"remove";
         sheet.buttonTitleFont = [UIFont systemFontOfSize:20];
         sheet.buttonTitleColor = [UIColor redColor];
-        sheet.destructiveButtonTitleColor = [UIColor grayColor];
+        sheet.buttonOpacity = 0.3;
         sheet.buttonHeight = 60.0f;
-        sheet.animationDuration = 2.0f;
+        sheet.destructiveButtonTitleColor = [UIColor grayColor];
+        sheet.animationDuration = 0.1f;
         sheet.blackgroundOpacity = 0.0f;
-        sheet.blurOpacity = 1.0f;
+        sheet.blurOpacity = 0.7f;
         sheet.delegate = self;
         sheet.tag = 200;
         [sheet show];
@@ -100,6 +103,12 @@
         [MKActionSheetHelper sheetWithTitle:@"title" buttonTitleArray:@[@"button51", @"button52",@"button53",@"button54"] block:^(MKActionSheet *actionSheet, NSInteger buttonIndex) {
             NSLog(@"===buttonIndex:%ld",(long)buttonIndex);
         }];
+    }else if (indexPath.row == 6) {
+        if (self.tableView.backgroundView) {
+            self.tableView.backgroundView = nil;
+        }else{
+            self.tableView.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"img_bg"]];
+        }
     }
 }
 

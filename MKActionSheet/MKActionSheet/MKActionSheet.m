@@ -164,7 +164,7 @@ destructiveButtonIndex:(NSInteger)destructiveButtonIndex
 #pragma mark - ***** methods ******
 - (void)initData{
     _cancelTitle = @"取消";
-    _buttonTitleFont = [UIFont systemFontOfSize:18];
+    _buttonTitleFont = [UIFont systemFontOfSize:18.0f];
     _buttonTitleColor = MKCOLOR_RGBA(51.0f,51.0f,51.0f,1.0f);
     _destructiveButtonTitleColor = MKCOLOR_RGBA(250.0f, 10.0f, 10.0f, 1.0f);
     _buttonHeight = 48.0f;
@@ -172,6 +172,7 @@ destructiveButtonIndex:(NSInteger)destructiveButtonIndex
     _blackgroundOpacity = 0.3f;
     _blurOpacity = 0.0f;
     _titleColor = MKCOLOR_RGBA(100.0f, 100.0f, 100.0f, 1.0f);
+    _buttonOpacity = 0.7;
 }
 
 
@@ -199,7 +200,7 @@ destructiveButtonIndex:(NSInteger)destructiveButtonIndex
 }
 
 - (void)show{
-    if (self.blackgroundOpacity <= 0) {
+    if (self.blackgroundOpacity < 0.1f) {
         self.blackgroundOpacity = 0.1f;
     }
     
@@ -248,15 +249,24 @@ destructiveButtonIndex:(NSInteger)destructiveButtonIndex
 - (void)setupMainView{
     self.frame = MKSCREEN_BOUNDS;
     [self addSubview:self.shadeView];
+    [self addSubview:self.sheetView];
+
+    int butOpacity = (int)(_buttonOpacity*10);
+    if (butOpacity > 10) {
+        butOpacity = 10;
+    }else if (butOpacity < 1){
+        butOpacity = 0;
+    }else if (butOpacity < 3){
+        butOpacity = 3;
+    }
     
     UIColor *lineColor = MKCOLOR_RGBA(0.0f, 0.0f, 0.0f, 0.1f);
- 
- 
-    [self addSubview:self.sheetView];
-    
     NSString *bundlePath = [[NSBundle bundleForClass:self.class] pathForResource:@"MKActionSheet" ofType:@"bundle"];
-    NSString *imgTransparencyPath = [bundlePath stringByAppendingPathComponent:@"img_transparency.png"];
-    NSString *imgWhitePath = [bundlePath stringByAppendingPathComponent:@"img_white.png"];
+    NSString *imgTransparencyPath = [bundlePath stringByAppendingPathComponent:@"img_white0.png"];
+    NSString *imgWhitePath = [bundlePath stringByAppendingPathComponent:[NSString stringWithFormat:@"img_white%d.png",butOpacity]];
+
+    UIImage *bImg = [UIImage imageWithContentsOfFile:imgWhitePath];
+    UIImage *tImg = [UIImage imageWithContentsOfFile:imgTransparencyPath];
     
     CGFloat titleHeight = 0;
     if (self.title) {
@@ -267,9 +277,12 @@ destructiveButtonIndex:(NSInteger)destructiveButtonIndex
         }
         
         UIView* titleBgView = [[UIView alloc] init];
-        titleBgView.backgroundColor = [UIColor whiteColor];
         titleBgView.frame = CGRectMake(0, 0, MKSCREEN_WIDTH, titleHeight);
         [self.sheetView addSubview:titleBgView];
+        
+        UIImageView *titleBgImg = [[UIImageView alloc] initWithImage:bImg];
+        titleBgImg.frame = titleBgView.bounds;
+        [titleBgView addSubview:titleBgImg];
         
         UILabel* labTitle = [[UILabel alloc] init];
         labTitle.text = self.title;
@@ -281,8 +294,7 @@ destructiveButtonIndex:(NSInteger)destructiveButtonIndex
         [titleBgView addSubview:labTitle];
     }
     
-    UIImage *bImg = [UIImage imageWithContentsOfFile:imgWhitePath];
-    UIImage *tImg = [UIImage imageWithContentsOfFile:imgTransparencyPath];
+ 
 
     if (self.buttonTitles.count) {
         for (int i = 0; i < self.buttonTitles.count; i++) {
