@@ -13,13 +13,40 @@ typedef void(^MKActionSheetBlock)(MKActionSheet* actionSheet, NSInteger buttonIn
 
 
 
+#pragma mark - ***** MKActionSheetHelper ******
+@interface MKActionSheetHelper : NSObject
+
++ (void)sheetWithTitle:(NSString *)title
+destructiveButtonIndex:(NSInteger)destructiveButtonIndex
+                 block:(MKActionSheetBlock)block
+          buttonTitles:(NSString *)buttonTitle, ... NS_REQUIRES_NIL_TERMINATION;
+
++ (void)sheetWithTitle:(NSString *)title
+                 block:(MKActionSheetBlock)block
+          buttonTitles:(NSString *)buttonTitle, ... NS_REQUIRES_NIL_TERMINATION;
+
++ (void)sheetWithTitle:(NSString *)title
+      buttonTitleArray:(NSArray *)buttonTitleArray
+destructiveButtonIndex:(NSInteger)destructiveButtonIndex
+                 block:(MKActionSheetBlock)block;
+
++ (void)sheetWithTitle:(NSString *)title
+      buttonTitleArray:(NSArray *)buttonTitleArray
+                 block:(MKActionSheetBlock)block;
+
+@end
+
+
+
+
+
+
 #pragma mark - ***** MKActionSheetDelegate ******
 @protocol MKActionSheetDelegate <NSObject>
 
 @optional
 - (void)actionSheet:(MKActionSheet *)actionSheet didClickButtonAtIndex:(NSInteger)buttonIndex;
 @end
-
 
 #pragma mark - ***** MKActionSheet ******
 @interface MKActionSheet : UIView
@@ -45,8 +72,8 @@ typedef void(^MKActionSheetBlock)(MKActionSheet* actionSheet, NSInteger buttonIn
              buttonTitleArray:(NSArray *)buttonTitleArray;
 
 - (instancetype)initWithTitle:(NSString *)title
-       destructiveButtonIndex:(NSInteger)destructiveButtonIndex
-             buttonTitleArray:(NSArray *)buttonTitleArray;
+             buttonTitleArray:(NSArray *)buttonTitleArray
+       destructiveButtonIndex:(NSInteger)destructiveButtonIndex;
 
 - (instancetype)initWithTitle:(NSString *)title
                  buttonTitles:(NSString *)buttonTitle, ... NS_REQUIRES_NIL_TERMINATION;

@@ -16,13 +16,81 @@
 #endif
 
 
+
+
+#pragma mark - ***** MKActionSheetHelper ******
+@implementation MKActionSheetHelper
+
++ (void)sheetWithTitle:(NSString *)title destructiveButtonIndex:(NSInteger)destructiveButtonIndex block:(MKActionSheetBlock)block buttonTitles:(NSString *)buttonTitle, ... {
+    NSMutableArray *tempArray = [[NSMutableArray alloc] init];
+    if (buttonTitle) {
+        [tempArray addObject:buttonTitle];
+    }
+    if (buttonTitle) {
+        va_list args;
+        va_start(args, buttonTitle);
+        NSString *btnTitle;
+        while ((btnTitle = va_arg(args, NSString *))) {
+            [tempArray addObject:btnTitle];
+        }
+        va_end(args);
+    }
+
+    MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:title buttonTitleArray:tempArray destructiveButtonIndex:destructiveButtonIndex];
+    [sheet showWithBlock:block];
+}
+
++ (void)sheetWithTitle:(NSString *)title block:(MKActionSheetBlock)block buttonTitles:(NSString *)buttonTitle, ... {
+    NSMutableArray *tempArray = [[NSMutableArray alloc] init];
+    if (buttonTitle) {
+        [tempArray addObject:buttonTitle];
+    }
+    if (buttonTitle) {
+        va_list args;
+        va_start(args, buttonTitle);
+        NSString *btnTitle;
+        while ((btnTitle = va_arg(args, NSString *))) {
+            [tempArray addObject:btnTitle];
+        }
+        va_end(args);
+    }
+    
+    MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:title buttonTitleArray:tempArray];
+    [sheet showWithBlock:block];
+}
+
++ (void)sheetWithTitle:(NSString *)title
+      buttonTitleArray:(NSArray *)buttonTitleArray
+destructiveButtonIndex:(NSInteger)destructiveButtonIndex
+                 block:(MKActionSheetBlock)block{
+    
+    MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:title buttonTitleArray:buttonTitleArray destructiveButtonIndex:destructiveButtonIndex];
+    [sheet showWithBlock:block];
+}
+
++ (void)sheetWithTitle:(NSString *)title
+      buttonTitleArray:(NSArray *)buttonTitleArray
+                 block:(MKActionSheetBlock)block{
+    
+    MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:title buttonTitleArray:buttonTitleArray];
+    [sheet showWithBlock:block];
+}
+
+@end
+
+
+
+
+
+
+
 #pragma mark - ***** MKActionSheet ******
 @interface MKActionSheet()
-@property (nonatomic, strong) NSMutableArray* buttonTitles;     /*!< 按钮列表 */
-@property (nonatomic, strong) UIWindow *window;                 /*!< 背景window */
-@property (nonatomic, strong) UIView *shadeView;                /*!< 遮罩view */
-@property (nonatomic, strong) UIView *sheetView;               /*!< 按钮底部View */
-@property (nonatomic, strong) UIView *blurView;                 /*!< 毛玻璃View */
+@property (nonatomic, strong) NSMutableArray* buttonTitles;
+@property (nonatomic, strong) UIWindow *window;
+@property (nonatomic, strong) UIView *shadeView;
+@property (nonatomic, strong) UIView *sheetView;
+@property (nonatomic, strong) UIView *blurView;
 
 @end
 
@@ -39,7 +107,7 @@
     return self;
 }
 
-- (instancetype)initWithTitle:(NSString *)title destructiveButtonIndex:(NSInteger)destructiveButtonIndex buttonTitleArray:(NSArray *)buttonTitleArray{
+- (instancetype)initWithTitle:(NSString *)title buttonTitleArray:(NSArray *)buttonTitleArray destructiveButtonIndex:(NSInteger)destructiveButtonIndex{
     if (self = [super init]) {
         self.title = title;
         self.buttonTitles = [[NSMutableArray alloc] initWithArray:buttonTitleArray];

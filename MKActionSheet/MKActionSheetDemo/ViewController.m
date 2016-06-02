@@ -35,6 +35,8 @@
     [self.datasArray addObject:@"MKActionSheet by Delegate"];
     [self.datasArray addObject:@"MKActionSheet by buttonTitleArray"];
     [self.datasArray addObject:@"MKActionSheet by custom UI"];
+    [self.datasArray addObject:@"MKActionSheetHelper by buttonTitles"];
+    [self.datasArray addObject:@"MKActionSheetHelper by buttonTitleArray"];
     
 }
 
@@ -69,7 +71,7 @@
         
     }else if (indexPath.row == 2){
         
-        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"title" destructiveButtonIndex:3 buttonTitleArray:@[@"button21", @"button22",@"button23",@"button24"]];
+        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"title" buttonTitleArray:@[@"button21", @"button22",@"button23",@"button24"] destructiveButtonIndex:3];
         [sheet showWithBlock:^(MKActionSheet *actionSheet, NSInteger buttonIndex) {
             NSLog(@"===buttonIndex:%ld",(long)buttonIndex);
         }];
@@ -89,6 +91,15 @@
         sheet.tag = 200;
         [sheet show];
         
+    }else if (indexPath.row == 4){
+        [MKActionSheetHelper sheetWithTitle:@"title" destructiveButtonIndex:0 block:^(MKActionSheet *actionSheet, NSInteger buttonIndex) {
+            NSLog(@"===buttonIndex:%ld",(long)buttonIndex);
+        } buttonTitles:@"button41", @"button42",@"button43",@"button44", nil];
+        
+    }else if (indexPath.row == 5){
+        [MKActionSheetHelper sheetWithTitle:@"title" buttonTitleArray:@[@"button51", @"button52",@"button53",@"button54"] block:^(MKActionSheet *actionSheet, NSInteger buttonIndex) {
+            NSLog(@"===buttonIndex:%ld",(long)buttonIndex);
+        }];
     }
 }
 
