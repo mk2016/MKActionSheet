@@ -7,14 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C5A125AE1CFEE7E700FEA77A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C5A125AD1CFEE7E700FEA77A /* main.m */; };
-		C5A125B11CFEE7E700FEA77A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C5A125B01CFEE7E700FEA77A /* AppDelegate.m */; };
-		C5A125B41CFEE7E700FEA77A /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C5A125B31CFEE7E700FEA77A /* ViewController.m */; };
-		C5A125B71CFEE7E700FEA77A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C5A125B51CFEE7E700FEA77A /* Main.storyboard */; };
-		C5A125B91CFEE7E700FEA77A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C5A125B81CFEE7E700FEA77A /* Assets.xcassets */; };
-		C5A125BC1CFEE7E700FEA77A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C5A125BA1CFEE7E700FEA77A /* LaunchScreen.storyboard */; };
 		C5A125C71CFEE7E700FEA77A /* MKActionSheetTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C5A125C61CFEE7E700FEA77A /* MKActionSheetTests.m */; };
 		C5A125D21CFEE7E700FEA77A /* MKActionSheetUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = C5A125D11CFEE7E700FEA77A /* MKActionSheetUITests.m */; };
+		C5A125EB1CFEE91900FEA77A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C5A125E11CFEE91900FEA77A /* AppDelegate.m */; };
+		C5A125EC1CFEE91900FEA77A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C5A125E21CFEE91900FEA77A /* Assets.xcassets */; };
+		C5A125ED1CFEE91900FEA77A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C5A125E31CFEE91900FEA77A /* LaunchScreen.storyboard */; };
+		C5A125EE1CFEE91900FEA77A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C5A125E51CFEE91900FEA77A /* Main.storyboard */; };
+		C5A125F01CFEE91900FEA77A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C5A125E81CFEE91900FEA77A /* main.m */; };
+		C5A125F11CFEE91900FEA77A /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C5A125EA1CFEE91900FEA77A /* ViewController.m */; };
+		C5A125F51CFEEAA600FEA77A /* MKActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = C5A125F41CFEEAA600FEA77A /* MKActionSheet.m */; };
+		C5DFD7E71CFFD58A00A9E037 /* MKActionSheet.bundle in Resources */ = {isa = PBXBuildFile; fileRef = C5DFD7E61CFFD58A00A9E037 /* MKActionSheet.bundle */; };
+		C5DFD7E91CFFF66500A9E037 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5DFD7E81CFFF66500A9E037 /* Default-568h@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,21 +39,25 @@
 
 /* Begin PBXFileReference section */
 		C5A125A91CFEE7E700FEA77A /* MKActionSheet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MKActionSheet.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		C5A125AD1CFEE7E700FEA77A /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		C5A125AF1CFEE7E700FEA77A /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
-		C5A125B01CFEE7E700FEA77A /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		C5A125B21CFEE7E700FEA77A /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		C5A125B31CFEE7E700FEA77A /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
-		C5A125B61CFEE7E700FEA77A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		C5A125B81CFEE7E700FEA77A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		C5A125BB1CFEE7E700FEA77A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		C5A125BD1CFEE7E700FEA77A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C5A125C21CFEE7E700FEA77A /* MKActionSheetTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MKActionSheetTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C5A125C61CFEE7E700FEA77A /* MKActionSheetTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MKActionSheetTests.m; sourceTree = "<group>"; };
 		C5A125C81CFEE7E700FEA77A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C5A125CD1CFEE7E700FEA77A /* MKActionSheetUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MKActionSheetUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C5A125D11CFEE7E700FEA77A /* MKActionSheetUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MKActionSheetUITests.m; sourceTree = "<group>"; };
 		C5A125D31CFEE7E700FEA77A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C5A125E01CFEE91900FEA77A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		C5A125E11CFEE91900FEA77A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		C5A125E21CFEE91900FEA77A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		C5A125E41CFEE91900FEA77A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		C5A125E61CFEE91900FEA77A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		C5A125E71CFEE91900FEA77A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = MKActionSheetDemo/Info.plist; sourceTree = SOURCE_ROOT; };
+		C5A125E81CFEE91900FEA77A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = MKActionSheetDemo/main.m; sourceTree = SOURCE_ROOT; };
+		C5A125E91CFEE91900FEA77A /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		C5A125EA1CFEE91900FEA77A /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		C5A125F31CFEEAA600FEA77A /* MKActionSheet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKActionSheet.h; sourceTree = "<group>"; };
+		C5A125F41CFEEAA600FEA77A /* MKActionSheet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKActionSheet.m; sourceTree = "<group>"; };
+		C5DFD7E61CFFD58A00A9E037 /* MKActionSheet.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = MKActionSheet.bundle; sourceTree = "<group>"; };
+		C5DFD7E81CFFF66500A9E037 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,6 +89,7 @@
 			isa = PBXGroup;
 			children = (
 				C5A125AB1CFEE7E700FEA77A /* MKActionSheet */,
+				C5A125DF1CFEE91900FEA77A /* MKActionSheetDemo */,
 				C5A125C51CFEE7E700FEA77A /* MKActionSheetTests */,
 				C5A125D01CFEE7E700FEA77A /* MKActionSheetUITests */,
 				C5A125AA1CFEE7E700FEA77A /* Products */,
@@ -101,15 +109,9 @@
 		C5A125AB1CFEE7E700FEA77A /* MKActionSheet */ = {
 			isa = PBXGroup;
 			children = (
-				C5A125AF1CFEE7E700FEA77A /* AppDelegate.h */,
-				C5A125B01CFEE7E700FEA77A /* AppDelegate.m */,
-				C5A125B21CFEE7E700FEA77A /* ViewController.h */,
-				C5A125B31CFEE7E700FEA77A /* ViewController.m */,
-				C5A125B51CFEE7E700FEA77A /* Main.storyboard */,
-				C5A125B81CFEE7E700FEA77A /* Assets.xcassets */,
-				C5A125BA1CFEE7E700FEA77A /* LaunchScreen.storyboard */,
-				C5A125BD1CFEE7E700FEA77A /* Info.plist */,
-				C5A125AC1CFEE7E700FEA77A /* Supporting Files */,
+				C5DFD7E61CFFD58A00A9E037 /* MKActionSheet.bundle */,
+				C5A125F31CFEEAA600FEA77A /* MKActionSheet.h */,
+				C5A125F41CFEEAA600FEA77A /* MKActionSheet.m */,
 			);
 			path = MKActionSheet;
 			sourceTree = "<group>";
@@ -117,9 +119,10 @@
 		C5A125AC1CFEE7E700FEA77A /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				C5A125AD1CFEE7E700FEA77A /* main.m */,
+				C5A125E81CFEE91900FEA77A /* main.m */,
 			);
 			name = "Supporting Files";
+			path = ../MKActionSheet;
 			sourceTree = "<group>";
 		};
 		C5A125C51CFEE7E700FEA77A /* MKActionSheetTests */ = {
@@ -138,6 +141,31 @@
 				C5A125D31CFEE7E700FEA77A /* Info.plist */,
 			);
 			path = MKActionSheetUITests;
+			sourceTree = "<group>";
+		};
+		C5A125DF1CFEE91900FEA77A /* MKActionSheetDemo */ = {
+			isa = PBXGroup;
+			children = (
+				C5A125E91CFEE91900FEA77A /* ViewController.h */,
+				C5A125EA1CFEE91900FEA77A /* ViewController.m */,
+				C5A125F21CFEE98F00FEA77A /* Origin */,
+				C5A125AC1CFEE7E700FEA77A /* Supporting Files */,
+			);
+			path = MKActionSheetDemo;
+			sourceTree = "<group>";
+		};
+		C5A125F21CFEE98F00FEA77A /* Origin */ = {
+			isa = PBXGroup;
+			children = (
+				C5DFD7E81CFFF66500A9E037 /* Default-568h@2x.png */,
+				C5A125E01CFEE91900FEA77A /* AppDelegate.h */,
+				C5A125E11CFEE91900FEA77A /* AppDelegate.m */,
+				C5A125E21CFEE91900FEA77A /* Assets.xcassets */,
+				C5A125E71CFEE91900FEA77A /* Info.plist */,
+				C5A125E31CFEE91900FEA77A /* LaunchScreen.storyboard */,
+				C5A125E51CFEE91900FEA77A /* Main.storyboard */,
+			);
+			name = Origin;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -243,9 +271,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C5A125BC1CFEE7E700FEA77A /* LaunchScreen.storyboard in Resources */,
-				C5A125B91CFEE7E700FEA77A /* Assets.xcassets in Resources */,
-				C5A125B71CFEE7E700FEA77A /* Main.storyboard in Resources */,
+				C5A125EC1CFEE91900FEA77A /* Assets.xcassets in Resources */,
+				C5DFD7E71CFFD58A00A9E037 /* MKActionSheet.bundle in Resources */,
+				C5A125EE1CFEE91900FEA77A /* Main.storyboard in Resources */,
+				C5A125ED1CFEE91900FEA77A /* LaunchScreen.storyboard in Resources */,
+				C5DFD7E91CFFF66500A9E037 /* Default-568h@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -270,9 +300,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C5A125B41CFEE7E700FEA77A /* ViewController.m in Sources */,
-				C5A125B11CFEE7E700FEA77A /* AppDelegate.m in Sources */,
-				C5A125AE1CFEE7E700FEA77A /* main.m in Sources */,
+				C5A125F11CFEE91900FEA77A /* ViewController.m in Sources */,
+				C5A125F51CFEEAA600FEA77A /* MKActionSheet.m in Sources */,
+				C5A125F01CFEE91900FEA77A /* main.m in Sources */,
+				C5A125EB1CFEE91900FEA77A /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -308,20 +339,20 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		C5A125B51CFEE7E700FEA77A /* Main.storyboard */ = {
+		C5A125E31CFEE91900FEA77A /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				C5A125B61CFEE7E700FEA77A /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-		C5A125BA1CFEE7E700FEA77A /* LaunchScreen.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				C5A125BB1CFEE7E700FEA77A /* Base */,
+				C5A125E41CFEE91900FEA77A /* Base */,
 			);
 			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		C5A125E51CFEE91900FEA77A /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C5A125E61CFEE91900FEA77A /* Base */,
+			);
+			name = Main.storyboard;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -415,7 +446,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				INFOPLIST_FILE = MKActionSheet/Info.plist;
+				INFOPLIST_FILE = MKActionSheetDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.mk.MKActionSheet;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -426,7 +457,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				INFOPLIST_FILE = MKActionSheet/Info.plist;
+				INFOPLIST_FILE = MKActionSheetDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.mk.MKActionSheet;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -498,6 +529,7 @@
 				C5A125D81CFEE7E700FEA77A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		C5A125D91CFEE7E700FEA77A /* Build configuration list for PBXNativeTarget "MKActionSheetTests" */ = {
 			isa = XCConfigurationList;
@@ -506,6 +538,7 @@
 				C5A125DB1CFEE7E700FEA77A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		C5A125DC1CFEE7E700FEA77A /* Build configuration list for PBXNativeTarget "MKActionSheetUITests" */ = {
 			isa = XCConfigurationList;
@@ -514,6 +547,7 @@
 				C5A125DE1CFEE7E700FEA77A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
