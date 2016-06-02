@@ -1,14 +1,14 @@
 # MKActionSheet
 
-####模仿微信ActionSheet 底部为毛玻璃
+###模仿微信ActionSheet 底部为毛玻璃
 
-```可以多参数初始化```
+####可以多参数初始化
 MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"title" destructiveButtonIndex:3 buttonTitles:@"button31", @"button32",@"button33",@"button34", nil];
 
-```也可以数组初始化```
+####也可以数组初始化
 MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"title" buttonTitleArray:@[@"button21", @"button22",@"button23",@"button24"] destructiveButtonIndex:3];
 
-```支持 block 和 delegate```
+####支持 block 和 delegate
 - (void)showWithDelegate:(id <MKActionSheetDelegate>)delegate;
 
 - (void)showWithBlock:(MKActionSheetBlock)block;
@@ -23,4 +23,6 @@ MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"title" buttonTitle
 @property (nonatomic, assign) CGFloat animationDuration;    
 @property (nonatomic, assign) CGFloat blackgroundOpacity;   
 @property (nonatomic, assign) CGFloat blurOpacity;          
+
+      
 
