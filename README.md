@@ -27,5 +27,4 @@
 @property (nonatomic, assign) CGFloat blackgroundOpacity;   
 @property (nonatomic, assign) CGFloat blurOpacity; `         
 
-
- ![image](https://github.com/mk2016/MKActionSheet/raw/master/Screenshots/gif1.gif)
+ ![image](https://github.com/mk2016/MKActionSheet/raw/master/Screenshots/1.png)
