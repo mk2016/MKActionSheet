@@ -167,7 +167,7 @@
     _blackgroundOpacity = 0.3f;
     _blurOpacity = 0.0f;
     _titleColor = MKCOLOR_RGBA(100.0f, 100.0f, 100.0f, 1.0f);
-    _buttonOpacity = 0.7;
+    _buttonOpacity = YES;
 }
 
 
@@ -245,20 +245,16 @@
     self.frame = MKSCREEN_BOUNDS;
     [self addSubview:self.shadeView];
     [self addSubview:self.sheetView];
-
-    int butOpacity = (int)(_buttonOpacity*10);
-    if (butOpacity > 10) {
-        butOpacity = 10;
-    }else if (butOpacity < 1){
-        butOpacity = 0;
-    }else if (butOpacity < 3){
-        butOpacity = 3;
-    }
     
     UIColor *lineColor = MKCOLOR_RGBA(0.0f, 0.0f, 0.0f, 0.1f);
     NSString *bundlePath = [[NSBundle bundleForClass:self.class] pathForResource:@"MKActionSheet" ofType:@"bundle"];
     NSString *imgTransparencyPath = [bundlePath stringByAppendingPathComponent:@"img_white0.png"];
-    NSString *imgWhitePath = [bundlePath stringByAppendingPathComponent:[NSString stringWithFormat:@"img_white%d.png",butOpacity]];
+    NSString *imgWhitePath;
+    if (_buttonOpacity) {
+        imgWhitePath = [bundlePath stringByAppendingPathComponent:@"img_white10"];
+    }else{
+        imgWhitePath = [bundlePath stringByAppendingPathComponent:@"img_white5"];
+    }
 
     UIImage *bImg = [UIImage imageWithContentsOfFile:imgWhitePath];
     UIImage *tImg = [UIImage imageWithContentsOfFile:imgTransparencyPath];

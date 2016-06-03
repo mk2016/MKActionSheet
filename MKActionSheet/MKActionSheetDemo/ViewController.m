@@ -84,7 +84,7 @@
         sheet.cancelTitle = @"remove";
         sheet.buttonTitleFont = [UIFont systemFontOfSize:20];
         sheet.buttonTitleColor = [UIColor redColor];
-        sheet.buttonOpacity = 0.3;
+        sheet.buttonOpacity = NO;
         sheet.buttonHeight = 60.0f;
         sheet.destructiveButtonTitleColor = [UIColor grayColor];
         sheet.animationDuration = 0.1f;
