@@ -17,14 +17,23 @@
 
 #### 可以根据自己的需求定制UI
 `@property (nonatomic, strong) UIColor *titleColor;
+
 @property (nonatomic, copy) NSString *cancelTitle;
+
 @property (nonatomic, strong) UIFont *buttonTitleFont;
+
 @property (nonatomic, strong) UIColor *buttonTitleColor;
-@property (nonatomic, assign) BOOL buttonOpacity;        
+
+@property (nonatomic, assign) BOOL buttonOpacity; 
+
 @property (nonatomic, strong) UIColor *destructiveButtonTitleColor;
-@property (nonatomic, assign) CGFloat buttonHeight;         
-@property (nonatomic, assign) CGFloat animationDuration;    
-@property (nonatomic, assign) CGFloat blackgroundOpacity;   
+
+@property (nonatomic, assign) CGFloat buttonHeight;
+
+@property (nonatomic, assign) CGFloat animationDuration; 
+
+@property (nonatomic, assign) CGFloat blackgroundOpacity;  
+
 @property (nonatomic, assign) CGFloat blurOpacity; `         
 
  ![image](https://github.com/mk2016/MKActionSheet/raw/master/Screenshots/1.png)
