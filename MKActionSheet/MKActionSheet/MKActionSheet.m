@@ -167,7 +167,7 @@
     _blackgroundOpacity = 0.3f;
     _blurOpacity = 0.0f;
     _titleColor = MKCOLOR_RGBA(100.0f, 100.0f, 100.0f, 1.0f);
-    _buttonOpacity = YES;
+    _buttonOpacity = 0.6;
 }
 
 
@@ -247,17 +247,9 @@
     [self addSubview:self.sheetView];
     
     UIColor *lineColor = MKCOLOR_RGBA(0.0f, 0.0f, 0.0f, 0.1f);
-    NSString *bundlePath = [[NSBundle bundleForClass:self.class] pathForResource:@"MKActionSheet" ofType:@"bundle"];
-    NSString *imgTransparencyPath = [bundlePath stringByAppendingPathComponent:@"img_white0.png"];
-    NSString *imgWhitePath;
-    if (_buttonOpacity) {
-        imgWhitePath = [bundlePath stringByAppendingPathComponent:@"img_white10"];
-    }else{
-        imgWhitePath = [bundlePath stringByAppendingPathComponent:@"img_white5"];
-    }
-
-    UIImage *bImg = [UIImage imageWithContentsOfFile:imgWhitePath];
-    UIImage *tImg = [UIImage imageWithContentsOfFile:imgTransparencyPath];
+    
+    UIImage *tImg = [self imageWithColor:MKCOLOR_RGBA(255, 255, 255, 0)];
+    UIImage *bImg = [self imageWithColor:MKCOLOR_RGBA(255, 255, 255, self.buttonOpacity)];
     
     CGFloat titleHeight = 0;
     if (self.title) {
@@ -398,6 +390,16 @@
     return _sheetView;
 }
 
+- (UIImage *)imageWithColor:(UIColor *)color{
+    CGRect rect = CGRectMake(0.0f, 0.0f, 1.0f, 1.0f);
+    UIGraphicsBeginImageContext(rect.size);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextSetFillColorWithColor(context, [color CGColor]);
+    CGContextFillRect(context, rect);
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return image;
+}
 
 /*
  // Only override drawRect: if you perform custom drawing.

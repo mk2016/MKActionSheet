@@ -57,16 +57,16 @@ destructiveButtonIndex:(NSInteger)destructiveButtonIndex
 @property (nonatomic, weak) id <MKActionSheetDelegate> delegate;    /*!< 代理 */
 
 /**  custom UI */
-@property (nonatomic, strong) UIColor *titleColor;
-@property (nonatomic, copy) NSString *cancelTitle;
-@property (nonatomic, strong) UIFont *buttonTitleFont;
-@property (nonatomic, strong) UIColor *buttonTitleColor;
-@property (nonatomic, strong) UIColor *destructiveButtonTitleColor;
+@property (nonatomic, strong) UIColor *titleColor;          /*!< 标题颜色 */
+@property (nonatomic, copy) NSString  *cancelTitle;         /*!< 取消按钮 title */
+@property (nonatomic, strong) UIColor *buttonTitleColor;    /*!< 按钮 titile 颜色 */
+@property (nonatomic, strong) UIFont  *buttonTitleFont;     /*!< 按钮 字体 */
+@property (nonatomic, assign) CGFloat buttonOpacity;        /*!< 按钮透明度 */
 @property (nonatomic, assign) CGFloat buttonHeight;         /*!< default: 48.0f*/
-@property (nonatomic, assign) CGFloat animationDuration;    /*!< default: 0.3f */
-@property (nonatomic, assign) CGFloat blackgroundOpacity;   /*!< default: 0.3f */
-@property (nonatomic, assign) CGFloat blurOpacity;          /*!< default: 0.0f */
-@property (nonatomic, assign) BOOL buttonOpacity;       
+@property (nonatomic, strong) UIColor *destructiveButtonTitleColor;
+@property (nonatomic, assign) CGFloat animationDuration;    /*!< 动画化时间 default: 0.3f */
+@property (nonatomic, assign) CGFloat blurOpacity;          /*!< 毛玻璃透明度 default: 0.0f */
+@property (nonatomic, assign) CGFloat blackgroundOpacity;   /*!< 灰色背景透明度 default: 0.3f */
 
 /** init method */
 - (instancetype)initWithTitle:(NSString *)title

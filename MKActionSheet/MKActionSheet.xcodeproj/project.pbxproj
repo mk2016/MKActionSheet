@@ -16,7 +16,6 @@
 		C5A125F01CFEE91900FEA77A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C5A125E81CFEE91900FEA77A /* main.m */; };
 		C5A125F11CFEE91900FEA77A /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C5A125EA1CFEE91900FEA77A /* ViewController.m */; };
 		C5A125F51CFEEAA600FEA77A /* MKActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = C5A125F41CFEEAA600FEA77A /* MKActionSheet.m */; };
-		C5DFD7E71CFFD58A00A9E037 /* MKActionSheet.bundle in Resources */ = {isa = PBXBuildFile; fileRef = C5DFD7E61CFFD58A00A9E037 /* MKActionSheet.bundle */; };
 		C5DFD7E91CFFF66500A9E037 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5DFD7E81CFFF66500A9E037 /* Default-568h@2x.png */; };
 /* End PBXBuildFile section */
 
@@ -56,7 +55,6 @@
 		C5A125EA1CFEE91900FEA77A /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		C5A125F31CFEEAA600FEA77A /* MKActionSheet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKActionSheet.h; sourceTree = "<group>"; };
 		C5A125F41CFEEAA600FEA77A /* MKActionSheet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKActionSheet.m; sourceTree = "<group>"; };
-		C5DFD7E61CFFD58A00A9E037 /* MKActionSheet.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = MKActionSheet.bundle; sourceTree = "<group>"; };
 		C5DFD7E81CFFF66500A9E037 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -109,7 +107,6 @@
 		C5A125AB1CFEE7E700FEA77A /* MKActionSheet */ = {
 			isa = PBXGroup;
 			children = (
-				C5DFD7E61CFFD58A00A9E037 /* MKActionSheet.bundle */,
 				C5A125F31CFEEAA600FEA77A /* MKActionSheet.h */,
 				C5A125F41CFEEAA600FEA77A /* MKActionSheet.m */,
 			);
@@ -272,7 +269,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				C5A125EC1CFEE91900FEA77A /* Assets.xcassets in Resources */,
-				C5DFD7E71CFFD58A00A9E037 /* MKActionSheet.bundle in Resources */,
 				C5A125EE1CFEE91900FEA77A /* Main.storyboard in Resources */,
 				C5A125ED1CFEE91900FEA77A /* LaunchScreen.storyboard in Resources */,
 				C5DFD7E91CFFF66500A9E037 /* Default-568h@2x.png in Resources */,
