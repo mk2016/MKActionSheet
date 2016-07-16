@@ -11,36 +11,6 @@
 @class MKActionSheet;
 typedef void(^MKActionSheetBlock)(MKActionSheet* actionSheet, NSInteger buttonIndex );
 
-
-
-#pragma mark - ***** MKActionSheetHelper ******
-@interface MKActionSheetHelper : NSObject
-
-+ (void)sheetWithTitle:(NSString *)title
-destructiveButtonIndex:(NSInteger)destructiveButtonIndex
-                 block:(MKActionSheetBlock)block
-          buttonTitles:(NSString *)buttonTitle, ... NS_REQUIRES_NIL_TERMINATION;
-
-+ (void)sheetWithTitle:(NSString *)title
-                 block:(MKActionSheetBlock)block
-          buttonTitles:(NSString *)buttonTitle, ... NS_REQUIRES_NIL_TERMINATION;
-
-+ (void)sheetWithTitle:(NSString *)title
-      buttonTitleArray:(NSArray *)buttonTitleArray
-destructiveButtonIndex:(NSInteger)destructiveButtonIndex
-                 block:(MKActionSheetBlock)block;
-
-+ (void)sheetWithTitle:(NSString *)title
-      buttonTitleArray:(NSArray *)buttonTitleArray
-                 block:(MKActionSheetBlock)block;
-
-@end
-
-
-
-
-
-
 #pragma mark - ***** MKActionSheetDelegate ******
 @protocol MKActionSheetDelegate <NSObject>
 
@@ -67,6 +37,28 @@ destructiveButtonIndex:(NSInteger)destructiveButtonIndex
 @property (nonatomic, assign) CGFloat animationDuration;    /*!< 动画化时间 default: 0.3f */
 @property (nonatomic, assign) CGFloat blurOpacity;          /*!< 毛玻璃透明度 default: 0.0f */
 @property (nonatomic, assign) CGFloat blackgroundOpacity;   /*!< 灰色背景透明度 default: 0.3f */
+
+
+
++ (void)sheetWithTitle:(NSString *)title
+destructiveButtonIndex:(NSInteger)destructiveButtonIndex
+                 block:(MKActionSheetBlock)block
+          buttonTitles:(NSString *)buttonTitle, ... NS_REQUIRES_NIL_TERMINATION;
+
++ (void)sheetWithTitle:(NSString *)title
+                 block:(MKActionSheetBlock)block
+          buttonTitles:(NSString *)buttonTitle, ... NS_REQUIRES_NIL_TERMINATION;
+
++ (void)sheetWithTitle:(NSString *)title
+      buttonTitleArray:(NSArray *)buttonTitleArray
+destructiveButtonIndex:(NSInteger)destructiveButtonIndex
+                 block:(MKActionSheetBlock)block;
+
++ (void)sheetWithTitle:(NSString *)title
+      buttonTitleArray:(NSArray *)buttonTitleArray
+                 block:(MKActionSheetBlock)block;
+
+
 
 /** init method */
 - (instancetype)initWithTitle:(NSString *)title

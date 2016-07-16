@@ -35,8 +35,8 @@
     [self.datasArray addObject:@"MKActionSheet by Delegate"];
     [self.datasArray addObject:@"MKActionSheet by buttonTitleArray"];
     [self.datasArray addObject:@"MKActionSheet by custom UI"];
-    [self.datasArray addObject:@"MKActionSheetHelper by buttonTitles"];
-    [self.datasArray addObject:@"MKActionSheetHelper by buttonTitleArray"];
+    [self.datasArray addObject:@"MKActionSheet by buttonTitles"];
+    [self.datasArray addObject:@"MKActionSheet by buttonTitleArray"];
     [self.datasArray addObject:@"change tableViewBackground View"];
 
 }
@@ -95,12 +95,12 @@
         [sheet show];
         
     }else if (indexPath.row == 4){
-        [MKActionSheetHelper sheetWithTitle:@"title" destructiveButtonIndex:0 block:^(MKActionSheet *actionSheet, NSInteger buttonIndex) {
+        [MKActionSheet sheetWithTitle:@"title" destructiveButtonIndex:0 block:^(MKActionSheet *actionSheet, NSInteger buttonIndex) {
             NSLog(@"===buttonIndex:%ld",(long)buttonIndex);
         } buttonTitles:@"button41", @"button42",@"button43",@"button44", nil];
         
     }else if (indexPath.row == 5){
-        [MKActionSheetHelper sheetWithTitle:@"title" buttonTitleArray:@[@"button51", @"button52",@"button53",@"button54"] block:^(MKActionSheet *actionSheet, NSInteger buttonIndex) {
+        [MKActionSheet sheetWithTitle:@"title" buttonTitleArray:@[@"button51", @"button52",@"button53",@"button54"] block:^(MKActionSheet *actionSheet, NSInteger buttonIndex) {
             NSLog(@"===buttonIndex:%ld",(long)buttonIndex);
         }];
     }else if (indexPath.row == 6) {

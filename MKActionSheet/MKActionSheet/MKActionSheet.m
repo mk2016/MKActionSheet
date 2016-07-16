@@ -15,11 +15,18 @@
 #define MKCOLOR_RGBA(r, g, b, a)    [UIColor colorWithRed:(r/255.0f) green:(g/255.0f) blue:(b/255.0f) alpha:(a)]
 #endif
 
+#pragma mark - ***** MKActionSheet ******
+@interface MKActionSheet()
+@property (nonatomic, strong) NSMutableArray* buttonTitles;
+@property (nonatomic, strong) UIWindow *bgWindow;
+@property (nonatomic, strong) UIView *shadeView;
+@property (nonatomic, strong) UIView *sheetView;
+@property (nonatomic, strong) UIView *blurView;
+
+@end
 
 
-
-#pragma mark - ***** MKActionSheetHelper ******
-@implementation MKActionSheetHelper
+@implementation MKActionSheet
 
 + (void)sheetWithTitle:(NSString *)title destructiveButtonIndex:(NSInteger)destructiveButtonIndex block:(MKActionSheetBlock)block buttonTitles:(NSString *)buttonTitle, ... {
     NSMutableArray *tempArray = [[NSMutableArray alloc] init];
@@ -35,7 +42,7 @@
         }
         va_end(args);
     }
-
+    
     MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:title buttonTitleArray:tempArray destructiveButtonIndex:destructiveButtonIndex];
     [sheet showWithBlock:block];
 }
@@ -60,37 +67,16 @@
 }
 
 + (void)sheetWithTitle:(NSString *)title buttonTitleArray:(NSArray *)buttonTitleArray destructiveButtonIndex:(NSInteger)destructiveButtonIndex block:(MKActionSheetBlock)block{
-    
     MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:title buttonTitleArray:buttonTitleArray destructiveButtonIndex:destructiveButtonIndex];
     [sheet showWithBlock:block];
 }
 
 + (void)sheetWithTitle:(NSString *)title buttonTitleArray:(NSArray *)buttonTitleArray block:(MKActionSheetBlock)block{
-    
     MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:title buttonTitleArray:buttonTitleArray];
     [sheet showWithBlock:block];
 }
 
-@end
 
-
-
-
-
-
-
-#pragma mark - ***** MKActionSheet ******
-@interface MKActionSheet()
-@property (nonatomic, strong) NSMutableArray* buttonTitles;
-@property (nonatomic, strong) UIWindow *bgWindow;
-@property (nonatomic, strong) UIView *shadeView;
-@property (nonatomic, strong) UIView *sheetView;
-@property (nonatomic, strong) UIView *blurView;
-
-@end
-
-
-@implementation MKActionSheet
 
 - (instancetype)initWithTitle:(NSString *)title buttonTitleArray:(NSArray *)buttonTitleArray{
     if (self = [super init]) {
