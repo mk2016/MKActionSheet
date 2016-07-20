@@ -27,18 +27,33 @@ typedef void(^MKActionSheetBlock)(MKActionSheet* actionSheet, NSInteger buttonIn
 @property (nonatomic, weak) id <MKActionSheetDelegate> delegate;    /*!< 代理 */
 
 /**  custom UI */
-@property (nonatomic, strong) UIColor *titleColor;          /*!< 标题颜色 */
-@property (nonatomic, copy) NSString  *cancelTitle;         /*!< 取消按钮 title */
-@property (nonatomic, strong) UIColor *buttonTitleColor;    /*!< 按钮 titile 颜色 */
-@property (nonatomic, strong) UIFont  *buttonTitleFont;     /*!< 按钮 字体 */
-@property (nonatomic, assign) CGFloat buttonOpacity;        /*!< 按钮透明度 */
-@property (nonatomic, assign) CGFloat buttonHeight;         /*!< default: 48.0f*/
-@property (nonatomic, strong) UIColor *destructiveButtonTitleColor;
-@property (nonatomic, assign) CGFloat animationDuration;    /*!< 动画化时间 default: 0.3f */
-@property (nonatomic, assign) CGFloat blurOpacity;          /*!< 毛玻璃透明度 default: 0.0f */
-@property (nonatomic, assign) CGFloat blackgroundOpacity;   /*!< 灰色背景透明度 default: 0.3f */
+@property (nonatomic, strong) UIColor *titleColor;                  /*!< 标题颜色 */
+@property (nonatomic, copy) NSString  *cancelTitle;                 /*!< 取消按钮 title */
+@property (nonatomic, strong) UIColor *buttonTitleColor;            /*!< 按钮 titile 颜色 */
+@property (nonatomic, strong) UIFont  *buttonTitleFont;             /*!< 按钮 字体 */
+@property (nonatomic, assign) CGFloat buttonOpacity;                /*!< 按钮透明度 */
+@property (nonatomic, assign) CGFloat buttonHeight;                 /*!< default: 48.0f*/
+@property (nonatomic, strong) UIColor *destructiveButtonTitleColor; /*!< 特殊按钮颜色 */
+@property (nonatomic, assign) CGFloat animationDuration;            /*!< 动画化时间 default: 0.3f */
+@property (nonatomic, assign) CGFloat blurOpacity;                  /*!< 毛玻璃透明度 default: 0.0f */
+@property (nonatomic, assign) CGFloat blackgroundOpacity;           /*!< 灰色背景透明度 default: 0.3f */
+@property (nonatomic, assign) BOOL isNeedCancelButton;              /*!< 是否需要取消按钮 */
+@property (nonatomic, assign) CGFloat maxShowButtonCount;           /*!< 显示按钮最大个数，支持小数 */
 
 
++ (void)sheetWithTitle:(NSString *)title
+      buttonTitleArray:(NSArray *)buttonTitleArray
+destructiveButtonIndex:(NSInteger)destructiveButtonIndex
+                 block:(MKActionSheetBlock)block;
+
++ (void)sheetWithTitle:(NSString *)title
+      buttonTitleArray:(NSArray *)buttonTitleArray
+                 block:(MKActionSheetBlock)block;
+
++ (void)sheetWithTitle:(NSString *)title
+      buttonTitleArray:(NSArray *)buttonTitleArray
+    isNeedCancelButton:(BOOL)isNeedCancelButton
+                 block:(MKActionSheetBlock)block;
 
 + (void)sheetWithTitle:(NSString *)title
 destructiveButtonIndex:(NSInteger)destructiveButtonIndex
@@ -49,14 +64,7 @@ destructiveButtonIndex:(NSInteger)destructiveButtonIndex
                  block:(MKActionSheetBlock)block
           buttonTitles:(NSString *)buttonTitle, ... NS_REQUIRES_NIL_TERMINATION;
 
-+ (void)sheetWithTitle:(NSString *)title
-      buttonTitleArray:(NSArray *)buttonTitleArray
-destructiveButtonIndex:(NSInteger)destructiveButtonIndex
-                 block:(MKActionSheetBlock)block;
 
-+ (void)sheetWithTitle:(NSString *)title
-      buttonTitleArray:(NSArray *)buttonTitleArray
-                 block:(MKActionSheetBlock)block;
 
 
 
@@ -83,3 +91,14 @@ destructiveButtonIndex:(NSInteger)destructiveButtonIndex
 - (void)addButtonWithTitle:(NSString *)title;
 
 @end
+
+
+
+
+#pragma mark - ***** MKActionSheetCell ******
+@interface MKActionSheetCell : UITableViewCell
+@property (nonatomic, weak) UIButton *btnCell;
++ (instancetype)cellWithTableView:(UITableView *)tableView;
+
+@end
+

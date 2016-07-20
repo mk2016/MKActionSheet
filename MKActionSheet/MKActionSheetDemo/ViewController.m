@@ -31,13 +31,14 @@
     [self.view addSubview:self.tableView];
     
     self.datasArray = [[NSMutableArray alloc] init];
+    [self.datasArray addObject:@"change tableViewBackground View"];
     [self.datasArray addObject:@"MKActionSheet by Block"];
-    [self.datasArray addObject:@"MKActionSheet by Delegate"];
+    [self.datasArray addObject:@"MKActionSheet by Delegate and no title"];
     [self.datasArray addObject:@"MKActionSheet by buttonTitleArray"];
-    [self.datasArray addObject:@"MKActionSheet by custom UI"];
     [self.datasArray addObject:@"MKActionSheet by buttonTitles"];
     [self.datasArray addObject:@"MKActionSheet by buttonTitleArray"];
-    [self.datasArray addObject:@"change tableViewBackground View"];
+    [self.datasArray addObject:@"MKActionSheet by no cancel"];
+    [self.datasArray addObject:@"MKActionSheet by custom UI"];
 
 }
 
@@ -57,42 +58,33 @@
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
     if (indexPath.row == 0) {
+        if (self.tableView.backgroundView) {
+            self.tableView.backgroundView = nil;
+        }else{
+            self.tableView.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"img_bg"]];
+        }
+    }
+    
+    if (indexPath.row == 1) {
         
-        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"this is a long titleeeeeeeeeeeeeeeeeeeeeeeeeeee" destructiveButtonIndex:3 buttonTitles:@"button1", @"button2",@"button3",@"button4",nil];
+        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"this is a longgggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg title" destructiveButtonIndex:3 buttonTitles:@"button1", @"button2",@"button3",@"button4",nil];
         [sheet showWithBlock:^(MKActionSheet *actionSheet, NSInteger buttonIndex) {
             NSLog(@"===buttonIndex:%ld",(long)buttonIndex);
         }];
         
-    }else if (indexPath.row == 1){
+    }else if (indexPath.row == 2){
         
         MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:nil buttonTitles:@"button11", @"button12",@"button13",@"button14",nil];
         sheet.delegate = self;
         sheet.tag = 100;
         [sheet show];
         
-    }else if (indexPath.row == 2){
+    }else if (indexPath.row == 3){
         
-        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"title" buttonTitleArray:@[@"button21", @"button22",@"button23",@"button24"] destructiveButtonIndex:3];
+        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"title" buttonTitleArray:@[@"button1", @"button2",@"button3",@"button4"] destructiveButtonIndex:3];
         [sheet showWithBlock:^(MKActionSheet *actionSheet, NSInteger buttonIndex) {
             NSLog(@"===buttonIndex:%ld",(long)buttonIndex);
         }];
-        
-    }else if (indexPath.row == 3){
-        
-        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"custom UI" destructiveButtonIndex:3 buttonTitles:@"button31", @"button32",@"button33",@"button34", nil];
-        [sheet addButtonWithTitle:@"button99"];
-        sheet.cancelTitle = @"remove";
-        sheet.buttonTitleFont = [UIFont systemFontOfSize:20];
-        sheet.buttonTitleColor = [UIColor redColor];
-        sheet.buttonOpacity = 1;
-        sheet.buttonHeight = 60.0f;
-        sheet.destructiveButtonTitleColor = [UIColor grayColor];
-        sheet.animationDuration = 0.1f;
-        sheet.blackgroundOpacity = 0.0f;
-        sheet.blurOpacity = 0.7f;
-        sheet.delegate = self;
-        sheet.tag = 200;
-        [sheet show];
         
     }else if (indexPath.row == 4){
         [MKActionSheet sheetWithTitle:@"title" destructiveButtonIndex:0 block:^(MKActionSheet *actionSheet, NSInteger buttonIndex) {
@@ -104,11 +96,27 @@
             NSLog(@"===buttonIndex:%ld",(long)buttonIndex);
         }];
     }else if (indexPath.row == 6) {
-        if (self.tableView.backgroundView) {
-            self.tableView.backgroundView = nil;
-        }else{
-            self.tableView.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"img_bg"]];
-        }
+        
+        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"custom UI" destructiveButtonIndex:3 buttonTitles:@"button31", @"button32",@"button33",@"button34", nil];
+        [sheet addButtonWithTitle:@"this a add Button"];
+        sheet.isNeedCancelButton = NO;
+        [sheet show];
+        
+    }else if (indexPath.row == 7){
+        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"custom UI" destructiveButtonIndex:3 buttonTitles:@"button31", @"button32",@"button33",@"button34", nil];
+        [sheet addButtonWithTitle:@"button99"];
+        sheet.isNeedCancelButton = NO;
+        sheet.buttonTitleFont = [UIFont systemFontOfSize:20];
+        sheet.buttonTitleColor = [UIColor redColor];
+        sheet.buttonOpacity = 1;
+        sheet.buttonHeight = 60.0f;
+        sheet.destructiveButtonTitleColor = [UIColor grayColor];
+        sheet.animationDuration = 0.1f;
+        sheet.blackgroundOpacity = 0.0f;
+        sheet.blurOpacity = 0.7f;
+        sheet.delegate = self;
+        sheet.tag = 200;
+        [sheet show];
     }
 }
 

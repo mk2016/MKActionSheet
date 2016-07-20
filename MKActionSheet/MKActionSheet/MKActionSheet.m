@@ -7,6 +7,7 @@
 //
 
 #import "MKActionSheet.h"
+#import "MKBlurView.h"
 
 #ifndef MKActionSheetDefine
 #define MKSCREEN_WIDTH     [UIScreen mainScreen].bounds.size.width
@@ -16,17 +17,35 @@
 #endif
 
 #pragma mark - ***** MKActionSheet ******
-@interface MKActionSheet()
+@interface MKActionSheet()<UITableViewDelegate, UITableViewDataSource>
+
 @property (nonatomic, strong) NSMutableArray* buttonTitles;
 @property (nonatomic, strong) UIWindow *bgWindow;
+@property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) UIView *shadeView;
-@property (nonatomic, strong) UIView *sheetView;
 @property (nonatomic, strong) UIView *blurView;
 
 @end
 
 
 @implementation MKActionSheet
+
+
++ (void)sheetWithTitle:(NSString *)title buttonTitleArray:(NSArray *)buttonTitleArray destructiveButtonIndex:(NSInteger)destructiveButtonIndex block:(MKActionSheetBlock)block{
+    MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:title buttonTitleArray:buttonTitleArray destructiveButtonIndex:destructiveButtonIndex];
+    [sheet showWithBlock:block];
+}
+
++ (void)sheetWithTitle:(NSString *)title buttonTitleArray:(NSArray *)buttonTitleArray block:(MKActionSheetBlock)block{
+    MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:title buttonTitleArray:buttonTitleArray];
+    [sheet showWithBlock:block];
+}
+
++ (void)sheetWithTitle:(NSString *)title buttonTitleArray:(NSArray *)buttonTitleArray isNeedCancelButton:(BOOL)isNeedCancelButton block:(MKActionSheetBlock)block{
+    MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:title buttonTitleArray:buttonTitleArray];
+    sheet.isNeedCancelButton = isNeedCancelButton;
+    [sheet showWithBlock:block];
+}
 
 + (void)sheetWithTitle:(NSString *)title destructiveButtonIndex:(NSInteger)destructiveButtonIndex block:(MKActionSheetBlock)block buttonTitles:(NSString *)buttonTitle, ... {
     NSMutableArray *tempArray = [[NSMutableArray alloc] init];
@@ -66,18 +85,10 @@
     [sheet showWithBlock:block];
 }
 
-+ (void)sheetWithTitle:(NSString *)title buttonTitleArray:(NSArray *)buttonTitleArray destructiveButtonIndex:(NSInteger)destructiveButtonIndex block:(MKActionSheetBlock)block{
-    MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:title buttonTitleArray:buttonTitleArray destructiveButtonIndex:destructiveButtonIndex];
-    [sheet showWithBlock:block];
-}
-
-+ (void)sheetWithTitle:(NSString *)title buttonTitleArray:(NSArray *)buttonTitleArray block:(MKActionSheetBlock)block{
-    MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:title buttonTitleArray:buttonTitleArray];
-    [sheet showWithBlock:block];
-}
 
 
 
+/** init method */
 - (instancetype)initWithTitle:(NSString *)title buttonTitleArray:(NSArray *)buttonTitleArray{
     if (self = [super init]) {
         self.title = title;
@@ -142,6 +153,7 @@
     return self;
 }
 
+
 #pragma mark - ***** methods ******
 - (void)initData{
     _cancelTitle = @"取消";
@@ -154,6 +166,8 @@
     _blurOpacity = 0.0f;
     _titleColor = MKCOLOR_RGBA(100.0f, 100.0f, 100.0f, 1.0f);
     _buttonOpacity = 0.6;
+    _isNeedCancelButton = YES;
+    _maxShowButtonCount = 5.8;
 }
 
 
@@ -193,9 +207,9 @@
         [self.shadeView setAlpha:self.blackgroundOpacity];
         [self.shadeView setUserInteractionEnabled:YES];
 
-        CGRect frame = self.sheetView.frame;
+        CGRect frame = self.tableView.frame;
         frame.origin.y = MKSCREEN_HEIGHT - frame.size.height;
-        self.sheetView.frame = frame;
+        self.tableView.frame = frame;
     } completion:nil];
 }
 
@@ -205,9 +219,9 @@
         [self.shadeView setAlpha:0];
         [self.shadeView setUserInteractionEnabled:NO];
 
-        CGRect frame = self.sheetView.frame;
+        CGRect frame = self.tableView.frame;
         frame.origin.y += frame.size.height;
-        self.sheetView.frame = frame;
+        self.tableView.frame = frame;
         
     } completion:^(BOOL finished) {
         [self removeFromSuperview];
@@ -230,118 +244,116 @@
 - (void)setupMainView{
     self.frame = MKSCREEN_BOUNDS;
     [self addSubview:self.shadeView];
-    [self addSubview:self.sheetView];
+    [self addSubview:self.tableView];
     
-    UIColor *lineColor = MKCOLOR_RGBA(0.0f, 0.0f, 0.0f, 0.1f);
-    
-    UIImage *tImg = [self imageWithColor:MKCOLOR_RGBA(255, 255, 255, 0)];
-    UIImage *bImg = [self imageWithColor:MKCOLOR_RGBA(255, 255, 255, self.buttonOpacity)];
-    
-    CGFloat titleHeight = 0;
+
+    CGFloat tableViewH = 0;
+
     if (self.title) {
-        titleHeight = 36.0f;
-        CGSize titleSize = [self.title sizeWithAttributes:@{NSFontAttributeName : [UIFont systemFontOfSize:13.0f]}];
-        if (titleSize.width > MKSCREEN_WIDTH - 30.f) {
-            titleHeight = 56.0f;
-        }
-        
-        UIView* titleBgView = [[UIView alloc] init];
-        titleBgView.frame = CGRectMake(0, 0, MKSCREEN_WIDTH, titleHeight);
-        [self.sheetView addSubview:titleBgView];
-        
-        UIImageView *titleBgImg = [[UIImageView alloc] initWithImage:bImg];
-        titleBgImg.frame = titleBgView.bounds;
-        [titleBgView addSubview:titleBgImg];
+        UIView *headView = [[UIView alloc] init];
+        headView.backgroundColor = MKCOLOR_RGBA(255, 255, 255, self.buttonOpacity);
         
         UILabel* labTitle = [[UILabel alloc] init];
         labTitle.text = self.title;
-        labTitle.numberOfLines = 2.0f;
+        labTitle.numberOfLines = 0;
         labTitle.textColor = self.titleColor;
         labTitle.textAlignment = NSTextAlignmentCenter;
         labTitle.font = [UIFont systemFontOfSize:13.0f];
-        labTitle.frame = CGRectMake(15.0f, 0.0f, MKSCREEN_WIDTH - 30.0f, titleBgView.frame.size.height);
-        [titleBgView addSubview:labTitle];
-    }
-    
- 
-
-    if (self.buttonTitles.count) {
-        for (int i = 0; i < self.buttonTitles.count; i++) {
-            
-            CGFloat lineY = titleHeight + (self.buttonHeight+0.5) * i;
-
-            UIView *line = [[UIView alloc] init];
-            line.backgroundColor = lineColor;
-            line.frame = CGRectMake(0, lineY, MKSCREEN_WIDTH, 0.5f);
-            [self.sheetView addSubview:line];
-
-            UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
-            btn.tag = i;
-            [btn addTarget:self action:@selector(btnOnclicked:) forControlEvents:UIControlEventTouchUpInside];
-            
-            btn.titleLabel.font = self.buttonTitleFont;
-            [btn setTitle:self.buttonTitles[i] forState:UIControlStateNormal];
-            if (i == self.destructiveButtonIndex) {
-                [btn setTitleColor:self.destructiveButtonTitleColor forState:UIControlStateNormal];
-            }else{
-                [btn setTitleColor:self.buttonTitleColor forState:UIControlStateNormal];
-            }
-            
-            [btn setBackgroundImage:bImg forState:UIControlStateNormal];
-            [btn setBackgroundImage:tImg forState:UIControlStateHighlighted];
-            
-            btn.frame = CGRectMake(0, lineY+0.5, MKSCREEN_WIDTH, self.buttonHeight);
-            [self.sheetView addSubview:btn];
-        }
+        [headView addSubview:labTitle];
         
-        UIView *line = [[UIView alloc] init];
-        line.backgroundColor = lineColor;
-        line.frame = CGRectMake(0, titleHeight + (self.buttonHeight+0.5) * self.buttonTitles.count, MKSCREEN_WIDTH, 0.5);
-        [self.sheetView addSubview:line];
+        CGSize titleSize = [labTitle.text boundingRectWithSize:CGSizeMake(MKSCREEN_WIDTH-32, MAXFLOAT)
+                                              options:NSStringDrawingUsesLineFragmentOrigin
+                                           attributes:@{NSFontAttributeName: labTitle.font}
+                                              context:nil].size;
+        labTitle.frame = CGRectMake(16, 8, MKSCREEN_WIDTH-32, titleSize.height);
+        headView.frame = CGRectMake(0, 0, MKSCREEN_WIDTH, titleSize.height+16);
+        
+        self.tableView.tableHeaderView = headView;
+        
+        tableViewH += headView.frame.size.height;
+
     }
     
-    //取消按钮
-    UIButton* cancelBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    [cancelBtn setBackgroundImage:bImg forState:UIControlStateNormal];
-    [cancelBtn setBackgroundImage:tImg forState:UIControlStateHighlighted];
-    [cancelBtn setTitle:self.cancelTitle forState:UIControlStateNormal];
-    [cancelBtn setTitleColor:self.buttonTitleColor forState:UIControlStateNormal];
-    cancelBtn.titleLabel.font = self.buttonTitleFont;
-    cancelBtn.tag = self.buttonTitles.count;
-    [cancelBtn addTarget:self action:@selector(btnOnclicked:) forControlEvents:UIControlEventTouchUpInside];
+    CGFloat maxCount = self.buttonTitles.count > self.maxShowButtonCount ? self.maxShowButtonCount : self.buttonTitles.count;
+    tableViewH += maxCount * self.buttonHeight;
     
-    CGFloat btnY = titleHeight + (0.5f + self.buttonHeight) * self.buttonTitles.count + 6.0f;
-    cancelBtn.frame = CGRectMake(0, btnY, MKSCREEN_WIDTH, self.buttonHeight);
-    [self.sheetView addSubview:cancelBtn];
+    if (self.isNeedCancelButton) {
+        tableViewH += self.buttonHeight + 6;
+    }
     
-    UIView *line = [[UIView alloc] init];
-    line.backgroundColor = lineColor;
-    line.frame = CGRectMake(0, btnY-0.5, MKSCREEN_WIDTH, 0.5);
-    [self.sheetView addSubview:line];
-    
-    CGFloat sheetViewH = btnY + self.buttonHeight;
-    self.sheetView.frame = CGRectMake(0, MKSCREEN_HEIGHT, MKSCREEN_WIDTH, sheetViewH);
-    
-    self.blurView = [[UIView alloc] initWithFrame:self.sheetView.bounds];
-    [self.blurView setClipsToBounds:YES];
-    UIToolbar *bar = [[UIToolbar alloc] initWithFrame:self.blurView.bounds];
-    [self.blurView.layer insertSublayer:[bar layer] atIndex:0];
-    [self.sheetView addSubview:self.blurView];
-    [self.sheetView sendSubviewToBack:self.blurView];
-    [self setBlurAlpha:self.blurOpacity];
+    self.tableView.frame = CGRectMake(0, MKSCREEN_HEIGHT, MKSCREEN_WIDTH, tableViewH);
+    self.blurView = [[MKBlurView alloc] initWithFrame:self.tableView.bounds];
+    [self.blurView setAlpha:self.blurOpacity];
+    self.tableView.backgroundView = self.blurView;
+
+    [self.tableView reloadData];
 }
 
-- (void)setBlurAlpha:(CGFloat)alpha{
-    unsigned long numComponents = CGColorGetNumberOfComponents([[self.blurView backgroundColor] CGColor]);
-    if (numComponents == 4){
-        const CGFloat *components = CGColorGetComponents([[self.blurView backgroundColor] CGColor]);
-        CGFloat red = components[0];
-        CGFloat green = components[1];
-        CGFloat blue = components[2];
-        [self.blurView setBackgroundColor:[UIColor colorWithRed:red green:green blue:blue alpha:alpha]];
-    }else{
-        [self.blurView setBackgroundColor:[UIColor colorWithRed:1 green:1 blue:1 alpha:alpha]];
+#pragma mark - ***** UITableView delegate ******
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
+    MKActionSheetCell *cell = [MKActionSheetCell cellWithTableView:tableView];
+    
+    cell.btnCell.frame = CGRectMake(0, 0.5, MKSCREEN_WIDTH, self.buttonHeight-0.5);
+    [cell.btnCell setBackgroundImage:[self imageWithColor:MKCOLOR_RGBA(255, 255, 255, self.buttonOpacity)] forState:UIControlStateNormal];
+    [cell.btnCell setBackgroundImage:[self imageWithColor:MKCOLOR_RGBA(255, 255, 255, 0)] forState:UIControlStateHighlighted];
+    [cell.btnCell addTarget:self action:@selector(btnOnclicked:) forControlEvents:UIControlEventTouchUpInside];
+    cell.btnCell.titleLabel.font = self.buttonTitleFont;
+    [cell.btnCell setTitleColor:self.buttonTitleColor forState:UIControlStateNormal];
+    
+    if (indexPath.section == 0) {
+        cell.btnCell.tag = indexPath.row;
+        [cell.btnCell setTitle:self.buttonTitles[indexPath.row] forState:UIControlStateNormal];
+
+        if (indexPath.row == self.destructiveButtonIndex) {
+            [cell.btnCell setTitleColor:self.destructiveButtonTitleColor forState:UIControlStateNormal];
+        }
+    }else if (indexPath.section == 1){
+        cell.btnCell.tag = self.buttonTitles.count;
+        [cell.btnCell setTitle:self.cancelTitle forState:UIControlStateNormal];
     }
+    return cell;
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
+    return self.isNeedCancelButton ? 2 : 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
+    if (section == 0) {
+        return self.buttonTitles.count > 0 ? self.buttonTitles.count : 0;
+    }else if (section == 1){
+        return 1;
+    }
+    return 0;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    return self.buttonHeight;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{
+    return 0.1;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
+    if (section == 1){
+        return 6;
+    }
+    return 0.1;
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
+    if (section == 1) {
+        UIView *view = [[UIView alloc] init];
+        view.backgroundColor = MKCOLOR_RGBA(100, 100, 100, 0.1);
+        
+        UIView *separatorView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, MKSCREEN_WIDTH, 0.5)];
+        separatorView.backgroundColor = MKCOLOR_RGBA(0, 0, 0, 0.15);
+        [view addSubview:separatorView];
+        
+        return view;
+    }
+    return nil;
 }
 
 #pragma mark - ***** lazy ******
@@ -368,13 +380,20 @@
     return _shadeView;
 }
 
-- (UIView*)sheetView{
-    if (!_sheetView) {
-        _sheetView = [[UIView alloc] init];
-        [_sheetView setBackgroundColor:[UIColor clearColor]];
+
+- (UITableView *)tableView{
+    if (!_tableView) {
+        _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
+        _tableView.delegate = self;
+        _tableView.dataSource = self;
+        _tableView.rowHeight = self.buttonHeight;
+        _tableView.bounces = NO;
+        _tableView.backgroundColor = [UIColor clearColor];
+        _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     }
-    return _sheetView;
+    return _tableView;
 }
+
 
 - (UIImage *)imageWithColor:(UIColor *)color{
     CGRect rect = CGRectMake(0.0f, 0.0f, 1.0f, 1.0f);
@@ -398,3 +417,43 @@
 @end
 
 
+
+
+
+
+
+
+#pragma mark - ***** MKActionSheepCell ******
+@implementation MKActionSheetCell
+
++ (instancetype)cellWithTableView:(UITableView *)tableView{
+    static NSString *identifier = @"MKActionSheetCell";
+    MKActionSheetCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier];
+    
+    if (!cell) {
+        cell = [[MKActionSheetCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
+        cell.backgroundColor = [UIColor clearColor];
+        
+        UIView *separatorView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, MKSCREEN_WIDTH, 0.5)];
+        separatorView.backgroundColor = MKCOLOR_RGBA(0, 0, 0, 0.1);
+        [cell addSubview:separatorView];
+        
+        UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [cell addSubview:btn];
+        cell.btnCell = btn;
+    }
+    return cell;
+}
+
+- (void)awakeFromNib {
+    [super awakeFromNib];
+    // Initialization code
+}
+
+- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
+    [super setSelected:selected animated:animated];
+    
+    // Configure the view for the selected state
+}
+
+@end
