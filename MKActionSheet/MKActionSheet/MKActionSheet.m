@@ -175,7 +175,7 @@
     _titleColor = MKCOLOR_RGBA(100.0f, 100.0f, 100.0f, 1.0f);
     _buttonOpacity = 0.6;
     _isNeedCancelButton = YES;
-    _maxShowButtonCount = 5.6;
+    _maxShowButtonCount = -1;
 }
 
 
@@ -277,8 +277,10 @@
         sheetViewH += self.titleView.frame.size.height;
 
     }
-    
-    CGFloat maxCount = self.buttonTitles.count > self.maxShowButtonCount ? self.maxShowButtonCount : self.buttonTitles.count;
+    CGFloat maxCount = self.buttonTitles.count;
+    if (self.maxShowButtonCount > 0) {
+        maxCount = self.buttonTitles.count > self.maxShowButtonCount ? self.maxShowButtonCount : self.buttonTitles.count;
+    }
     CGFloat tableViewH = maxCount * self.buttonHeight;
     
     self.tableView.frame = CGRectMake(0, sheetViewH, MKSCREEN_WIDTH, tableViewH);
@@ -321,7 +323,8 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     MKActionSheetCell *cell = [MKActionSheetCell cellWithTableView:tableView];
     cell.separatorView.frame = CGRectMake(0, self.buttonHeight-0.5, MKSCREEN_WIDTH, 0.5);
-    
+    cell.separatorView.hidden = indexPath.row == self.buttonTitles.count - 1;
+
     cell.btnCell.frame = CGRectMake(0, 0, MKSCREEN_WIDTH, self.buttonHeight-0.5);
     [cell.btnCell setBackgroundImage:[self imageWithColor:MKCOLOR_RGBA(255, 255, 255, self.buttonOpacity)] forState:UIControlStateNormal];
     [cell.btnCell setBackgroundImage:[self imageWithColor:MKCOLOR_RGBA(255, 255, 255, 0)] forState:UIControlStateHighlighted];
@@ -336,9 +339,7 @@
         [cell.btnCell setTitleColor:self.destructiveButtonTitleColor forState:UIControlStateNormal];
     }
     
-    if (indexPath.row == self.buttonTitles.count - 1) {
-        cell.separatorView.hidden = YES;
-    }
+    
     
     return cell;
 }
