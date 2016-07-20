@@ -53,6 +53,7 @@ destructiveButtonIndex:(NSInteger)destructiveButtonIndex
 + (void)sheetWithTitle:(NSString *)title
       buttonTitleArray:(NSArray *)buttonTitleArray
     isNeedCancelButton:(BOOL)isNeedCancelButton
+    maxShowButtonCount:(CGFloat)maxShowButtonCount
                  block:(MKActionSheetBlock)block;
 
 + (void)sheetWithTitle:(NSString *)title

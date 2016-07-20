@@ -49,9 +49,12 @@
     [sheet showWithBlock:block];
 }
 
-+ (void)sheetWithTitle:(NSString *)title buttonTitleArray:(NSArray *)buttonTitleArray isNeedCancelButton:(BOOL)isNeedCancelButton block:(MKActionSheetBlock)block{
++ (void)sheetWithTitle:(NSString *)title buttonTitleArray:(NSArray *)buttonTitleArray isNeedCancelButton:(BOOL)isNeedCancelButton maxShowButtonCount:(CGFloat)maxShowButtonCount block:(MKActionSheetBlock)block{
     MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:title buttonTitleArray:buttonTitleArray];
     sheet.isNeedCancelButton = isNeedCancelButton;
+    if (maxShowButtonCount > 0 ) {
+        sheet.maxShowButtonCount = maxShowButtonCount;
+    }
     [sheet showWithBlock:block];
 }
 
@@ -270,9 +273,10 @@
         self.titleLabel.frame = CGRectMake(16, 8, MKSCREEN_WIDTH-32, titleSize.height);
         self.titleView.frame = CGRectMake(0, 0, MKSCREEN_WIDTH, titleSize.height+16);
         
-        UIView *separatorView = [[UIView alloc] initWithFrame:CGRectMake(0, self.titleView.frame.size.height-0.7, MKSCREEN_WIDTH, 0.7)];
-        separatorView.backgroundColor = MKCOLOR_RGBA(0, 0, 0, 0.2);
-        [self.titleView addSubview:separatorView];
+        CALayer *separatorLayer = [CALayer layer];
+        separatorLayer.frame = CGRectMake(0, self.titleView.frame.size.height-0.7, MKSCREEN_WIDTH, 0.7);
+        separatorLayer.backgroundColor = MKCOLOR_RGBA(0, 0, 0, 0.2).CGColor;
+        [self.titleView.layer addSublayer:separatorLayer];
         
         sheetViewH += self.titleView.frame.size.height;
 

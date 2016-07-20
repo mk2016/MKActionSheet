@@ -92,9 +92,10 @@
         } buttonTitles:@"button41", @"button42",@"button43",@"button44", nil];
         
     }else if (indexPath.row == 5){
-        [MKActionSheet sheetWithTitle:@"title" buttonTitleArray:@[@"button1", @"button2",@"button3",@"button4",@"button5",@"button6",@"button7",@"button8",@"button9",@"button10"] block:^(MKActionSheet *actionSheet, NSInteger buttonIndex) {
-            NSLog(@"===buttonIndex:%ld",(long)buttonIndex);
-        }];
+        [MKActionSheet sheetWithTitle:@"title" buttonTitleArray:@[@"button1", @"button2",@"button3",@"button4",@"button5",@"button6",@"button7",@"button8",@"button9",@"button10"]
+                   isNeedCancelButton:YES maxShowButtonCount:5.6 block:^(MKActionSheet *actionSheet, NSInteger buttonIndex) {
+                       NSLog(@"===buttonIndex:%ld",(long)buttonIndex);
+                   }];
     }else if (indexPath.row == 6) {
         
         MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"custom UI" destructiveButtonIndex:3 buttonTitles:@"button31", @"button32",@"button33",@"button34", nil];
