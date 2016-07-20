@@ -98,6 +98,7 @@ destructiveButtonIndex:(NSInteger)destructiveButtonIndex
 #pragma mark - ***** MKActionSheetCell ******
 @interface MKActionSheetCell : UITableViewCell
 @property (nonatomic, weak) UIButton *btnCell;
+@property (nonatomic, weak) UIView *separatorView;
 + (instancetype)cellWithTableView:(UITableView *)tableView;
 
 @end

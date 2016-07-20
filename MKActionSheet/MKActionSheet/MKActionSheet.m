@@ -17,13 +17,21 @@
 #endif
 
 #pragma mark - ***** MKActionSheet ******
-@interface MKActionSheet()<UITableViewDelegate, UITableViewDataSource>
+@interface MKActionSheet()<UITableViewDelegate, UITableViewDataSource>{
+    CGFloat _titleViewH;    /*!< title view height */
+}
 
-@property (nonatomic, strong) NSMutableArray* buttonTitles;
+@property (nonatomic, strong) NSMutableArray* buttonTitles; /*!< button titles array */
 @property (nonatomic, strong) UIWindow *bgWindow;
-@property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) UIView *shadeView;
+@property (nonatomic, strong) UIView *sheetView;
+@property (nonatomic, strong) UITableView *tableView;
+
 @property (nonatomic, strong) UIView *blurView;
+
+@property (nonatomic, strong) UIView *titleView;
+@property (nonatomic, strong) UILabel *titleLabel;
+@property (nonatomic, strong) UIButton *cancelButton;
 
 @end
 
@@ -167,7 +175,7 @@
     _titleColor = MKCOLOR_RGBA(100.0f, 100.0f, 100.0f, 1.0f);
     _buttonOpacity = 0.6;
     _isNeedCancelButton = YES;
-    _maxShowButtonCount = 5.8;
+    _maxShowButtonCount = 5.6;
 }
 
 
@@ -207,9 +215,9 @@
         [self.shadeView setAlpha:self.blackgroundOpacity];
         [self.shadeView setUserInteractionEnabled:YES];
 
-        CGRect frame = self.tableView.frame;
+        CGRect frame = self.sheetView.frame;
         frame.origin.y = MKSCREEN_HEIGHT - frame.size.height;
-        self.tableView.frame = frame;
+        self.sheetView.frame = frame;
     } completion:nil];
 }
 
@@ -219,9 +227,9 @@
         [self.shadeView setAlpha:0];
         [self.shadeView setUserInteractionEnabled:NO];
 
-        CGRect frame = self.tableView.frame;
+        CGRect frame = self.sheetView.frame;
         frame.origin.y += frame.size.height;
-        self.tableView.frame = frame;
+        self.sheetView.frame = frame;
         
     } completion:^(BOOL finished) {
         [self removeFromSuperview];
@@ -240,95 +248,111 @@
 }
 
 
+
 #pragma mark - ***** setup UI ******
 - (void)setupMainView{
     self.frame = MKSCREEN_BOUNDS;
     [self addSubview:self.shadeView];
-    [self addSubview:self.tableView];
-    
+    [self addSubview:self.sheetView];
+    [self.sheetView addSubview:self.tableView];
 
-    CGFloat tableViewH = 0;
+    CGFloat sheetViewH = 0;
 
     if (self.title) {
-        UIView *headView = [[UIView alloc] init];
-        headView.backgroundColor = MKCOLOR_RGBA(255, 255, 255, self.buttonOpacity);
-        
-        UILabel* labTitle = [[UILabel alloc] init];
-        labTitle.text = self.title;
-        labTitle.numberOfLines = 0;
-        labTitle.textColor = self.titleColor;
-        labTitle.textAlignment = NSTextAlignmentCenter;
-        labTitle.font = [UIFont systemFontOfSize:13.0f];
-        [headView addSubview:labTitle];
-        
-        CGSize titleSize = [labTitle.text boundingRectWithSize:CGSizeMake(MKSCREEN_WIDTH-32, MAXFLOAT)
+        [self.sheetView addSubview:self.titleView];
+        [self.titleView addSubview:self.titleLabel];
+    
+        CGSize titleSize = [self.titleLabel.text boundingRectWithSize:CGSizeMake(MKSCREEN_WIDTH-32, MAXFLOAT)
                                               options:NSStringDrawingUsesLineFragmentOrigin
-                                           attributes:@{NSFontAttributeName: labTitle.font}
+                                           attributes:@{NSFontAttributeName: self.titleLabel.font}
                                               context:nil].size;
-        labTitle.frame = CGRectMake(16, 8, MKSCREEN_WIDTH-32, titleSize.height);
-        headView.frame = CGRectMake(0, 0, MKSCREEN_WIDTH, titleSize.height+16);
         
-        self.tableView.tableHeaderView = headView;
+        self.titleLabel.frame = CGRectMake(16, 8, MKSCREEN_WIDTH-32, titleSize.height);
+        self.titleView.frame = CGRectMake(0, 0, MKSCREEN_WIDTH, titleSize.height+16);
         
-        tableViewH += headView.frame.size.height;
+        UIView *separatorView = [[UIView alloc] initWithFrame:CGRectMake(0, self.titleView.frame.size.height-0.7, MKSCREEN_WIDTH, 0.7)];
+        separatorView.backgroundColor = MKCOLOR_RGBA(0, 0, 0, 0.2);
+        [self.titleView addSubview:separatorView];
+        
+        sheetViewH += self.titleView.frame.size.height;
 
     }
     
     CGFloat maxCount = self.buttonTitles.count > self.maxShowButtonCount ? self.maxShowButtonCount : self.buttonTitles.count;
-    tableViewH += maxCount * self.buttonHeight;
+    CGFloat tableViewH = maxCount * self.buttonHeight;
+    
+    self.tableView.frame = CGRectMake(0, sheetViewH, MKSCREEN_WIDTH, tableViewH);
+
+    sheetViewH += tableViewH;
     
     if (self.isNeedCancelButton) {
-        tableViewH += self.buttonHeight + 6;
+        sheetViewH += self.buttonHeight + 6;
+        
+        UIView *cancelView = [[UIView alloc] initWithFrame:CGRectMake(0, self.tableView.frame.origin.y+self.tableView.frame.size.height, MKSCREEN_WIDTH, self.buttonHeight + 6)];
+        [cancelView addSubview:self.cancelButton];
+        [self.sheetView addSubview:cancelView];
+        
+        UIView *sepView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, MKSCREEN_WIDTH, 6)];
+        sepView.backgroundColor = MKCOLOR_RGBA(100, 100, 100, 0.1);
+        [cancelView addSubview:sepView];
+        
+        CALayer *topBorderLayer = [CALayer layer];
+        topBorderLayer.frame = CGRectMake(0, 0, sepView.frame.size.width, 0.5);
+        topBorderLayer.backgroundColor = MKCOLOR_RGBA(0, 0, 0, 0.1).CGColor;
+        [sepView.layer addSublayer:topBorderLayer];
+        
+        CALayer *botBorderLayer = [CALayer layer];
+        botBorderLayer.frame = CGRectMake(0, sepView.frame.size.height - 0.5, sepView.frame.size.width, 0.5);
+        botBorderLayer.backgroundColor = MKCOLOR_RGBA(0, 0, 0, 0.1).CGColor;
+        [sepView.layer addSublayer:botBorderLayer];
+        
     }
     
-    self.tableView.frame = CGRectMake(0, MKSCREEN_HEIGHT, MKSCREEN_WIDTH, tableViewH);
-    self.blurView = [[MKBlurView alloc] initWithFrame:self.tableView.bounds];
+    self.sheetView.frame = CGRectMake(0, MKSCREEN_HEIGHT, MKSCREEN_WIDTH, sheetViewH);
+    self.blurView = [[MKBlurView alloc] initWithFrame:self.sheetView.bounds];
     [self.blurView setAlpha:self.blurOpacity];
-    self.tableView.backgroundView = self.blurView;
-
+    [self.sheetView addSubview:self.blurView];
+    [self.sheetView sendSubviewToBack:self.blurView];
+    
     [self.tableView reloadData];
 }
 
 #pragma mark - ***** UITableView delegate ******
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     MKActionSheetCell *cell = [MKActionSheetCell cellWithTableView:tableView];
+    cell.separatorView.frame = CGRectMake(0, self.buttonHeight-0.5, MKSCREEN_WIDTH, 0.5);
     
-    cell.btnCell.frame = CGRectMake(0, 0.5, MKSCREEN_WIDTH, self.buttonHeight-0.5);
+    cell.btnCell.frame = CGRectMake(0, 0, MKSCREEN_WIDTH, self.buttonHeight-0.5);
     [cell.btnCell setBackgroundImage:[self imageWithColor:MKCOLOR_RGBA(255, 255, 255, self.buttonOpacity)] forState:UIControlStateNormal];
     [cell.btnCell setBackgroundImage:[self imageWithColor:MKCOLOR_RGBA(255, 255, 255, 0)] forState:UIControlStateHighlighted];
     [cell.btnCell addTarget:self action:@selector(btnOnclicked:) forControlEvents:UIControlEventTouchUpInside];
     cell.btnCell.titleLabel.font = self.buttonTitleFont;
     [cell.btnCell setTitleColor:self.buttonTitleColor forState:UIControlStateNormal];
     
-    if (indexPath.section == 0) {
-        cell.btnCell.tag = indexPath.row;
-        [cell.btnCell setTitle:self.buttonTitles[indexPath.row] forState:UIControlStateNormal];
-
-        if (indexPath.row == self.destructiveButtonIndex) {
-            [cell.btnCell setTitleColor:self.destructiveButtonTitleColor forState:UIControlStateNormal];
-        }
-    }else if (indexPath.section == 1){
-        cell.btnCell.tag = self.buttonTitles.count;
-        [cell.btnCell setTitle:self.cancelTitle forState:UIControlStateNormal];
+    cell.btnCell.tag = indexPath.row;
+    [cell.btnCell setTitle:self.buttonTitles[indexPath.row] forState:UIControlStateNormal];
+    
+    if (indexPath.row == self.destructiveButtonIndex) {
+        [cell.btnCell setTitleColor:self.destructiveButtonTitleColor forState:UIControlStateNormal];
     }
+    
+    if (indexPath.row == self.buttonTitles.count - 1) {
+        cell.separatorView.hidden = YES;
+    }
+    
     return cell;
 }
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
-    return self.isNeedCancelButton ? 2 : 1;
-}
-
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    if (section == 0) {
-        return self.buttonTitles.count > 0 ? self.buttonTitles.count : 0;
-    }else if (section == 1){
-        return 1;
-    }
-    return 0;
+    return self.buttonTitles.count > 0 ? self.buttonTitles.count : 0;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     return self.buttonHeight;
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
+    return 1;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{
@@ -336,25 +360,10 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
-    if (section == 1){
-        return 6;
-    }
     return 0.1;
 }
 
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
-    if (section == 1) {
-        UIView *view = [[UIView alloc] init];
-        view.backgroundColor = MKCOLOR_RGBA(100, 100, 100, 0.1);
-        
-        UIView *separatorView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, MKSCREEN_WIDTH, 0.5)];
-        separatorView.backgroundColor = MKCOLOR_RGBA(0, 0, 0, 0.15);
-        [view addSubview:separatorView];
-        
-        return view;
-    }
-    return nil;
-}
+
 
 #pragma mark - ***** lazy ******
 - (UIWindow *)bgWindow{
@@ -381,9 +390,17 @@
 }
 
 
+- (UIView*)sheetView{
+    if (!_sheetView) {
+        _sheetView = [[UIView alloc] init];
+        [_sheetView setBackgroundColor:[UIColor clearColor]];
+    }
+    return _sheetView;
+}
+
 - (UITableView *)tableView{
     if (!_tableView) {
-        _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
+        _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
         _tableView.delegate = self;
         _tableView.dataSource = self;
         _tableView.rowHeight = self.buttonHeight;
@@ -394,6 +411,40 @@
     return _tableView;
 }
 
+- (UIView *)titleView{
+    if (!_titleView) {
+        _titleView = [[UIView alloc] init];
+        _titleView.backgroundColor = MKCOLOR_RGBA(255, 255, 255, self.buttonOpacity);
+    }
+    return _titleView;
+}
+
+- (UILabel *)titleLabel{
+    if (!_titleLabel) {
+        _titleLabel = [[UILabel alloc] init];
+        _titleLabel.text = self.title;
+        _titleLabel.numberOfLines = 0;
+        _titleLabel.textColor = self.titleColor;
+        _titleLabel.textAlignment = NSTextAlignmentCenter;
+        _titleLabel.font = [UIFont systemFontOfSize:13.0f];
+    }
+    return _titleLabel;
+}
+
+- (UIButton *)cancelButton{
+    if (!_cancelButton) {
+        _cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_cancelButton setBackgroundImage:[self imageWithColor:MKCOLOR_RGBA(255, 255, 255, self.buttonOpacity)] forState:UIControlStateNormal];
+        [_cancelButton setBackgroundImage:[self imageWithColor:MKCOLOR_RGBA(255, 255, 255, 0)] forState:UIControlStateHighlighted];
+        [_cancelButton setTitle:self.cancelTitle forState:UIControlStateNormal];
+        [_cancelButton setTitleColor:self.buttonTitleColor forState:UIControlStateNormal];
+        _cancelButton.titleLabel.font = self.buttonTitleFont;
+        _cancelButton.tag = self.buttonTitles.count;
+        [_cancelButton addTarget:self action:@selector(btnOnclicked:) forControlEvents:UIControlEventTouchUpInside];
+        _cancelButton.frame = CGRectMake(0, 6, MKSCREEN_WIDTH, self.buttonHeight);
+    }
+    return _cancelButton;
+}
 
 - (UIImage *)imageWithColor:(UIColor *)color{
     CGRect rect = CGRectMake(0.0f, 0.0f, 1.0f, 1.0f);
@@ -434,9 +485,10 @@
         cell = [[MKActionSheetCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
         cell.backgroundColor = [UIColor clearColor];
         
-        UIView *separatorView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, MKSCREEN_WIDTH, 0.5)];
+        UIView *separatorView = [[UIView alloc] init];
         separatorView.backgroundColor = MKCOLOR_RGBA(0, 0, 0, 0.1);
         [cell addSubview:separatorView];
+        cell.separatorView = separatorView;
         
         UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
         [cell addSubview:btn];

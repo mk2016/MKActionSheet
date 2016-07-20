@@ -32,13 +32,13 @@
     
     self.datasArray = [[NSMutableArray alloc] init];
     [self.datasArray addObject:@"change tableViewBackground View"];
-    [self.datasArray addObject:@"MKActionSheet by Block"];
-    [self.datasArray addObject:@"MKActionSheet by Delegate and no title"];
-    [self.datasArray addObject:@"MKActionSheet by buttonTitleArray"];
-    [self.datasArray addObject:@"MKActionSheet by buttonTitles"];
-    [self.datasArray addObject:@"MKActionSheet by buttonTitleArray"];
-    [self.datasArray addObject:@"MKActionSheet by no cancel"];
-    [self.datasArray addObject:@"MKActionSheet by custom UI"];
+    [self.datasArray addObject:@"Block"];
+    [self.datasArray addObject:@"Delegate and no title"];
+    [self.datasArray addObject:@"buttonTitleArray"];
+    [self.datasArray addObject:@"buttonTitles"];
+    [self.datasArray addObject:@"more then max show Count"];
+    [self.datasArray addObject:@"no cancel"];
+    [self.datasArray addObject:@"custom UI"];
 
 }
 
@@ -92,7 +92,7 @@
         } buttonTitles:@"button41", @"button42",@"button43",@"button44", nil];
         
     }else if (indexPath.row == 5){
-        [MKActionSheet sheetWithTitle:@"title" buttonTitleArray:@[@"button51", @"button52",@"button53",@"button54"] block:^(MKActionSheet *actionSheet, NSInteger buttonIndex) {
+        [MKActionSheet sheetWithTitle:@"title" buttonTitleArray:@[@"button1", @"button2",@"button3",@"button4",@"button5",@"button6",@"button7",@"button8",@"button9",@"button10"] block:^(MKActionSheet *actionSheet, NSInteger buttonIndex) {
             NSLog(@"===buttonIndex:%ld",(long)buttonIndex);
         }];
     }else if (indexPath.row == 6) {
