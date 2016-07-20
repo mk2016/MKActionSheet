@@ -7,7 +7,6 @@
 //
 
 #import "MKActionSheet.h"
-#import "MKBlurView.h"
 
 #ifndef MKActionSheetDefine
 #define MKSCREEN_WIDTH     [UIScreen mainScreen].bounds.size.width
@@ -315,13 +314,32 @@
     }
     
     self.sheetView.frame = CGRectMake(0, MKSCREEN_HEIGHT, MKSCREEN_WIDTH, sheetViewH);
-    self.blurView = [[MKBlurView alloc] initWithFrame:self.sheetView.bounds];
-    [self.blurView setAlpha:self.blurOpacity];
+    
+    
+    self.blurView = [[UIView alloc] initWithFrame:self.sheetView.bounds];
+    [self.blurView setClipsToBounds:YES];
+    UIToolbar *bar = [[UIToolbar alloc] initWithFrame:self.blurView.bounds];
+    [self.blurView.layer insertSublayer:[bar layer] atIndex:0];
     [self.sheetView addSubview:self.blurView];
     [self.sheetView sendSubviewToBack:self.blurView];
+    [self setBlurAlpha:self.blurOpacity];
     
     [self.tableView reloadData];
 }
+
+- (void)setBlurAlpha:(CGFloat)alpha{
+    unsigned long numComponents = CGColorGetNumberOfComponents([[self.blurView backgroundColor] CGColor]);
+    if (numComponents == 4){
+        const CGFloat *components = CGColorGetComponents([[self.blurView backgroundColor] CGColor]);
+        CGFloat red = components[0];
+        CGFloat green = components[1];
+        CGFloat blue = components[2];
+        [self.blurView setBackgroundColor:[UIColor colorWithRed:red green:green blue:blue alpha:alpha]];
+    }else{
+        [self.blurView setBackgroundColor:[UIColor colorWithRed:1 green:1 blue:1 alpha:alpha]];
+    }
+}
+
 
 #pragma mark - ***** UITableView delegate ******
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
