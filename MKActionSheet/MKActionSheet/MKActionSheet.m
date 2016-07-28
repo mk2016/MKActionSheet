@@ -27,6 +27,7 @@
 @property (nonatomic, strong) UITableView *tableView;
 
 @property (nonatomic, strong) UIView *blurView;
+@property (nonatomic, strong) UIToolbar *blurBar;
 
 @property (nonatomic, strong) UIView *titleView;
 @property (nonatomic, strong) UILabel *titleLabel;
@@ -318,12 +319,16 @@
     
     self.blurView = [[UIView alloc] initWithFrame:self.sheetView.bounds];
     [self.blurView setClipsToBounds:YES];
-    UIToolbar *bar = [[UIToolbar alloc] initWithFrame:self.blurView.bounds];
-    [self.blurView.layer insertSublayer:[bar layer] atIndex:0];
+    self.blurView.backgroundColor = [UIColor clearColor];
+    
+    self.blurBar = [[UIToolbar alloc] initWithFrame:self.blurView.bounds];
+    self.blurBar = [[UIToolbar alloc] initWithFrame:[self bounds]];
+    [self.blurView.layer insertSublayer:[self.blurBar layer] atIndex:0];
+    
     [self.sheetView addSubview:self.blurView];
     [self.sheetView sendSubviewToBack:self.blurView];
     [self setBlurAlpha:self.blurOpacity];
-    
+
     [self.tableView reloadData];
 }
 
