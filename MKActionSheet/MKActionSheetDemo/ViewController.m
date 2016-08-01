@@ -105,19 +105,20 @@
         
     }else if (indexPath.row == 7){
         MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"custom UI" destructiveButtonIndex:3 buttonTitles:@"button31", @"button32",@"button33",@"button34", nil];
-        [sheet addButtonWithTitle:@"button99"];
-        sheet.isNeedCancelButton = NO;
-        sheet.buttonTitleFont = [UIFont systemFontOfSize:20];
+        [sheet addButtonWithTitle:@"button add"];
+        sheet.isNeedCancelButton = YES;
+        sheet.buttonTitleFont = [UIFont systemFontOfSize:17];
         sheet.buttonTitleColor = [UIColor redColor];
         sheet.buttonOpacity = 1;
-        sheet.buttonHeight = 60.0f;
+        sheet.buttonHeight = 40.0f;
         sheet.destructiveButtonTitleColor = [UIColor grayColor];
-        sheet.animationDuration = 0.1f;
+        sheet.animationDuration = 0.2f;
         sheet.blackgroundOpacity = 0.0f;
         sheet.blurOpacity = 0.7f;
-        sheet.delegate = self;
         sheet.tag = 200;
-        [sheet show];
+        [sheet showWithBlock:^(MKActionSheet *actionSheet, NSInteger buttonIndex) {
+            
+        }];
     }
 }
 
