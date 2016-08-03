@@ -6,7 +6,7 @@
 ####模仿微信样式，还支持 无标题模式，无取消按钮模式，多按钮支持tableView模式，可设定最多显示按钮个数（支持小数）
 
 ### Manually (手动导入)  后期会加入 cocosPods
-秩序将 MKActionSheet.h 和 MKActionSheet.m 导入到项目中 在需要使用的地方 #import "MJExtension.h" 即可
+只需将 MKActionSheet.h 和 MKActionSheet.m 导入到项目中 在需要使用的地方 #import "MJExtension.h" 即可
 
 #### 可以多参数初始化
 ```
