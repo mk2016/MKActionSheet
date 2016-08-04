@@ -21,8 +21,10 @@
 }
 @property (nonatomic, assign) MKActionSheetParamType paramType;         /*!< actionSheet param style */
 
+@property (nonatomic, copy) NSString *imageKey;
+@property (nonatomic, assign) MKActionSheetButtonImageType imageType;
 @property (nonatomic, strong) NSMutableArray *buttonTitles;             /*!< button titles array */
-@property (nonatomic, strong) NSMutableArray *modelArray;
+@property (nonatomic, strong) NSMutableArray *objArray;
 @property (nonatomic, strong) UIWindow *bgWindow;
 @property (nonatomic, strong) UIView *shadeView;
 @property (nonatomic, strong) UIView *sheetView;
@@ -39,71 +41,6 @@
 
 
 @implementation MKActionSheet
-
-#pragma mark - ***** Class method ******
-
-+ (void)sheetWithTitle:(NSString *)title buttonTitleArray:(NSArray *)buttonTitleArray destructiveButtonIndex:(NSInteger)destructiveButtonIndex block:(MKActionSheetBlock)block{
-    MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:title buttonTitleArray:buttonTitleArray destructiveButtonIndex:destructiveButtonIndex];
-    [sheet showWithBlock:block];
-}
-
-+ (void)sheetWithTitle:(NSString *)title buttonTitleArray:(NSArray *)buttonTitleArray block:(MKActionSheetBlock)block{
-    MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:title buttonTitleArray:buttonTitleArray];
-    [sheet showWithBlock:block];
-}
-
-+ (void)sheetWithTitle:(NSString *)title buttonTitleArray:(NSArray *)buttonTitleArray isNeedCancelButton:(BOOL)isNeedCancelButton maxShowButtonCount:(CGFloat)maxShowButtonCount block:(MKActionSheetBlock)block{
-    MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:title buttonTitleArray:buttonTitleArray];
-    sheet.isNeedCancelButton = isNeedCancelButton;
-    if (maxShowButtonCount > 0 ) {
-        sheet.maxShowButtonCount = maxShowButtonCount;
-    }
-    [sheet showWithBlock:block];
-}
-
-+ (void)sheetWithTitle:(NSString *)title destructiveButtonIndex:(NSInteger)destructiveButtonIndex block:(MKActionSheetBlock)block buttonTitles:(NSString *)buttonTitle, ... {
-    NSMutableArray *tempArray = [[NSMutableArray alloc] init];
-    if (buttonTitle) {
-        [tempArray addObject:buttonTitle];
-    }
-    if (buttonTitle) {
-        va_list args;
-        va_start(args, buttonTitle);
-        NSString *btnTitle;
-        while ((btnTitle = va_arg(args, NSString *))) {
-            [tempArray addObject:btnTitle];
-        }
-        va_end(args);
-    }
-    
-    MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:title buttonTitleArray:tempArray destructiveButtonIndex:destructiveButtonIndex];
-    [sheet showWithBlock:block];
-}
-
-+ (void)sheetWithTitle:(NSString *)title block:(MKActionSheetBlock)block buttonTitles:(NSString *)buttonTitle, ... {
-    NSMutableArray *tempArray = [[NSMutableArray alloc] init];
-    if (buttonTitle) {
-        [tempArray addObject:buttonTitle];
-    }
-    if (buttonTitle) {
-        va_list args;
-        va_start(args, buttonTitle);
-        NSString *btnTitle;
-        while ((btnTitle = va_arg(args, NSString *))) {
-            [tempArray addObject:btnTitle];
-        }
-        va_end(args);
-    }
-    
-    MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:title buttonTitleArray:tempArray];
-    [sheet showWithBlock:block];
-}
-
-+ (void)sheetWithTitle:(NSString *)title modelArray:(NSArray *)modelArray titleKey:(NSString *)titleKey paramBlock:(MKActionSheetParamBlock)paramBlock{
-    MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:title modelArray:modelArray titleKey:titleKey destructiveButtonIndex:-1];
-    [sheet showWithParamBlock:paramBlock];
-}
-
 
 #pragma mark - ***** init method ******
 
@@ -171,13 +108,26 @@
     return self;
 }
 
-- (instancetype)initWithTitle:(NSString *)title modelArray:(NSArray *)modelArray titleKey:(NSString *)titleKey destructiveButtonIndex:(NSInteger)destructiveButtonIndex{
+/** init with object array */
+- (instancetype)initWithTitle:(NSString *)title objArray:(NSArray *)objArray titleKey:(NSString *)titleKey{
+    if (self = [super init]) {
+        self.title = title;
+        self.titleKey = titleKey;
+        self.destructiveButtonIndex = -1;
+        self.paramType = MKActionSheetParamType_object;
+        self.objArray = [[NSMutableArray alloc] initWithArray:objArray];
+        [self initData];
+    }
+    return self;
+}
+
+- (instancetype)initWithTitle:(NSString *)title objArray:(NSArray *)objArray titleKey:(NSString *)titleKey destructiveButtonIndex:(NSInteger)destructiveButtonIndex{
     if (self = [super init]) {
         self.title = title;
         self.titleKey = titleKey;
         self.destructiveButtonIndex = destructiveButtonIndex;
-        self.paramType = MKActionSheetParamType_model;
-        self.modelArray = [[NSMutableArray alloc] initWithArray:modelArray];
+        self.paramType = MKActionSheetParamType_object;
+        self.objArray = [[NSMutableArray alloc] initWithArray:objArray];
         [self initData];
     }
     return self;
@@ -185,31 +135,41 @@
 
 
 #pragma mark - ***** methods ******
+/** init data */
 - (void)initData{
-    _cancelTitle = @"取消";
-    _buttonTitleFont = [UIFont systemFontOfSize:18.0f];
+    _titleColor = MKCOLOR_RGBA(100.0f, 100.0f, 100.0f, 1.0f);
+    _titleFont = [UIFont systemFontOfSize:14];
     _titleAlignment = NSTextAlignmentCenter;
+    
     _buttonTitleColor = MKCOLOR_RGBA(51.0f,51.0f,51.0f,1.0f);
-    _destructiveButtonTitleColor = MKCOLOR_RGBA(250.0f, 10.0f, 10.0f, 1.0f);
+    _buttonTitleFont = [UIFont systemFontOfSize:18.0f];
+    _buttonOpacity = 0.6;
     _buttonHeight = 48.0f;
     _buttonTitleAlignment = MKActionSheetButtonTitleAlignment_center;
+
+    _destructiveButtonTitleColor = MKCOLOR_RGBA(250.0f, 10.0f, 10.0f, 1.0f);
+    _cancelTitle = @"取消";
     _animationDuration = 0.3f;
-    _blackgroundOpacity = 0.3f;
     _blurOpacity = 0.0f;
-    _titleColor = MKCOLOR_RGBA(100.0f, 100.0f, 100.0f, 1.0f);
-    _buttonOpacity = 0.6;
-    _isNeedCancelButton = YES;
+    _blackgroundOpacity = 0.3f;
     _maxShowButtonCount = -1;
-    
-    if (self.paramType == MKActionSheetParamType_model) {
+    _isNeedCancelButton = YES;
+
+    if (self.paramType == MKActionSheetParamType_object) {
         _isNeedCancelButton = NO;
     }
 }
 
+- (void)setImageKey:(NSString *)imageKey imageType:(MKActionSheetButtonImageType)imageType{
+    NSAssert(imageKey && imageKey.length > 0 && imageType , @"设置带 icon 类型 imageType 和 imageType 不能为nil 或者 空");
+    self.imageKey = imageKey;
+    self.imageType = imageType;
+    self.buttonTitleAlignment = MKActionSheetButtonTitleAlignment_left;
+}
 
 - (void)addButtonWithTitle:(NSString *)title{
-    if (self.paramType == MKActionSheetParamType_model) {
-        NSAssert(NO, @"由 modelArray 初始化时，不能直接添加 title, 请使用 addDataModel:(id)model");
+    if (self.paramType == MKActionSheetParamType_object) {
+        NSAssert(NO, @"由 objArray 初始化时，不能直接添加 title, 请使用 addDataObj:(id)obj");
     }
     if (!_buttonTitles) {
         _buttonTitles = [[NSMutableArray alloc] init];
@@ -217,14 +177,14 @@
     [_buttonTitles addObject:title];
 }
 
-- (void)addDataModel:(id)model{
-    if (self.paramType != MKActionSheetParamType_model) {
-        NSAssert(NO, @"不是由 modelArray 初始化时，不能直接添加 model, 请使用 addButtonWithTitle:(NSString *)title");
+- (void)addObject:(id)obj{
+    if (self.paramType != MKActionSheetParamType_object) {
+        NSAssert(NO, @"不是由 objArray 初始化时，不能直接添加 object, 请使用 addButtonWithTitle:(NSString *)title");
     }
-    if (!_modelArray) {
-        _modelArray = [[NSMutableArray alloc] init];
+    if (!_objArray) {
+        _objArray = [[NSMutableArray alloc] init];
     }
-    [_modelArray addObject:model];
+    [_objArray addObject:obj];
 }
 
 #pragma mark - ***** show ******
@@ -251,14 +211,13 @@
 
 
 - (void)show{
-    if (self.paramType == MKActionSheetParamType_model) {
+    if (self.paramType == MKActionSheetParamType_object) {
         NSAssert(self.titleKey && self.titleKey.length > 0, @"titleKey 不能为nil 或者 空, 必须是有效的 NSString");
-        for (id model in self.modelArray) {
-            id titleValue = [model valueForKey:self.titleKey];
-            NSAssert(titleValue && [titleValue isKindOfClass:[NSString class]], @"model.titleKey 必须为 有效的 NSString");
+        for (id obj in self.objArray) {
+            id titleValue = [obj valueForKey:self.titleKey];
+            NSAssert(titleValue && [titleValue isKindOfClass:[NSString class]], @"obj.titleKey 必须为 有效的 NSString");
         }
-        self.buttonTitles = [self.modelArray valueForKey:self.titleKey];
-
+        self.buttonTitles = [self.objArray valueForKey:self.titleKey];
     }
     
     
@@ -307,18 +266,18 @@
         [_delegate actionSheet:self didClickButtonAtIndex:sender.tag];
     }
     
-    if (self.paramType == MKActionSheetParamType_model) {
-        id model = nil;
-        if (self.modelArray && sender.tag < self.modelArray.count) {
-            model = [self.modelArray objectAtIndex:sender.tag];
+    if (self.paramType == MKActionSheetParamType_object) {
+        id obj = nil;
+        if (self.objArray && sender.tag < self.objArray.count) {
+            obj = [self.objArray objectAtIndex:sender.tag];
         }
         
         if (self.paramBlock) {
-            self.paramBlock(self, sender.tag, model);
+            self.paramBlock(self, sender.tag, obj);
         }
         
-        if ([_delegate respondsToSelector:@selector(actionSheet:didClickButtonAtIndex:selectModel:)]) {
-            [_delegate actionSheet:self didClickButtonAtIndex:sender.tag selectModel:model];
+        if ([_delegate respondsToSelector:@selector(actionSheet:didClickButtonAtIndex:selectObj:)]) {
+            [_delegate actionSheet:self didClickButtonAtIndex:sender.tag selectObj:obj];
         }
     }
 }
@@ -432,6 +391,35 @@
     cell.btnCell.titleLabel.font = self.buttonTitleFont;
     [cell.btnCell setTitleColor:self.buttonTitleColor forState:UIControlStateNormal];
     
+    
+    if (self.imageKey && self.imageKey.length > 0 && self.imageType && self.paramType == MKActionSheetParamType_object) {
+        self.buttonTitleAlignment = MKActionSheetButtonTitleAlignment_left;
+        
+        id obj = [self.objArray objectAtIndex:indexPath.row];
+        id imageValue = [obj valueForKey:self.imageKey];
+        if (self.imageType == MKActionSheetButtonImageType_name) {
+            if ([imageValue isKindOfClass:[NSString class]]) {
+                [cell.btnCell setImage:[UIImage imageNamed:imageValue] forState:UIControlStateNormal];
+            }
+        }else if (self.imageType == MKActionSheetButtonImageType_image){
+            if ([imageValue isKindOfClass:[UIImage class]]) {
+                [cell.btnCell setImage:imageValue forState:UIControlStateNormal];
+            }
+        }else if (self.imageType == MKActionSheetButtonImageType_url){
+            //由于加载url图片需要导入 SDWebImage，而且有些人在项目中用的也不一定是SDWebImage, 或用不到此类型，
+            //为了不增加 使用MKActionSheet 的成本，加载url 图片  用一个block 或 delegate 回调出去，根据大家自己的实际情况设置 图片，并设置自己的默认图片。
+            if ([imageValue isKindOfClass:[NSString class]]) {
+                if (self.buttonImageBlock) {
+                    self.buttonImageBlock(self, cell.btnCell, imageValue);
+                }else if (_delegate && [_delegate respondsToSelector:@selector(actionSheet:button:imageUrl:)]) {
+                    [_delegate actionSheet:self button:cell.btnCell imageUrl:imageValue];
+                }
+            }
+        }
+        
+        [cell.btnCell setTitleEdgeInsets:UIEdgeInsetsMake(0, 12, 0, 0)];
+    }
+    
     if (self.buttonTitleAlignment == MKActionSheetButtonTitleAlignment_left) {
         cell.btnCell.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
         [cell.btnCell setContentEdgeInsets:UIEdgeInsetsMake(0, 16, 0, 0)];
@@ -533,7 +521,7 @@
         _titleLabel.numberOfLines = 0;
         _titleLabel.textColor = self.titleColor;
         _titleLabel.textAlignment = _titleAlignment;
-        _titleLabel.font = [UIFont systemFontOfSize:13.0f];
+        _titleLabel.font = self.titleFont;
     }
     return _titleLabel;
 }
@@ -564,16 +552,72 @@
     return image;
 }
 
-/*
- // Only override drawRect: if you perform custom drawing.
- // An empty implementation adversely affects performance during animation.
- - (void)drawRect:(CGRect)rect {
- // Drawing code
- }
- */
+
+#pragma mark - ***** Class method ******
+
++ (void)sheetWithTitle:(NSString *)title buttonTitleArray:(NSArray *)buttonTitleArray destructiveButtonIndex:(NSInteger)destructiveButtonIndex block:(MKActionSheetBlock)block{
+    MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:title buttonTitleArray:buttonTitleArray destructiveButtonIndex:destructiveButtonIndex];
+    [sheet showWithBlock:block];
+}
+
++ (void)sheetWithTitle:(NSString *)title buttonTitleArray:(NSArray *)buttonTitleArray block:(MKActionSheetBlock)block{
+    MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:title buttonTitleArray:buttonTitleArray];
+    [sheet showWithBlock:block];
+}
+
++ (void)sheetWithTitle:(NSString *)title buttonTitleArray:(NSArray *)buttonTitleArray isNeedCancelButton:(BOOL)isNeedCancelButton maxShowButtonCount:(CGFloat)maxShowButtonCount block:(MKActionSheetBlock)block{
+    MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:title buttonTitleArray:buttonTitleArray];
+    sheet.isNeedCancelButton = isNeedCancelButton;
+    if (maxShowButtonCount > 0 ) {
+        sheet.maxShowButtonCount = maxShowButtonCount;
+    }
+    [sheet showWithBlock:block];
+}
+
++ (void)sheetWithTitle:(NSString *)title destructiveButtonIndex:(NSInteger)destructiveButtonIndex block:(MKActionSheetBlock)block buttonTitles:(NSString *)buttonTitle, ... {
+    NSMutableArray *tempArray = [[NSMutableArray alloc] init];
+    if (buttonTitle) {
+        [tempArray addObject:buttonTitle];
+    }
+    if (buttonTitle) {
+        va_list args;
+        va_start(args, buttonTitle);
+        NSString *btnTitle;
+        while ((btnTitle = va_arg(args, NSString *))) {
+            [tempArray addObject:btnTitle];
+        }
+        va_end(args);
+    }
+    
+    MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:title buttonTitleArray:tempArray destructiveButtonIndex:destructiveButtonIndex];
+    [sheet showWithBlock:block];
+}
+
++ (void)sheetWithTitle:(NSString *)title block:(MKActionSheetBlock)block buttonTitles:(NSString *)buttonTitle, ... {
+    NSMutableArray *tempArray = [[NSMutableArray alloc] init];
+    if (buttonTitle) {
+        [tempArray addObject:buttonTitle];
+    }
+    if (buttonTitle) {
+        va_list args;
+        va_start(args, buttonTitle);
+        NSString *btnTitle;
+        while ((btnTitle = va_arg(args, NSString *))) {
+            [tempArray addObject:btnTitle];
+        }
+        va_end(args);
+    }
+    
+    MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:title buttonTitleArray:tempArray];
+    [sheet showWithBlock:block];
+}
+
++ (void)sheetWithTitle:(NSString *)title objArray:(NSArray *)objArray titleKey:(NSString *)titleKey paramBlock:(MKActionSheetParamBlock)paramBlock{
+    MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:title objArray:objArray titleKey:titleKey];
+    [sheet showWithParamBlock:paramBlock];
+}
 
 @end
-
 
 
 
@@ -614,5 +658,8 @@
     
     // Configure the view for the selected state
 }
+
+
+
 
 @end
