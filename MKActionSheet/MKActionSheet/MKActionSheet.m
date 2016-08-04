@@ -19,8 +19,10 @@
 @interface MKActionSheet()<UITableViewDelegate, UITableViewDataSource>{
     CGFloat _titleViewH;    /*!< title view height */
 }
+@property (nonatomic, assign) MKActionSheetParamType paramType;         /*!< actionSheet param style */
 
-@property (nonatomic, strong) NSMutableArray* buttonTitles; /*!< button titles array */
+@property (nonatomic, strong) NSMutableArray *buttonTitles;             /*!< button titles array */
+@property (nonatomic, strong) NSMutableArray *modelArray;
 @property (nonatomic, strong) UIWindow *bgWindow;
 @property (nonatomic, strong) UIView *shadeView;
 @property (nonatomic, strong) UIView *sheetView;
@@ -38,6 +40,7 @@
 
 @implementation MKActionSheet
 
+#pragma mark - ***** Class method ******
 
 + (void)sheetWithTitle:(NSString *)title buttonTitleArray:(NSArray *)buttonTitleArray destructiveButtonIndex:(NSInteger)destructiveButtonIndex block:(MKActionSheetBlock)block{
     MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:title buttonTitleArray:buttonTitleArray destructiveButtonIndex:destructiveButtonIndex];
@@ -96,10 +99,14 @@
     [sheet showWithBlock:block];
 }
 
++ (void)sheetWithTitle:(NSString *)title modelArray:(NSArray *)modelArray titleKey:(NSString *)titleKey paramBlock:(MKActionSheetParamBlock)paramBlock{
+    MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:title modelArray:modelArray titleKey:titleKey destructiveButtonIndex:-1];
+    [sheet showWithParamBlock:paramBlock];
+}
 
 
+#pragma mark - ***** init method ******
 
-/** init method */
 - (instancetype)initWithTitle:(NSString *)title buttonTitleArray:(NSArray *)buttonTitleArray{
     if (self = [super init]) {
         self.title = title;
@@ -164,14 +171,28 @@
     return self;
 }
 
+- (instancetype)initWithTitle:(NSString *)title modelArray:(NSArray *)modelArray titleKey:(NSString *)titleKey destructiveButtonIndex:(NSInteger)destructiveButtonIndex{
+    if (self = [super init]) {
+        self.title = title;
+        self.titleKey = titleKey;
+        self.destructiveButtonIndex = destructiveButtonIndex;
+        self.paramType = MKActionSheetParamType_model;
+        self.modelArray = [[NSMutableArray alloc] initWithArray:modelArray];
+        [self initData];
+    }
+    return self;
+}
+
 
 #pragma mark - ***** methods ******
 - (void)initData{
     _cancelTitle = @"取消";
     _buttonTitleFont = [UIFont systemFontOfSize:18.0f];
+    _titleAlignment = NSTextAlignmentCenter;
     _buttonTitleColor = MKCOLOR_RGBA(51.0f,51.0f,51.0f,1.0f);
     _destructiveButtonTitleColor = MKCOLOR_RGBA(250.0f, 10.0f, 10.0f, 1.0f);
     _buttonHeight = 48.0f;
+    _buttonTitleAlignment = MKActionSheetButtonTitleAlignment_center;
     _animationDuration = 0.3f;
     _blackgroundOpacity = 0.3f;
     _blurOpacity = 0.0f;
@@ -179,14 +200,31 @@
     _buttonOpacity = 0.6;
     _isNeedCancelButton = YES;
     _maxShowButtonCount = -1;
+    
+    if (self.paramType == MKActionSheetParamType_model) {
+        _isNeedCancelButton = NO;
+    }
 }
 
 
 - (void)addButtonWithTitle:(NSString *)title{
+    if (self.paramType == MKActionSheetParamType_model) {
+        NSAssert(NO, @"由 modelArray 初始化时，不能直接添加 title, 请使用 addDataModel:(id)model");
+    }
     if (!_buttonTitles) {
         _buttonTitles = [[NSMutableArray alloc] init];
     }
     [_buttonTitles addObject:title];
+}
+
+- (void)addDataModel:(id)model{
+    if (self.paramType != MKActionSheetParamType_model) {
+        NSAssert(NO, @"不是由 modelArray 初始化时，不能直接添加 model, 请使用 addButtonWithTitle:(NSString *)title");
+    }
+    if (!_modelArray) {
+        _modelArray = [[NSMutableArray alloc] init];
+    }
+    [_modelArray addObject:model];
 }
 
 #pragma mark - ***** show ******
@@ -197,7 +235,6 @@
     [self show];
 }
 
-
 - (void)showWithBlock:(MKActionSheetBlock)block{
     if (block) {
         self.block = block;
@@ -205,7 +242,27 @@
     [self show];
 }
 
+- (void)showWithParamBlock:(MKActionSheetParamBlock)block{
+    if (block) {
+        self.paramBlock = block;
+    }
+    [self show];
+}
+
+
 - (void)show{
+    if (self.paramType == MKActionSheetParamType_model) {
+        NSAssert(self.titleKey && self.titleKey.length > 0, @"titleKey 不能为nil 或者 空, 必须是有效的 NSString");
+        for (id model in self.modelArray) {
+            id titleValue = [model valueForKey:self.titleKey];
+            NSAssert(titleValue && [titleValue isKindOfClass:[NSString class]], @"model.titleKey 必须为 有效的 NSString");
+        }
+        self.buttonTitles = [self.modelArray valueForKey:self.titleKey];
+
+    }
+    
+    
+    
     if (self.blackgroundOpacity < 0.1f) {
         self.blackgroundOpacity = 0.1f;
     }
@@ -245,8 +302,24 @@
     if (self.block) {
         self.block(self, sender.tag);
     }
+    
     if ([_delegate respondsToSelector:@selector(actionSheet:didClickButtonAtIndex:)]) {
         [_delegate actionSheet:self didClickButtonAtIndex:sender.tag];
+    }
+    
+    if (self.paramType == MKActionSheetParamType_model) {
+        id model = nil;
+        if (self.modelArray && sender.tag < self.modelArray.count) {
+            model = [self.modelArray objectAtIndex:sender.tag];
+        }
+        
+        if (self.paramBlock) {
+            self.paramBlock(self, sender.tag, model);
+        }
+        
+        if ([_delegate respondsToSelector:@selector(actionSheet:didClickButtonAtIndex:selectModel:)]) {
+            [_delegate actionSheet:self didClickButtonAtIndex:sender.tag selectModel:model];
+        }
     }
 }
 
@@ -359,14 +432,20 @@
     cell.btnCell.titleLabel.font = self.buttonTitleFont;
     [cell.btnCell setTitleColor:self.buttonTitleColor forState:UIControlStateNormal];
     
+    if (self.buttonTitleAlignment == MKActionSheetButtonTitleAlignment_left) {
+        cell.btnCell.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
+        [cell.btnCell setContentEdgeInsets:UIEdgeInsetsMake(0, 16, 0, 0)];
+    }else if (self.buttonTitleAlignment == MKActionSheetButtonTitleAlignment_right){
+        cell.btnCell.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
+        [cell.btnCell setContentEdgeInsets:UIEdgeInsetsMake(0, 0, 0, 16)];
+    }
+    
     cell.btnCell.tag = indexPath.row;
     [cell.btnCell setTitle:self.buttonTitles[indexPath.row] forState:UIControlStateNormal];
     
     if (indexPath.row == self.destructiveButtonIndex) {
         [cell.btnCell setTitleColor:self.destructiveButtonTitleColor forState:UIControlStateNormal];
     }
-    
-    
     
     return cell;
 }
@@ -453,7 +532,7 @@
         _titleLabel.text = self.title;
         _titleLabel.numberOfLines = 0;
         _titleLabel.textColor = self.titleColor;
-        _titleLabel.textAlignment = NSTextAlignmentCenter;
+        _titleLabel.textAlignment = _titleAlignment;
         _titleLabel.font = [UIFont systemFontOfSize:13.0f];
     }
     return _titleLabel;

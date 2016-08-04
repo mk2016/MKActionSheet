@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C53D40AE1D524DB1003E1545 /* InfoModel.m in Sources */ = {isa = PBXBuildFile; fileRef = C53D40AD1D524DB1003E1545 /* InfoModel.m */; };
 		C5A125C71CFEE7E700FEA77A /* MKActionSheetTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C5A125C61CFEE7E700FEA77A /* MKActionSheetTests.m */; };
 		C5A125D21CFEE7E700FEA77A /* MKActionSheetUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = C5A125D11CFEE7E700FEA77A /* MKActionSheetUITests.m */; };
 		C5A125EB1CFEE91900FEA77A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C5A125E11CFEE91900FEA77A /* AppDelegate.m */; };
@@ -37,6 +38,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C53D40AC1D524DB1003E1545 /* InfoModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfoModel.h; sourceTree = "<group>"; };
+		C53D40AD1D524DB1003E1545 /* InfoModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfoModel.m; sourceTree = "<group>"; };
 		C5A125A91CFEE7E700FEA77A /* MKActionSheet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MKActionSheet.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C5A125C21CFEE7E700FEA77A /* MKActionSheetTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MKActionSheetTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C5A125C61CFEE7E700FEA77A /* MKActionSheetTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MKActionSheetTests.m; sourceTree = "<group>"; };
@@ -143,6 +146,8 @@
 		C5A125DF1CFEE91900FEA77A /* MKActionSheetDemo */ = {
 			isa = PBXGroup;
 			children = (
+				C53D40AC1D524DB1003E1545 /* InfoModel.h */,
+				C53D40AD1D524DB1003E1545 /* InfoModel.m */,
 				C5A125E91CFEE91900FEA77A /* ViewController.h */,
 				C5A125EA1CFEE91900FEA77A /* ViewController.m */,
 				C5A125F21CFEE98F00FEA77A /* Origin */,
@@ -297,6 +302,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C5A125F11CFEE91900FEA77A /* ViewController.m in Sources */,
+				C53D40AE1D524DB1003E1545 /* InfoModel.m in Sources */,
 				C5A125F51CFEEAA600FEA77A /* MKActionSheet.m in Sources */,
 				C5A125F01CFEE91900FEA77A /* main.m in Sources */,
 				C5A125EB1CFEE91900FEA77A /* AppDelegate.m in Sources */,
