@@ -10,6 +10,7 @@
 #import "MKActionSheet.h"
 #import "InfoModel.h"
 #import "UIButton+WebCache.h"
+#import "NSObject+MKASAdditions.h"
 
 @interface ViewController ()<UITableViewDelegate, UITableViewDataSource, MKActionSheetDelegate>
 
@@ -41,17 +42,23 @@
     //tableView dataSource
     self.datasArray = [[NSMutableArray alloc] init];
     [self.datasArray addObject:@"change tableViewBackground View"];
-    [self.datasArray addObject:@"have icon style: imageName"];
-    [self.datasArray addObject:@"have icon style: image"];
-    [self.datasArray addObject:@"have icon style: imageUrl 、delegate"];
-    [self.datasArray addObject:@"have icon style: imageUrl 、block"];
-    [self.datasArray addObject:@"init with Block"];
-    [self.datasArray addObject:@"init with delegate and no title"];
-    [self.datasArray addObject:@"button Titles"];
+    [self.datasArray addObject:@"default UI delegate"];
+    [self.datasArray addObject:@"default UI block and no cancel"];
+    [self.datasArray addObject:@"init with titles、block and no title"];
+    [self.datasArray addObject:@"init with titles、delegate"];
     [self.datasArray addObject:@"more then max show Count"];
-    [self.datasArray addObject:@"no cancel"];
+    [self.datasArray addObject:@"init with modelArray、block"];
+    [self.datasArray addObject:@"init with dictionary Array、delegate"];
+    [self.datasArray addObject:@"multiselect"];
+    
+    [self.datasArray addObject:@"imageValueType:imageName、block"];
+    [self.datasArray addObject:@"imageValueType:image delegate"];
+    [self.datasArray addObject:@"imageValueType:imageUrl、delegate"];
+    [self.datasArray addObject:@"imageValueType:imageUrl、block"];
     
     [self.datasArray addObject:@"custom UI"];
+    
+    
     [self.datasArray addObject:@"modelArray show with block"];
     [self.datasArray addObject:@"modelArray show with paramBlock"];
     [self.datasArray addObject:@"param with model and have cancel button"];
@@ -70,12 +77,12 @@
         model.image = [UIImage imageNamed:model.imageName];
         model.imageUrl = [NSString stringWithFormat:@"https://github.com/mk2016/MKActionSheet/raw/MKActionSheet_dev/Resource/image_%ld@2x.png",(long)i];
         
-        
-        OtherModel *otherModel = [[OtherModel alloc] init];
-        otherModel.titleStr = [NSString stringWithFormat:@"other button %ld", (long)i];
-        otherModel.otherData = [NSString stringWithFormat:@"other Data %ld", (long)i];
-        otherModel.otherNum = @(i+100);
-        model.otherInfo = otherModel;
+//        
+//        OtherModel *otherModel = [[OtherModel alloc] init];
+//        otherModel.titleStr = [NSString stringWithFormat:@"other button %ld", (long)i];
+//        otherModel.otherData = [NSString stringWithFormat:@"other Data %ld", (long)i];
+//        otherModel.otherNum = @(i+100);
+//        model.otherInfo = otherModel;
         
         [self.modelArray addObject:model];
     }
@@ -83,14 +90,14 @@
     //init dictionary data array
     self.dicArray = [[NSMutableArray alloc] init];
     for (NSInteger i = 0; i < 5; i++) {
-        NSDictionary *otherDic = @{@"titleStr":[NSString stringWithFormat:@"other button %ld", (long)i],
-                                   @"otherData":[NSString stringWithFormat:@"other Data %ld", (long)i],
-                                   @"otherNum":@(i+100)
-                                   };
+//        NSDictionary *otherDic = @{@"titleStr":[NSString stringWithFormat:@"other button %ld", (long)i],
+//                                   @"otherData":[NSString stringWithFormat:@"other Data %ld", (long)i],
+//                                   @"otherNum":@(i+100)
+//                                   };
         NSDictionary *dic = @{@"titleStr"   :[NSString stringWithFormat:@"button %ld", (long)i],
                               @"testData"   :[NSString stringWithFormat:@"test data %ld", (long)i],
                               @"testNum"    :@(i),
-                              @"otherDic"   :otherDic,
+//                              @"otherDic"   :otherDic,
                               @"imageName"  :[NSString stringWithFormat:@"image_%ld",(long)i],
                               @"image"      :[UIImage imageNamed:[NSString stringWithFormat:@"image_%ld",(long)i]],
                               @"imageUrl"   :[NSString stringWithFormat:@"https://github.com/mk2016/MKActionSheet/raw/MKActionSheet_dev/Resource/image_%ld@2x.png",(long)i],
@@ -106,234 +113,203 @@
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     NSString *cellTitle = [self.datasArray objectAtIndex:indexPath.row];
     
-    
-    if ([cellTitle isEqualToString:@"change tableViewBackground View"]) {
-        if (self.tableView.backgroundView) {
-            self.tableView.backgroundView = nil;
-        }else{
-            self.tableView.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"img_bg"]];
-        }
+    if ([cellTitle isEqualToString:@"default UI delegate"]) {
+        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"this is a longgggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg title" buttonTitleArray:@[@"button0", @"button1", @"button2",@"button3",@"button4"]];
+        sheet.tag = 100;
+        sheet.destructiveButtonIndex = 2;
+        sheet.selectedIndex = 2;
+        [sheet showWithDelegate:self];
     }
     
-    else if ([cellTitle isEqualToString:@"init with Block"]) {
-        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"this is a longgggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg title" destructiveButtonIndex:3 buttonTitles:@"button1", @"button2",@"button3",@"button4",nil];
-        [sheet showWithBlock:^(MKActionSheet *actionSheet, NSInteger buttonIndex) {
+    else if ([cellTitle isEqualToString:@"default UI block and no cancel"]) {
+        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"无取消按钮样式" buttonTitleArray:@[@"button0", @"button1",@"button2",@"button3",@"button4"]];
+        sheet.needCancelButton = NO;
+        [sheet showWithBlock:^(MKActionSheet *actionSheet, NSInteger buttonIndex, id obj) {
             NSLog(@"===buttonIndex:%ld",(long)buttonIndex);
         }];
-        
     }
-    
-    else if ([cellTitle isEqualToString:@"init with delegate and no title"]) {
-        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:nil buttonTitles:@"button11", @"button12",@"button13",@"button14",nil];
-        sheet.tag = 100;
-        sheet.delegate = self;
-        [sheet show];
-//        [sheet showWithDelegate:self];
-        
-    }
-    
-    else if ([cellTitle isEqualToString:@"button Titles"]) {
-        [MKActionSheet sheetWithTitle:@"title" destructiveButtonIndex:0 block:^(MKActionSheet *actionSheet, NSInteger buttonIndex) {
+
+    else if ([cellTitle isEqualToString:@"init with titles、block and no title"]) {
+        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:nil buttonTitles:@"button0", @"button1",@"button2",@"button3",nil];
+        [sheet showWithBlock:^(MKActionSheet *actionSheet, NSInteger buttonIndex, id obj) {
             NSLog(@"===buttonIndex:%ld",(long)buttonIndex);
-        } buttonTitles:@"button41", @"button42",@"button43",@"button44", nil];
-        
+        }];
     }
-
+    
+    else if ([cellTitle isEqualToString:@"init with titles、delegate"]) {
+        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"init titles by delegate" buttonTitles:@"button0", @"button1",@"button2",@"button3",nil];
+        sheet.tag = 101;
+        [sheet showWithDelegate:self];
+    }
+    
     else if ([cellTitle isEqualToString:@"more then max show Count"]){
-        [MKActionSheet sheetWithTitle:@"title" buttonTitleArray:@[@"button1", @"button2",@"button3",@"button4",@"button5",@"button6",@"button7",@"button8",@"button9",@"button10"]
-                   isNeedCancelButton:YES maxShowButtonCount:5.6 block:^(MKActionSheet *actionSheet, NSInteger buttonIndex) {
-                       NSLog(@"===buttonIndex:%ld",(long)buttonIndex);
-                   }];
-    }
-
-    else if ([cellTitle isEqualToString:@"no cancel"]) {
-        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"custom UI" destructiveButtonIndex:3 buttonTitles:@"button1", @"button2",@"button3",@"button4",@"button5",@"button6",@"button7",@"button8",@"button9",@"button10", nil];
-        [sheet addButtonWithTitle:@"this a add Button"];
+        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"设置 maxShowButtonCount 控制显示 按钮的最大数量，超过将以 tableView 的样式展示" buttonTitleArray:@[@"button0", @"button1", @"button2",@"button3",@"button4",@"button5",@"button6",@"button7",@"button8",@"button9",@"button10"]];
         sheet.maxShowButtonCount = 5.6;
-        sheet.isNeedCancelButton = NO;
-        [sheet show];
-        
+        [sheet showWithBlock:^(MKActionSheet *actionSheet, NSInteger buttonIndex, id obj) {
+            NSLog(@"===buttonIndex:%ld",(long)buttonIndex);
+        }];
     }
-
+    
+    else if ([cellTitle isEqualToString:@"init with modelArray、block"]){
+        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"create with models array" objArray:self.modelArray titleKey:@"titleStr"];
+        sheet.destructiveButtonIndex = 0;
+        sheet.destructiveButtonTitleColor = [UIColor greenColor];
+        [sheet showWithBlock:^(MKActionSheet *actionSheet, NSInteger buttonIndex, id obj) {
+            NSLog(@"====buttonIndex:%ld",(long)buttonIndex);
+            [self printLogWithModel:obj];
+        }];
+    }
+    
+    else if ([cellTitle isEqualToString:@"init with dictionary Array、delegate"]){
+        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"create with models array" objArray:self.dicArray titleKey:@"titleStr"];
+        sheet.destructiveButtonIndex = 3;
+        sheet.destructiveButtonTitleColor = [UIColor blueColor];
+        sheet.tag = 120;
+        [sheet showWithDelegate:self];
+    }
+    
+    else if ([cellTitle isEqualToString:@"imageValueType:imageName、block"]) {
+        MKActionSheet *sheet =[[MKActionSheet alloc] initWithTitle:@"imageValueType:imageName" objArray:self.modelArray titleKey:@"titleStr"];
+        [sheet setImageKey:@"imageName" imageValueType:MKActionSheetButtonImageValueType_name];
+        [sheet showWithBlock:^(MKActionSheet *actionSheet, NSInteger buttonIndex, id obj) {
+            NSLog(@"----------------------");
+            NSLog(@"buttonIndex:%ld",(long)buttonIndex);
+            [self printLogWithModel:obj];
+        }];
+    }
+    
+    else if ([cellTitle isEqualToString:@"imageValueType:image delegate"]) {
+        MKActionSheet *sheet =[[MKActionSheet alloc] initWithTitle:@"init with dictionary array,imageValueType:image、delegate" objArray:self.dicArray titleKey:@"titleStr"];
+        [sheet setImageKey:@"imageName" imageValueType:MKActionSheetButtonImageValueType_name];
+        sheet.tag = 130;
+        [sheet showWithDelegate:self];
+    }
+    
+    else if ([cellTitle isEqualToString:@"imageValueType:imageUrl、delegate"]){
+        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"imageValueType:imageUrl、delegate" objArray:self.modelArray titleKey:@"titleStr"];
+        [sheet setImageKey:@"imageUrl" imageValueType:MKActionSheetButtonImageValueType_url];
+        sheet.maxShowButtonCount = 3.6;
+        sheet.buttonImageBlock = ^(MKActionSheet* actionSheet, UIButton *button, NSString *imageUrl){
+            [button sd_setImageWithURL:[NSURL URLWithString:imageUrl] forState:UIControlStateNormal placeholderImage:[self getDefaultIcon]];
+        };
+        InfoModel *model = [[InfoModel alloc] init];
+        model.titleStr = @"add button";
+        model.testData = @"add testData";
+        model.testNum = @(999);
+        model.imageName = @"image_5";
+        model.image = [UIImage imageNamed:model.imageName];
+        model.imageUrl = @"https://github.com/mk2016/MKActionSheet/raw/MKActionSheet_dev/Resource/image_5@2x.png";
+        [sheet addButtonWithObj:model];
+        sheet.tag = 300;
+        [sheet showWithDelegate:self];
+    }
+    
+    else if ([cellTitle isEqualToString:@"multiselect"]) {
+        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"多选样式 delegate" objArray:self.modelArray titleKey:@"titleStr" selectType:MKActionSheetSelectType_multiselect];
+        [sheet setImageKey:@"imageUrl" imageValueType:MKActionSheetButtonImageValueType_url];
+        [sheet showWithDelegate:self];
+    }
+    
+    else if ([cellTitle isEqualToString:@"imageValueType:imageUrl、block"]){
+        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"多选样式 delegate" objArray:self.dicArray titleKey:@"titleStr" selectType:MKActionSheetSelectType_multiselect];
+        sheet.tag = 301;
+        [sheet showWithMultiselectBlock:^(MKActionSheet *actionSheet, NSArray *array) {
+            NSLog(@"actionSheet:%@",actionSheet);
+            NSLog(@"array:%@",array);
+        }];
+    }
+    
+    
     else if ([cellTitle isEqualToString:@"custom UI"]){
-        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"custom UI" destructiveButtonIndex:3 buttonTitles:@"button31", @"button32",@"button33",@"button34", nil];
-        sheet.isNeedCancelButton = YES;
+        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"custom UI" buttonTitleArray:@[@"button1", @"button2",@"button3",@"button4", @"button5",@"button6",@"button7"]];
         sheet.titleColor = [UIColor greenColor];
+        sheet.titleFont = [UIFont boldSystemFontOfSize:24];
         sheet.titleAlignment = NSTextAlignmentLeft;
-        sheet.cancelTitle = @"关闭";
         sheet.buttonTitleColor = [UIColor redColor];
         sheet.buttonTitleFont = [UIFont boldSystemFontOfSize:14];
         sheet.buttonOpacity = 1;
         sheet.buttonHeight = 40.0f;
         sheet.buttonTitleAlignment = MKActionSheetButtonTitleAlignment_left;
         sheet.destructiveButtonTitleColor = [UIColor grayColor];
+        sheet.destructiveButtonIndex = 2;
+        sheet.cancelTitle = @"关闭";
         sheet.animationDuration = 0.2f;
         sheet.blurOpacity = 0.7f;
         sheet.blackgroundOpacity = 0.6f;
+        sheet.needCancelButton = YES;
+        sheet.maxShowButtonCount = 5.6;
         [sheet addButtonWithTitle:@"button add"];
-        [sheet showWithBlock:^(MKActionSheet *actionSheet, NSInteger buttonIndex) {
+        [sheet showWithBlock:^(MKActionSheet *actionSheet, NSInteger buttonIndex, id obj) {
             NSLog(@"buttonIndex:%ld",(long)buttonIndex);
-        }];
-        
-    }
-
-    else if ([cellTitle isEqualToString:@"modelArray show with block"]){
-        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"create with models array" objArray:self.modelArray titleKey:@"titleStr" destructiveButtonIndex:2];
-        [sheet showWithBlock:^(MKActionSheet *actionSheet, NSInteger buttonIndex) {
-            NSLog(@"----------------------");
-            NSLog(@"buttonIndex:%ld",(long)buttonIndex);
-            InfoModel *model = [self.modelArray objectAtIndex:buttonIndex];
-            if (model) {
-                NSLog(@"obj.titleStr:%@",model.titleStr);
-                NSLog(@"obj.testData:%@",model.testData);
-                NSLog(@"obj.testNum:%@",model.testNum);
-            }
         }];
     }
 
-    else if ([cellTitle isEqualToString:@"modelArray show with paramBlock"]){
-        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"create with models array" objArray:self.modelArray titleKey:@"titleStr" destructiveButtonIndex:3];
-        [sheet showWithParamBlock:^(MKActionSheet *actionSheet, NSInteger buttonIndex, InfoModel *obj) {
-            NSLog(@"----------------------");
-            NSLog(@"buttonIndex:%ld",(long)buttonIndex);
-            NSLog(@"obj.titleStr:%@",obj.titleStr);
-            NSLog(@"obj.testData:%@",obj.testData);
-            NSLog(@"obj.testNum:%@",obj.testNum);
-        }];
-    }
-    
-    else if ([cellTitle isEqualToString:@"param with model and have cancel button"]){
-        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"create with models array" objArray:self.modelArray titleKey:@"titleStr" destructiveButtonIndex:3];
-        sheet.isNeedCancelButton = YES;
-        sheet.tag = 200;
-        [sheet showWithDelegate:self];
-    }
-    
-    else if ([cellTitle isEqualToString:@"param with Dictionary"]){
-        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"create with models array" objArray:self.dicArray titleKey:@"titleStr" destructiveButtonIndex:3];
-        sheet.isNeedCancelButton = YES;
-        [sheet showWithParamBlock:^(MKActionSheet *actionSheet, NSInteger buttonIndex, NSDictionary *dic) {
-            NSLog(@"----------------------");
-            if (dic) {
-                NSLog(@"buttonIndex:%ld",(long)buttonIndex);
-                NSLog(@"dic : %@",dic);
-            }else{
-                NSLog(@"is cancel button, obj = nil");
-            }
-            
-            //or
-            NSLog(@"-----------or-----------");
-            if (buttonIndex == self.modelArray.count) {
-                NSLog(@"is cancel button, obj = nil");
-            }else{
-                NSLog(@"buttonIndex:%ld",(long)buttonIndex);
-                NSLog(@"dic : %@",dic);
-            }
-        }];
-    }
-    
-    else if ([cellTitle isEqualToString:@"have icon style: imageName"]){
-        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"have icon style: imageName" objArray:self.modelArray titleKey:@"titleStr" destructiveButtonIndex:0];
-        [sheet setImageKey:@"imageName" imageType:MKActionSheetButtonImageType_name];
-        [sheet showWithParamBlock:^(MKActionSheet *actionSheet, NSInteger buttonIndex, InfoModel *obj) {
-            NSLog(@"----------------------");
-            if (obj) {
-                NSLog(@"buttonIndex:%ld",(long)buttonIndex);
-                NSLog(@"obj.titleStr:%@",obj.titleStr);
-                NSLog(@"obj.testData:%@",obj.testData);
-                NSLog(@"obj.testNum:%@",obj.testNum);
-            }
-        }];
-    }
-    
-    else if ([cellTitle isEqualToString:@"have icon style: image"]){
-        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"have icon style: image" objArray:self.dicArray titleKey:@"titleStr" destructiveButtonIndex:0];
-        [sheet setImageKey:@"image" imageType:MKActionSheetButtonImageType_image];
-        sheet.isNeedCancelButton = YES;
-        [sheet showWithParamBlock:^(MKActionSheet *actionSheet, NSInteger buttonIndex, NSDictionary *dic) {
-            NSLog(@"----------------------");
-            if (dic) {
-                NSLog(@"buttonIndex:%ld",(long)buttonIndex);
-                NSLog(@"dic : %@",dic);
-            }else{
-                NSLog(@"is cancel button, obj = nil");
-            }
-        }];
-    }
-    
-    else if ([cellTitle isEqualToString:@"have icon style: imageUrl 、delegate"]){
-        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"have icon style: imageUrl" objArray:self.modelArray titleKey:@"titleStr" destructiveButtonIndex:0];
-        [sheet setImageKey:@"imageUrl" imageType:MKActionSheetButtonImageType_url];
-        sheet.titleAlignment = NSTextAlignmentLeft;
-        sheet.buttonImageBlock = ^(MKActionSheet* actionSheet, UIButton *button, NSString *imageUrl){
-            [button sd_setImageWithURL:[NSURL URLWithString:imageUrl] forState:UIControlStateNormal placeholderImage:[UIImage imageNamed:@"image_5"]];
-        };
-        sheet.tag = 300;
-        [sheet showWithDelegate:self];
-    }
-    
-    else if ([cellTitle isEqualToString:@"have icon style: imageUrl 、block"]){
-        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"have icon style: imageUrl" objArray:self.modelArray titleKey:@"titleStr" destructiveButtonIndex:-1];
-        [sheet setImageKey:@"imageUrl" imageType:MKActionSheetButtonImageType_url];
-        sheet.buttonImageBlock = ^(MKActionSheet* actionSheet, UIButton *button, NSString *imageUrl){
-            [button sd_setImageWithURL:[NSURL URLWithString:imageUrl] forState:UIControlStateNormal placeholderImage:[UIImage imageNamed:@"image_5"]];
-        };
-        [sheet showWithParamBlock:^(MKActionSheet *actionSheet, NSInteger buttonIndex, InfoModel *obj) {
-            if (obj) {
-                NSLog(@"buttonIndex:%ld",(long)buttonIndex);
-                NSLog(@"obj.titleStr:%@",obj.titleStr);
-                NSLog(@"obj.testData:%@",obj.testData);
-                NSLog(@"obj.testNum:%@",obj.testNum);
-            }
-        }];
+    else if ([cellTitle isEqualToString:@"change tableViewBackground View"]) {
+        if (self.tableView.backgroundView) {
+            self.tableView.backgroundView = nil;
+        }else{
+            self.tableView.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"img_bg"]];
+        }
     }
 }
 
 #pragma mark - ***** MKActionSheet delegate ******
 - (void)actionSheet:(MKActionSheet *)actionSheet button:(UIButton *)button imageUrl:(NSString *)imageUrl{
-    if (actionSheet.tag == 300) {
-        [button sd_setImageWithURL:[NSURL URLWithString:imageUrl] forState:UIControlStateNormal placeholderImage:[UIImage imageNamed:@"image_5"]];
-    }
+    [button sd_setImageWithURL:[NSURL URLWithString:imageUrl] forState:UIControlStateNormal placeholderImage:[self getDefaultIcon]];
 }
 
 - (void)actionSheet:(MKActionSheet *)actionSheet didClickButtonAtIndex:(NSInteger)buttonIndex{
-    NSLog(@"==========delegate====================");
-    NSLog(@"actionSheet.tag:%ld",(long)actionSheet.tag);
-    NSLog(@"buttonIndex:%ld",(long)buttonIndex);
+    if (actionSheet.tag == 100 || actionSheet.tag == 101) {
+        NSLog(@"========== delegate ====");
+        NSLog(@"actionSheet.tag:%ld",(long)actionSheet.tag);
+        NSLog(@"buttonIndex:%ld",(long)buttonIndex);
+    }
 }
 
-- (void)actionSheet:(MKActionSheet *)actionSheet didClickButtonAtIndex:(NSInteger)buttonIndex selectObj:(InfoModel *)obj{
-    if (actionSheet.tag == 200) {
-        NSLog(@"---------delegate -------------");
+- (void)actionSheet:(MKActionSheet *)actionSheet didClickButtonAtIndex:(NSInteger)buttonIndex selectObj:(id)obj{
+    NSLog(@"--------paramModel delegate -------------");
+    NSLog(@"---actionSheet.tag:%ld",actionSheet.tag);
+    NSLog(@"---buttonIndex:%ld",(long)buttonIndex);
+    if (actionSheet.tag == 120 || actionSheet.tag == 130) {
         if (obj) {
-            NSLog(@"buttonIndex:%ld",(long)buttonIndex);
-            NSLog(@"obj.titleStr:%@",obj.titleStr);
-            NSLog(@"obj.testData:%@",obj.testData);
-            NSLog(@"obj.testNum:%@",obj.testNum);
+            [self printLogWithModel:obj];
         }else{
             NSLog(@"is cancel button, obj = nil");
         }
-        
         //or
         NSLog(@"-----------or");
         if (buttonIndex == self.modelArray.count) {
             NSLog(@"is cancel button, obj = nil");
         }else{
-            NSLog(@"buttonIndex:%ld",(long)buttonIndex);
-            NSLog(@"obj.titleStr:%@",obj.titleStr);
-            NSLog(@"obj.testData:%@",obj.testData);
-            NSLog(@"obj.testNum:%@",obj.testNum);
-        }
-    }else if (actionSheet.tag == 300){
-        if (obj) {
-            NSLog(@"buttonIndex:%ld",(long)buttonIndex);
-            NSLog(@"obj.titleStr:%@",obj.titleStr);
-            NSLog(@"obj.testData:%@",obj.testData);
-            NSLog(@"obj.testNum:%@",obj.testNum);
+            [self printLogWithModel:obj];
         }
     }
 }
 
+- (void)actionSheet:(MKActionSheet *)actionSheet selectArray:(NSArray *)array{
+//    if (actionSheet.tag == 300 || actionSheet.tag == 301) {
+        NSLog(@"actionSheet:%@",actionSheet);
+        NSLog(@"array:%@",array);
+//    }
+}
+
+- (void)printLogWithModel:(id)obj{
+    if (obj) {
+        if ([obj isKindOfClass:[InfoModel class]]) {
+            InfoModel *moel = (InfoModel*)obj;
+            NSLog(@"obj.titleStr : %@",moel.titleStr);
+            NSLog(@"obj.testData : %@",moel.testData);
+            NSLog(@"obj.testNum  : %@",moel.testNum);
+        }else if ([obj isKindOfClass:[NSDictionary class]]){
+            NSLog(@"obj is dic : %@", obj);
+        }
+  
+    }
+}
+
+- (UIImage *)getDefaultIcon{
+    return [UIImage imageNamed:@"image_5"];
+}
 
 
 #pragma mark - ***** UITableView delegate ******

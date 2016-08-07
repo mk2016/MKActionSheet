@@ -8,6 +8,9 @@
 
 #import "AppDelegate.h"
 #import "ViewController.h"
+#import "MKFPSStatus.h"
+
+
 @interface AppDelegate ()
 
 @end
@@ -18,10 +21,22 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     
+#if DEBUG
+    [[MKFPSStatus sharedInstance] open];
+#endif
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     
+    UINavigationBar *navBar = [UINavigationBar appearance];
+    navBar.barTintColor = [UIColor colorWithRed:39/255.0f green:39/255.0f blue:39/255.0f alpha:0.94];
+    navBar.tintColor = [UIColor whiteColor];
+    navBar.titleTextAttributes = @{NSForegroundColorAttributeName:[UIColor whiteColor],
+                                   NSFontAttributeName:[UIFont boldSystemFontOfSize:18]
+                                   };
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
+
     ViewController* vc = [[ViewController alloc] init];
-    self.window.rootViewController = vc;
+    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:vc];
+    self.window.rootViewController = nav;
     [self.window makeKeyWindow];
     
     return YES;
