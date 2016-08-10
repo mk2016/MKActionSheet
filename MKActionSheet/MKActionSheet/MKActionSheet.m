@@ -287,8 +287,6 @@
 }
 
 - (void)dismissWithButtonIndex:(NSInteger)index{
-    [self dismiss];
-    
     if (self.selectType == MKActionSheetSelectType_multiselect) {
         //多选样式下 只有 取消按钮才会走这里
         if (self.multiselectBlock) {
@@ -305,11 +303,11 @@
     if (self.delegate && [self.delegate respondsToSelector:@selector(actionSheet:didClickButtonAtIndex:)]) {
         [self.delegate actionSheet:self didClickButtonAtIndex:index];
     }
+    [self dismiss];
 }
 
 /** 多选确认按钮 */
 - (void)confirmButtonOnclick:(UIButton *)sender{
-    [self dismiss];
     
     NSMutableArray *selectedArray = [[NSMutableArray alloc] init];
     
@@ -322,7 +320,6 @@
                 [selectedArray addObject:[self.buttonTitles objectAtIndex:i]];
             }
         }
-        title.mk_isSelect = NO;
     }
     
     if (self.multiselectBlock) {
@@ -332,9 +329,17 @@
     if ([self.delegate respondsToSelector:@selector(actionSheet:selectArray:)]) {
         [self.delegate actionSheet:self selectArray:selectedArray];
     }
+    
+    [self dismiss];
 }
 
 - (void)dismiss{
+    if (self.selectType == MKActionSheetSelectType_multiselect) {
+        for (NSString *title in self.buttonTitles) {
+            title.mk_isSelect = NO;
+        }
+    }
+    
     [UIView animateWithDuration:self.animationDuration delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
         [self.shadeView setAlpha:0];
         [self.shadeView setUserInteractionEnabled:NO];
