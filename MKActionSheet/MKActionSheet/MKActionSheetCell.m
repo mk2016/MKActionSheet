@@ -8,6 +8,7 @@
 
 #import "MKActionSheetCell.h"
 
+
 @implementation MKActionSheetCell
 
 + (instancetype)cellWithTableView:(UITableView *)tableView{
@@ -38,15 +39,15 @@
         
         //select button
         NSString *bundle = [[NSBundle bundleForClass:self.class] pathForResource:@"MKActionSheet" ofType:@"bundle"];
-        NSString *selectImgPath0 = [bundle stringByAppendingPathComponent:@"img_select_2.png"];
-        NSString *selectImgPath1 = [bundle stringByAppendingPathComponent:@"img_select_3.png"];
+        NSString *selectImgPath0 = [bundle stringByAppendingPathComponent:@"img_select_0.png"];
+        NSString *selectImgPath1 = [bundle stringByAppendingPathComponent:@"img_select_1.png"];
         NSString *selectImgPath2 = [bundle stringByAppendingPathComponent:@"img_selected.png"];
         UIImage *selectImg0 = [UIImage imageWithContentsOfFile:selectImgPath0];
         UIImage *selectImg1 = [UIImage imageWithContentsOfFile:selectImgPath1];
         UIImage *selectImg2 = [UIImage imageWithContentsOfFile:selectImgPath2];
         
         UIButton *selectBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        selectBtn.tag = 100;
+        selectBtn.tag = MKActionSheet_select_button_tag;
         selectBtn.userInteractionEnabled = NO;
         [selectBtn setImage:selectImg0 forState:UIControlStateNormal];
         [selectBtn setImage:selectImg1 forState:UIControlStateSelected];
@@ -67,26 +68,6 @@
                                                                            views:NSDictionaryOfVariableBindings(selectBtn)];
         [btn addConstraints:constraints_H];
         [btn addConstraints:constraints_V];
-        
-//        //separator
-//        NSString *separatorImgPath = [bundle stringByAppendingPathComponent:@"img_separator.png"];
-//        UIImage *separatorImg = [UIImage imageWithContentsOfFile:separatorImgPath];
-//        UIImageView *separatorView = [[UIImageView alloc] initWithImage:separatorImg];
-//        [cell addSubview:separatorView];
-//        
-//        separatorView.translatesAutoresizingMaskIntoConstraints = NO;
-//        NSArray *sepConstraints_H = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|[separatorView]|"
-//                                                                         options:0
-//                                                                         metrics:nil
-//                                                                           views:NSDictionaryOfVariableBindings(separatorView)];
-//        
-//        NSArray *sepConstraints_V = [NSLayoutConstraint constraintsWithVisualFormat:@"V:[separatorView]|"
-//                                                                         options:0
-//                                                                         metrics:nil
-//                                                                           views:NSDictionaryOfVariableBindings(separatorView)];
-//        
-//        [cell addConstraints:sepConstraints_H];
-//        [cell addConstraints:sepConstraints_V];
     }
     return cell;
 }

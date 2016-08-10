@@ -264,8 +264,11 @@
                 title.mk_isSelect = btnSelect.isSelected;
             }
         }
+    }else if(self.selectType == MKActionSheetSelectType_selected){
+        self.selectedIndex = sender.tag;
+        [self.tableView reloadData];
+        [self dismissWithButtonIndex:index];
     }else{
-        //单选
         [self dismissWithButtonIndex:index];
     }
 }
@@ -286,6 +289,7 @@
             [self.delegate actionSheet:self selectArray:nil];
         }
     }else{
+        
         id obj = nil;
         if (self.paramIsObject) {
             if (self.objArray && index < self.objArray.count) {
@@ -373,31 +377,10 @@
         self.titleLabel.frame = CGRectMake(self.titleMargin, 10, titleLabWidth, titleSize.height);
         self.titleView.frame = CGRectMake(0, 0, MKSCREEN_WIDTH, titleSize.height+20);
         
-        NSString *bundle = [[NSBundle bundleForClass:self.class] pathForResource:@"MKActionSheet" ofType:@"bundle"];
-        NSString *separatorImgPath = [bundle stringByAppendingPathComponent:@"img_separator.png"];
-        UIImage *separatorImg = [UIImage imageWithContentsOfFile:separatorImgPath];
-        UIImageView *separatorView = [[UIImageView alloc] initWithImage:separatorImg];
-        //        cell.separatorView = separatorView;
-        [self.titleView addSubview:separatorView];
-        
-        separatorView.translatesAutoresizingMaskIntoConstraints = NO;
-        NSArray *sepConstraints_H = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|[separatorView]|"
-                                                                            options:0
-                                                                            metrics:nil
-                                                                              views:NSDictionaryOfVariableBindings(separatorView)];
-        
-        NSArray *sepConstraints_V = [NSLayoutConstraint constraintsWithVisualFormat:@"V:[separatorView]|"
-                                                                            options:0
-                                                                            metrics:nil
-                                                                              views:NSDictionaryOfVariableBindings(separatorView)];
-        
-        [self.titleView addConstraints:sepConstraints_H];
-        [self.titleView addConstraints:sepConstraints_V];
-        
-//        CALayer *separatorLayer = [CALayer layer];
-//        separatorLayer.frame = CGRectMake(0, self.titleView.frame.size.height, MKSCREEN_WIDTH, 0.7);
-//        separatorLayer.backgroundColor = MKCOLOR_RGBA(0, 0, 0, 0.2).CGColor;
-//        [self.titleView.layer addSublayer:separatorLayer];
+        CALayer *separatorLayer = [CALayer layer];
+        separatorLayer.frame = CGRectMake(0, self.titleView.frame.size.height, MKSCREEN_WIDTH, 0.5);
+        separatorLayer.backgroundColor = MKCOLOR_RGBA(0, 0, 0, 0.2).CGColor;
+        [self.titleView.layer addSublayer:separatorLayer];
         
         sheetViewH += self.titleView.frame.size.height;
         
@@ -432,10 +415,10 @@
         sepView.backgroundColor = MKCOLOR_RGBA(100, 100, 100, 0.1);
         [cancelView addSubview:sepView];
         
-//        CALayer *topBorderLayer = [CALayer layer];
-//        topBorderLayer.frame = CGRectMake(0, 0, sepView.frame.size.width, 0.5);
-//        topBorderLayer.backgroundColor = MKCOLOR_RGBA(0, 0, 0, 0.1).CGColor;
-//        [sepView.layer addSublayer:topBorderLayer];
+        CALayer *topBorderLayer = [CALayer layer];
+        topBorderLayer.frame = CGRectMake(0, 0, sepView.frame.size.width, 0.5);
+        topBorderLayer.backgroundColor = MKCOLOR_RGBA(0, 0, 0, 0.1).CGColor;
+        [sepView.layer addSublayer:topBorderLayer];
         
         CALayer *botBorderLayer = [CALayer layer];
         botBorderLayer.frame = CGRectMake(0, sepView.frame.size.height - 0.5, sepView.frame.size.width, 0.5);

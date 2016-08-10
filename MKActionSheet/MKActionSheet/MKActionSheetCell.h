@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+#define MKActionSheet_select_button_tag 100
+
 @interface MKActionSheetCell : UITableViewCell
 
 @property (nonatomic, weak) UIButton *btnCell;

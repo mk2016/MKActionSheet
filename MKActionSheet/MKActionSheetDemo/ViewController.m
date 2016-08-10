@@ -114,9 +114,8 @@
     NSString *cellTitle = [self.datasArray objectAtIndex:indexPath.row];
     
     if ([cellTitle isEqualToString:@"default UI delegate"]) {
-        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"this is a longgggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg title" buttonTitleArray:@[@"button0", @"button1", @"button2",@"button3",@"button4"]];
+        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"this is a longgggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg title" buttonTitleArray:@[@"button0", @"button1", @"button2",@"button3",@"button4"] selectType:MKActionSheetSelectType_selected];
         sheet.tag = 100;
-        sheet.destructiveButtonIndex = 2;
         sheet.selectedIndex = 2;
         [sheet showWithDelegate:self];
     }
