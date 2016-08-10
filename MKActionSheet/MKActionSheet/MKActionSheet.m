@@ -237,7 +237,9 @@
         NSAssert(self.titleKey && self.titleKey.length > 0, @"titleKey 不能为nil 或者 空, 必须是有效的 NSString");
         for (id obj in self.objArray) {
             id titleValue = [obj valueForKey:self.titleKey];
-            NSAssert(titleValue && [titleValue isKindOfClass:[NSString class]], @"obj.titleKey 必须为 有效的 NSString");
+            if (!titleValue || ![titleValue isKindOfClass:[NSString class]]) {
+                NSAssert(NO, @"obj.titleKey 必须为 有效的 NSString");
+            }
         }
         self.buttonTitles = [self.objArray valueForKey:self.titleKey];
     }
