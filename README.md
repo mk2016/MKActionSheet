@@ -21,7 +21,8 @@
 
 
 ##添加
-* cocoapods
+* cocoapods  
+  pod 'MKActionSheet', '~> 1.1.0'
 
 * Manually (手动导入)  
   只需将 MKActionSheet 文件添加到项目中即可
