@@ -119,10 +119,10 @@
     [self.detailArray addObject:@"设置显示最大按钮数，超过最大数量，已tableView样式展示"];
     
     [self.datasArray addObject:@"model array、block"];
-    [self.detailArray addObject:@"model 数组初始化，block用例"];
+    [self.detailArray addObject:@"model 数组初始化，block用例，默认没有 取消 按钮"];
     
     [self.datasArray addObject:@"dictionary array、delegate"];
-    [self.detailArray addObject:@"字段 数组初始化，delegate用例"];
+    [self.detailArray addObject:@"字段 数组初始化，delegate用例，默认没有 取消 按钮"];
     
     [self.datasArray addObject:@"custom UI"];
     [self.detailArray addObject:@"自定义UI"];
@@ -229,7 +229,7 @@
 
     // 模型 数组初始化  block
     else if ([cellTitle isEqualToString:@"model array、block"]){
-        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"create with models array" objArray:self.modelArray titleKey:@"titleStr"];
+        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"create with models array,默认没有取消按钮" objArray:self.modelArray titleKey:@"titleStr"];
         sheet.destructiveButtonIndex = 0;
         sheet.destructiveButtonTitleColor = [UIColor greenColor];
         [sheet showWithBlock:^(MKActionSheet *actionSheet, NSInteger buttonIndex) {
@@ -243,7 +243,7 @@
         MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"create with models array" objArray:self.dicArray titleKey:@"titleStr"];
         sheet.destructiveButtonIndex = 3;
         sheet.destructiveButtonTitleColor = [UIColor blueColor];
-        sheet.needCancelButton = NO;
+        sheet.needCancelButton = YES;
         [sheet showWithDelegate:self];
     }
     
