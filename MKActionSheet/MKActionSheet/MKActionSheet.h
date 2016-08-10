@@ -39,9 +39,10 @@ typedef NS_ENUM(NSInteger, MKActionSheetButtonImageValueType) {
  *
  *  @param actionSheet self
  *  @param buttonIndex clicked button's index
- *  @param obj         以titls array 初始化，返回的obj 是 title(NSString), 以 objects array 初始化的，返回的obj是相应的对象;
+;
  */
-typedef void(^MKActionSheetBlock)(MKActionSheet* actionSheet, NSInteger buttonIndex, id obj);
+typedef void(^MKActionSheetBlock)(MKActionSheet* actionSheet, NSInteger buttonIndex);
+
 /**
  *  multiselect block
  *
@@ -53,7 +54,7 @@ typedef void(^MKActionSheetMultiselectBlock)(MKActionSheet* actionSheet, NSArray
 /**
  *  imageKey 的类型为 url时，可用 这个block 加载 图片
  *
- *  @param actionSheet actionSheet with self
+ *  @param actionSheet self
  *  @param button      需要设置图片的按钮
  *  @param imageUrl    图片的 URL，即 'imageKey'  对应的值
  */
@@ -66,18 +67,20 @@ typedef void(^MKActionSheetSetButtonImageWithUrlBlock)(MKActionSheet* actionShee
 @protocol MKActionSheetDelegate <NSObject>
 
 @optional
-/** 以title array 初始化时 点击按钮的 代理 */
-- (void)actionSheet:(MKActionSheet *)actionSheet didClickButtonAtIndex:(NSInteger)buttonIndex;
 /**
- *  以 object array 初始化时 点击按钮时执行
+ *  单选 delegage
  *
- *  @param actionSheet actionSheet with self
- *  @param buttonIndex button index
- *  @param obj         选择按钮对应的 obj, 如果带有 cancel button,点击cancel button 返回的 obj 为nil
+ *  @param actionSheet self
+ *  @param buttonIndex clicked button's index
  */
-- (void)actionSheet:(MKActionSheet *)actionSheet didClickButtonAtIndex:(NSInteger)buttonIndex selectObj:(id)obj;
+- (void)actionSheet:(MKActionSheet *)actionSheet didClickButtonAtIndex:(NSInteger)buttonIndex;
 
-/** 多选样式 点击确认后 返回 选中的 array， 如果有 取消 按钮，取消按钮返回的 array 为nil  */
+/**
+ *  多选样式 的delegate 点击确认后 返回 选中的 array， 如果有 取消 按钮，取消按钮返回的 array 为nil
+ *
+ *  @param actionSheet self
+ *  @param array       被选中的button 对应数据的 array
+ */
 - (void)actionSheet:(MKActionSheet *)actionSheet selectArray:(NSArray *)array;
 
 /**
@@ -129,50 +132,6 @@ typedef void(^MKActionSheetSetButtonImageWithUrlBlock)(MKActionSheet* actionShee
 @property (nonatomic, copy) NSString *titleKey;                     /*!< 传入为object array 时 指定 title 的字段名 */
 @property (nonatomic, copy) NSString *imageKey;                     /*!< 传入为object array 时 指定button image对应的字段名 */
 @property (nonatomic, assign) MKActionSheetButtonImageValueType imageValueType;   /*!< imageKey对应的类型：image、imageName、imageUrl */
-
-#pragma mark - ***** Class method ******
-//+ (void)sheetWithTitle:(NSString *)title
-//      buttonTitleArray:(NSArray *)buttonTitleArray
-//destructiveButtonIndex:(NSInteger)destructiveButtonIndex
-//                 block:(MKActionSheetBlock)block;
-//
-//+ (void)sheetWithTitle:(NSString *)title
-//      buttonTitleArray:(NSArray *)buttonTitleArray
-//                 block:(MKActionSheetBlock)block;
-//
-//+ (void)sheetWithTitle:(NSString *)title
-//      buttonTitleArray:(NSArray *)buttonTitleArray
-//      needCancelButton:(BOOL)needCancelButton
-//    maxShowButtonCount:(CGFloat)maxShowButtonCount
-//                 block:(MKActionSheetBlock)block;
-//
-//+ (void)sheetWithTitle:(NSString *)title
-//destructiveButtonIndex:(NSInteger)destructiveButtonIndex
-//                 block:(MKActionSheetBlock)block
-//          buttonTitles:(NSString *)buttonTitle, ... NS_REQUIRES_NIL_TERMINATION;
-//
-//+ (void)sheetWithTitle:(NSString *)title
-//                 block:(MKActionSheetBlock)block
-//          buttonTitles:(NSString *)buttonTitle, ... NS_REQUIRES_NIL_TERMINATION;
-//
-///**
-// *  支持直接传入 model 或 NSDictionary 数据的初始化方法。必须设置titleKey，object中的titleKey字段将用于显示按钮title,
-// *  参照普遍需求，传入object模式默认去除取消按钮。如果需要取消按钮可自己设置  needCancelButton = YES;
-// *
-// *  @param title      title string
-// *  @param objArray   object data array. 支持 model or NSDictionary
-// *  @param titleKey   用于显示按钮title, object中对应的key
-// *  @param paramBlock call back (MKActionSheet* actionSheet, NSInteger buttonIndex, id obj )
-// */
-//+ (void)sheetWithTitle:(NSString *)title
-//              objArray:(NSArray *)objArray
-//              titleKey:(NSString *)titleKey
-//            paramBlock:(MKActionSheetBlock)paramBlock;
-
-
-
-
-
 
 
 #pragma mark - ***** init method ******

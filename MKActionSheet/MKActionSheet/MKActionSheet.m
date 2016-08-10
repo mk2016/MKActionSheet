@@ -48,7 +48,13 @@
 #pragma mark - ***** init method ******
 
 - (instancetype)initWithTitle:(NSString *)title buttonTitleArray:(NSArray *)buttonTitleArray{
-    if (self = [self initWithTitle:title buttonTitleArray:buttonTitleArray selectType:MKActionSheetSelectType_common]) {}
+    if (self = [super init]) {
+        self.title = title;
+        self.buttonTitles = [[NSMutableArray alloc] initWithArray:buttonTitleArray];
+        self.selectType = MKActionSheetSelectType_common;
+        [self initData];
+    }
+    
     return self;
 }
 
@@ -64,7 +70,14 @@
 
 /** init with object array */
 - (instancetype)initWithTitle:(NSString *)title objArray:(NSArray *)objArray titleKey:(NSString *)titleKey{
-    if (self = [self initWithTitle:title objArray:objArray titleKey:titleKey selectType:MKActionSheetSelectType_common]) {}
+    if (self = [super init]) {
+        self.title = title;
+        self.titleKey = titleKey;
+        self.objArray = [[NSMutableArray alloc] initWithArray:objArray];
+        self.selectType = MKActionSheetSelectType_common;
+        self.paramIsObject = YES;
+        [self initData];
+    }
     return self;
 }
 
@@ -174,7 +187,7 @@
     if (self.selectType == MKActionSheetSelectType_selected) {
         _selectedIndex = selectedIndex;
     }else{
-        NSLog(@"MKActionSheet Error: 初始化 selectType = MKActionSheetSelectType_selected 时 设置 selectedIndex 才有效");
+        NSAssert(NO, @"初始化 selectType = MKActionSheetSelectType_selected 时 设置 selectedIndex 才有效");
     }
 }
 
@@ -275,10 +288,6 @@
 
 - (void)dismissWithButtonIndex:(NSInteger)index{
     [self dismiss];
-
-    if (self.delegate && [self.delegate respondsToSelector:@selector(actionSheet:didClickButtonAtIndex:)]) {
-        [self.delegate actionSheet:self didClickButtonAtIndex:index];
-    }
     
     if (self.selectType == MKActionSheetSelectType_multiselect) {
         //多选样式下 只有 取消按钮才会走这里
@@ -289,24 +298,12 @@
             [self.delegate actionSheet:self selectArray:nil];
         }
     }else{
-        
-        id obj = nil;
-        if (self.paramIsObject) {
-            if (self.objArray && index < self.objArray.count) {
-                obj = [self.objArray objectAtIndex:index];
-            }
-        }else{
-            if (self.buttonTitles && index < self.buttonTitles.count) {
-                obj = [self.buttonTitles objectAtIndex:index];
-            }
-        }
         if (self.block) {
-            self.block(self, index, obj);
+            self.block(self, index);
         }
-        
-        if ([_delegate respondsToSelector:@selector(actionSheet:didClickButtonAtIndex:selectObj:)]) {
-            [_delegate actionSheet:self didClickButtonAtIndex:index selectObj:obj];
-        }
+    }
+    if (self.delegate && [self.delegate respondsToSelector:@selector(actionSheet:didClickButtonAtIndex:)]) {
+        [self.delegate actionSheet:self didClickButtonAtIndex:index];
     }
 }
 
@@ -325,6 +322,7 @@
                 [selectedArray addObject:[self.buttonTitles objectAtIndex:i]];
             }
         }
+        title.mk_isSelect = NO;
     }
     
     if (self.multiselectBlock) {
@@ -360,6 +358,11 @@
 
     CGFloat sheetViewH = 0;
 
+    //title
+    if (self.selectType == MKActionSheetSelectType_multiselect && !self.title) {
+        self.title = @"";
+    }
+    
     if (self.title) {
         [self.sheetView addSubview:self.titleView];
         [self.titleView addSubview:self.titleLabel];
@@ -404,6 +407,10 @@
 
     sheetViewH += tableViewH;
     
+    
+    
+    
+    //取消按钮
     if (self.isNeedCancelButton) {
         sheetViewH += self.buttonHeight + 6;
         
@@ -645,7 +652,7 @@
 
 - (UIButton *)confirmButton{
     if (!_confirmButton) {
-        _confirmButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        _confirmButton = [UIButton buttonWithType:UIButtonTypeSystem];
         [_confirmButton setTitle:@"确定" forState:UIControlStateNormal];
         [_confirmButton setTitleColor:self.titleColor forState:UIControlStateNormal];
         _confirmButton.titleLabel.font = [UIFont systemFontOfSize:16];
@@ -664,97 +671,5 @@
     UIGraphicsEndImageContext();
     return image;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#pragma mark - ***** Class method ******
-//+ (void)sheetWithTitle:(NSString *)title buttonTitleArray:(NSArray *)buttonTitleArray destructiveButtonIndex:(NSInteger)destructiveButtonIndex block:(MKActionSheetBlock)block{
-//    MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:title buttonTitleArray:buttonTitleArray];
-//    sheet.destructiveButtonIndex = destructiveButtonIndex;
-//    [sheet showWithBlock:block];
-//}
-//
-//+ (void)sheetWithTitle:(NSString *)title buttonTitleArray:(NSArray *)buttonTitleArray block:(MKActionSheetBlock)block{
-//    MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:title buttonTitleArray:buttonTitleArray];
-//    [sheet showWithBlock:block];
-//}
-//
-//+ (void)sheetWithTitle:(NSString *)title buttonTitleArray:(NSArray *)buttonTitleArray needCancelButton:(BOOL)needCancelButton maxShowButtonCount:(CGFloat)maxShowButtonCount block:(MKActionSheetBlock)block{
-//    MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:title buttonTitleArray:buttonTitleArray];
-//    sheet.needCancelButton = needCancelButton;
-//    if (maxShowButtonCount > 0 ) {
-//        sheet.maxShowButtonCount = maxShowButtonCount;
-//    }
-//    [sheet showWithBlock:block];
-//}
-//
-//+ (void)sheetWithTitle:(NSString *)title destructiveButtonIndex:(NSInteger)destructiveButtonIndex block:(MKActionSheetBlock)block buttonTitles:(NSString *)buttonTitle, ... {
-//    NSMutableArray *tempArray = [[NSMutableArray alloc] init];
-//    if (buttonTitle) {
-//        [tempArray addObject:buttonTitle];
-//    }
-//    if (buttonTitle) {
-//        va_list args;
-//        va_start(args, buttonTitle);
-//        NSString *btnTitle;
-//        while ((btnTitle = va_arg(args, NSString *))) {
-//            [tempArray addObject:btnTitle];
-//        }
-//        va_end(args);
-//    }
-//    
-//    MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:title buttonTitleArray:tempArray];
-//    sheet.destructiveButtonIndex = destructiveButtonIndex;
-//    [sheet showWithBlock:block];
-//}
-////
-////+ (void)sheetWithTitle:(NSString *)title block:(MKActionSheetBlock)block buttonTitles:(NSString *)buttonTitle, ... {
-////    NSMutableArray *tempArray = [[NSMutableArray alloc] init];
-////    if (buttonTitle) {
-////        [tempArray addObject:buttonTitle];
-////    }
-////    if (buttonTitle) {
-////        va_list args;
-////        va_start(args, buttonTitle);
-////        NSString *btnTitle;
-////        while ((btnTitle = va_arg(args, NSString *))) {
-////            [tempArray addObject:btnTitle];
-////        }
-////        va_end(args);
-////    }
-////    
-////    MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:title buttonTitleArray:tempArray block:block];
-////    [sheet show];
-////}
-////
-////+ (void)sheetWithTitle:(NSString *)title objArray:(NSArray *)objArray titleKey:(NSString *)titleKey paramBlock:(MKActionSheetParamBlock)paramBlock{
-////    MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:title objArray:objArray titleKey:titleKey paramBlock:paramBlock];
-////    [sheet show];
-////}
 
 @end

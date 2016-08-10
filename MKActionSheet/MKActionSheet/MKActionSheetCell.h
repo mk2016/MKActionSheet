@@ -14,7 +14,6 @@
 
 @property (nonatomic, weak) UIButton *btnCell;
 @property (nonatomic, weak) UIButton *btnSelect;
-//@property (nonatomic, weak) UIImageView *separatorView;
 
 + (instancetype)cellWithTableView:(UITableView *)tableView;
 
