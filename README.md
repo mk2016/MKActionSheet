@@ -17,7 +17,7 @@
  * 支持 block 和 delegate
  
 #### 先上效果图
- ![image](https://github.com/mk2016/MKActionSheet/raw/MKActionSheet_dev/Screenshots/gif1.gif)
+ ![image](https://github.com/mk2016/MKActionSheet/raw/master/Screenshots/gif2.gif)
 
 
 ##添加
@@ -31,12 +31,32 @@
 * 支持 block 和 delegate
 
 ```
-//delegate
-- (void)showWithDelegate:(id <MKActionSheetDelegate>)delegate;
 //单选 block
 - (void)showWithBlock:(MKActionSheetBlock)block;
 //多选 block
 - (void)showWithMultiselectBlock:(MKActionSheetMultiselectBlock)multiselectblock;
+
+//delegate
+- (void)showWithDelegate:(id <MKActionSheetDelegate>)delegate;
+
+/**
+ *  单选 delegage
+ *  @param buttonIndex 被点击按钮的 index
+ */
+- (void)actionSheet:(MKActionSheet *)actionSheet didClickButtonAtIndex:(NSInteger)buttonIndex;
+
+/**
+ *  多选样式 的delegate 点击确认后 返回 选中的 array， 如果有 取消 按钮，取消按钮返回的 array 为nil
+ *  @param array       被选中的button 对应数据的 array
+ */
+- (void)actionSheet:(MKActionSheet *)actionSheet selectArray:(NSArray *)array;
+
+/**
+ *  带icon图片，imageKey 对应的 图片类型是 URL方式， 调用此回调 设置图片
+ *  @param button      要设置图片的 button
+ *  @param imageUrl    图片的URL， 即 object 对应 的 imageKey 字段
+ */
+- (void)actionSheet:(MKActionSheet *)actionSheet button:(UIButton *)button imageUrl:(NSString *)imageUrl;
 ```
 
 * 普通样式，多参数初始化， block
