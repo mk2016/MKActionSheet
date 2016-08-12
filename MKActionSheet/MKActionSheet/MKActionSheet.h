@@ -133,6 +133,10 @@ typedef void(^MKActionSheetSetButtonImageWithUrlBlock)(MKActionSheet* actionShee
 @property (nonatomic, copy) NSString *imageKey;                     /*!< 传入为object array 时 指定button image对应的字段名 */
 @property (nonatomic, assign) MKActionSheetButtonImageValueType imageValueType;   /*!< imageKey对应的类型：image、imageName、imageUrl */
 
+//set image name
+@property (nonatomic, copy) NSString *selectedBtnImageName;         /*!< 带默认选中模式，选中图片的名字 */
+@property (nonatomic, copy) NSString *selectBtnImageNameNormal;     /*!< 多选模式，选择按钮非选中状态图片 */
+@property (nonatomic, copy) NSString *selectBtnImageNameSelected;   /*!< 多选模式，选择按钮选中状态图片 */
 
 #pragma mark - ***** init method ******
 /**

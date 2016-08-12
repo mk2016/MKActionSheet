@@ -476,7 +476,17 @@
 #pragma mark - ***** UITableView delegate ******
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     MKActionSheetCell *cell = [MKActionSheetCell cellWithTableView:tableView];
-//    cell.separatorView.hidden = indexPath.row == self.buttonTitles.count - 1;
+    
+    if (self.selectBtnImageNameNormal && self.selectBtnImageNameNormal.length > 0) {
+        [cell.btnSelect setImage:[UIImage imageNamed:self.selectedBtnImageName] forState:UIControlStateNormal];
+    }
+    if (self.selectBtnImageNameSelected && self.selectBtnImageNameSelected.length > 0) {
+        [cell.btnSelect setImage:[UIImage imageNamed:self.selectBtnImageNameSelected] forState:UIControlStateSelected];
+        [cell.btnSelect setImage:[UIImage imageNamed:self.selectBtnImageNameSelected] forState:UIControlStateHighlighted];
+    }
+    if (self.selectedBtnImageName && self.selectedBtnImageName.length > 0) {
+        [cell.btnSelect setImage:[UIImage imageNamed:self.selectedBtnImageName] forState:UIControlStateDisabled];
+    }
 
     [cell.btnCell setBackgroundImage:[self imageWithColor:MKCOLOR_RGBA(255, 255, 255, self.buttonOpacity)] forState:UIControlStateNormal];
     [cell.btnCell setBackgroundImage:[self imageWithColor:MKCOLOR_RGBA(255, 255, 255, 0)] forState:UIControlStateHighlighted];
@@ -510,7 +520,7 @@
             }
         }
         
-        [cell.btnCell setTitleEdgeInsets:UIEdgeInsetsMake(0, 12, 0, 0)];
+        [cell.btnCell setTitleEdgeInsets:UIEdgeInsetsMake(0, 16, 0, 0)];
     }
     
     if (self.buttonTitleAlignment == MKActionSheetButtonTitleAlignment_left) {

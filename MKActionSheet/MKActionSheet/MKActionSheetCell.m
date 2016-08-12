@@ -18,6 +18,7 @@
     if (!cell) {
         cell = [[MKActionSheetCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
         cell.backgroundColor = [UIColor clearColor];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
         
         //cell button
         UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
