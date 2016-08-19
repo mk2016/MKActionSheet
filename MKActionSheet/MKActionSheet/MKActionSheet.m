@@ -158,8 +158,10 @@
     _animationDuration = 0.3f;
     _blurOpacity = 0.0f;
     _blackgroundOpacity = 0.3f;
-    _maxShowButtonCount = -1;
+    _maxShowButtonCount = 5.6;
     _needCancelButton = YES;
+    _showSeparator = YES;
+    _separatorLeftMargin = 0;
     
     //以 object array 初始化，默认没有取消按钮
     if (self.paramIsObject) {
@@ -370,37 +372,48 @@
         self.title = @"";
     }
     
-    if (self.title) {
+    if (self.title || self.customTitleView) {
         [self.sheetView addSubview:self.titleView];
-        [self.titleView addSubview:self.titleLabel];
-    
-        CGFloat titleLabWidth = MKSCREEN_WIDTH - self.titleMargin*2;
-        if (self.selectType == MKActionSheetSelectType_multiselect) {
-            titleLabWidth = titleLabWidth - 80 + self.titleMargin-4;
-            [self.titleView addSubview:self.confirmButton];
-        }
-        CGSize titleSize = [self.titleLabel.text boundingRectWithSize:CGSizeMake(titleLabWidth, MAXFLOAT)
-                                                              options:NSStringDrawingUsesLineFragmentOrigin
-                                                           attributes:@{NSFontAttributeName: self.titleLabel.font}
-                                                              context:nil].size;
         
-        self.titleLabel.frame = CGRectMake(self.titleMargin, 10, titleLabWidth, titleSize.height);
-        self.titleView.frame = CGRectMake(0, 0, MKSCREEN_WIDTH, titleSize.height+20);
+        if (self.customTitleView) {
+            [self.customTitleView removeFromSuperview];
+            [self.titleView addSubview:self.customTitleView];
+            self.titleView.frame = CGRectMake(0, 0, MKSCREEN_WIDTH, self.customTitleView.bounds.size.height);
+            sheetViewH += self.titleView.frame.size.height;
+        }else if (self.title){
+            [self.titleView addSubview:self.titleLabel];
         
-        CALayer *separatorLayer = [CALayer layer];
-        separatorLayer.frame = CGRectMake(0, self.titleView.frame.size.height, MKSCREEN_WIDTH, 0.5);
-        separatorLayer.backgroundColor = MKCOLOR_RGBA(0, 0, 0, 0.2).CGColor;
-        [self.titleView.layer addSublayer:separatorLayer];
-        
-        sheetViewH += self.titleView.frame.size.height;
-        
-        if (_confirmButton) {
-            _confirmButton.frame = CGRectMake(titleLabWidth+self.titleMargin+4, 0, 80, sheetViewH);
+            CGFloat titleLabWidth = MKSCREEN_WIDTH - self.titleMargin*2;
+            if (self.selectType == MKActionSheetSelectType_multiselect) {
+                titleLabWidth = titleLabWidth - 80 + self.titleMargin-4;
+                [self.titleView addSubview:self.confirmButton];
+            }
+            CGSize titleSize = [self.titleLabel.text boundingRectWithSize:CGSizeMake(titleLabWidth, MAXFLOAT)
+                                                                  options:NSStringDrawingUsesLineFragmentOrigin
+                                                               attributes:@{NSFontAttributeName: self.titleLabel.font}
+                                                                  context:nil].size;
             
-            CALayer *leftLayer = [CALayer layer];
-            leftLayer.frame = CGRectMake(0, sheetViewH/2-10, 1, 20);
-            leftLayer.backgroundColor = MKCOLOR_RGBA(0, 0, 0, 0.2).CGColor;
-            [_confirmButton.layer addSublayer:leftLayer];
+            self.titleLabel.frame = CGRectMake(self.titleMargin, 10, titleLabWidth, titleSize.height);
+            self.titleView.frame = CGRectMake(0, 0, MKSCREEN_WIDTH, titleSize.height+20);
+            
+//        if (_showSeparator) {
+            CALayer *separatorLayer = [CALayer layer];
+            separatorLayer.frame = CGRectMake(0, self.titleView.frame.size.height, MKSCREEN_WIDTH, 0.5);
+            separatorLayer.backgroundColor = MKCOLOR_RGBA(0, 0, 0, 0.2).CGColor;
+            [self.titleView.layer addSublayer:separatorLayer];
+//        }
+            
+            
+            sheetViewH += self.titleView.frame.size.height;
+            
+            if (_confirmButton) {
+                _confirmButton.frame = CGRectMake(titleLabWidth+self.titleMargin+4, 0, 80, sheetViewH);
+                
+                CALayer *leftLayer = [CALayer layer];
+                leftLayer.frame = CGRectMake(0, sheetViewH/2-10, 1, 20);
+                leftLayer.backgroundColor = MKCOLOR_RGBA(0, 0, 0, 0.2).CGColor;
+                [_confirmButton.layer addSublayer:leftLayer];
+            }
         }
     }
     
@@ -429,16 +442,17 @@
         sepView.backgroundColor = MKCOLOR_RGBA(100, 100, 100, 0.1);
         [cancelView addSubview:sepView];
         
-        CALayer *topBorderLayer = [CALayer layer];
-        topBorderLayer.frame = CGRectMake(0, 0, sepView.frame.size.width, 0.5);
-        topBorderLayer.backgroundColor = MKCOLOR_RGBA(0, 0, 0, 0.1).CGColor;
-        [sepView.layer addSublayer:topBorderLayer];
-        
-        CALayer *botBorderLayer = [CALayer layer];
-        botBorderLayer.frame = CGRectMake(0, sepView.frame.size.height - 0.5, sepView.frame.size.width, 0.5);
-        botBorderLayer.backgroundColor = MKCOLOR_RGBA(0, 0, 0, 0.1).CGColor;
-        [sepView.layer addSublayer:botBorderLayer];
-        
+//        if (_showSeparator) {
+//            CALayer *topBorderLayer = [CALayer layer];
+//            topBorderLayer.frame = CGRectMake(0, 0, sepView.frame.size.width, 0.5);
+//            topBorderLayer.backgroundColor = MKCOLOR_RGBA(0, 0, 0, 0.1).CGColor;
+//            [sepView.layer addSublayer:topBorderLayer];
+//            
+//            CALayer *botBorderLayer = [CALayer layer];
+//            botBorderLayer.frame = CGRectMake(0, sepView.frame.size.height - 0.5, sepView.frame.size.width, 0.5);
+//            botBorderLayer.backgroundColor = MKCOLOR_RGBA(0, 0, 0, 0.1).CGColor;
+//            [sepView.layer addSublayer:botBorderLayer];
+//        }
     }
     
     self.sheetView.frame = CGRectMake(0, MKSCREEN_HEIGHT, MKSCREEN_WIDTH, sheetViewH);
@@ -575,13 +589,13 @@
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath{\
     if ([tableView respondsToSelector:@selector(setSeparatorInset:)]) {
-        [tableView setSeparatorInset:UIEdgeInsetsZero];
+        [tableView setSeparatorInset:UIEdgeInsetsMake(0, self.separatorLeftMargin, 0, 0)];
     }
     if ([tableView respondsToSelector:@selector(setLayoutMargins:)]) {
-        [tableView setLayoutMargins:UIEdgeInsetsZero];
+        [tableView setLayoutMargins:UIEdgeInsetsMake(0, self.separatorLeftMargin, 0, 0)];
     }
     if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
-        [cell setLayoutMargins:UIEdgeInsetsZero];
+        [cell setLayoutMargins:UIEdgeInsetsMake(0, self.separatorLeftMargin, 0, 0)];
     }
 }
 
@@ -625,9 +639,14 @@
         _tableView.delegate = self;
         _tableView.dataSource = self;
         _tableView.rowHeight = self.buttonHeight;
+        _tableView.showsVerticalScrollIndicator = NO;
+        _tableView.showsHorizontalScrollIndicator = NO;
+        if (!_showSeparator) {
+            _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+        }
         _tableView.bounces = NO;
         _tableView.backgroundColor = [UIColor clearColor];
-        _tableView.tableFooterView = [UIView new];
+//        _tableView.tableFooterView = [UIView new];
     }
     return _tableView;
 }

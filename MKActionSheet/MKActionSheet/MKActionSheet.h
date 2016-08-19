@@ -105,29 +105,33 @@ typedef void(^MKActionSheetSetButtonImageWithUrlBlock)(MKActionSheet* actionShee
 
 /**  custom UI */
 //title
+@property (nonatomic, weak) UIView *customTitleView;                /*!< 自定义标题View */
 @property (nonatomic, copy) NSString *title;                        /*!< 标题 */
-@property (nonatomic, strong) UIColor *titleColor;                  /*!< 标题颜色 */
-@property (nonatomic, strong) UIFont *titleFont;                    /*!< 标题字体 */
-@property (nonatomic, assign) NSTextAlignment titleAlignment;       /*!< 标题 对齐方式 */
+@property (nonatomic, strong) UIColor *titleColor;                  /*!< 标题颜色 [default: RGBA(100.0f, 100.0f, 100.0f, 1.0f)]*/
+@property (nonatomic, strong) UIFont *titleFont;                    /*!< 标题字体 [default: sys 14] */
+@property (nonatomic, assign) NSTextAlignment titleAlignment;       /*!< 标题 对齐方式 [default: center] */
 //button
-@property (nonatomic, strong) UIColor *buttonTitleColor;            /*!< 按钮 titile 颜色 */
-@property (nonatomic, strong) UIFont  *buttonTitleFont;             /*!< 按钮 字体 */
-@property (nonatomic, assign) CGFloat buttonOpacity;                /*!< 按钮透明度 */
-@property (nonatomic, assign) CGFloat buttonHeight;                 /*!< default: 48.0f*/
-@property (nonatomic, assign) MKActionSheetButtonTitleAlignment buttonTitleAlignment;   /*!< button title 对齐方式 */
+@property (nonatomic, strong) UIColor *buttonTitleColor;            /*!< 按钮 titile 颜色 [default:RBGA(51.0f, 51.0f, 51.0f, 1.0f)] */
+@property (nonatomic, strong) UIFont  *buttonTitleFont;             /*!< 按钮 字体 [default: sys 18] */
+@property (nonatomic, assign) CGFloat buttonOpacity;                /*!< 按钮透明度 [default: 0.6] */
+@property (nonatomic, assign) CGFloat buttonHeight;                 /*!< 按钮高度 [default: 48.0f] */
+@property (nonatomic, assign) MKActionSheetButtonTitleAlignment buttonTitleAlignment;   /*!< button title 对齐方式 [default: center] */
 //destructive Button
-@property (nonatomic, assign) NSInteger destructiveButtonIndex;     /*!< 特殊按钮位置 */
-@property (nonatomic, strong) UIColor *destructiveButtonTitleColor; /*!< 特殊按钮颜色 */
+@property (nonatomic, assign) NSInteger destructiveButtonIndex;     /*!< 特殊按钮位置 [default:-1]*/
+@property (nonatomic, strong) UIColor *destructiveButtonTitleColor; /*!< 特殊按钮颜色 [default:RBGA(250.0f, 10.0f, 10.0f, 1.0f)]*/
 //cancel Title
-@property (nonatomic, copy) NSString  *cancelTitle;                 /*!< 取消按钮 title */
+@property (nonatomic, copy) NSString  *cancelTitle;                 /*!< 取消按钮 title [dafault:取消] */
 //action sheet
-@property (nonatomic, assign) CGFloat titleMargin;                  /*!< title 边距 */
-@property (nonatomic, assign) CGFloat animationDuration;            /*!< 动画化时间 default: 0.3f */
-@property (nonatomic, assign) CGFloat blurOpacity;                  /*!< 毛玻璃透明度 default: 0.0f */
-@property (nonatomic, assign) CGFloat blackgroundOpacity;           /*!< 灰色背景透明度 default: 0.3f */
+@property (nonatomic, assign) CGFloat titleMargin;                  /*!< title 边距 [default: 20] */
+@property (nonatomic, assign) CGFloat animationDuration;            /*!< 动画化时间 [default: 0.3f] */
+@property (nonatomic, assign) CGFloat blurOpacity;                  /*!< 毛玻璃透明度 [default: 0.0f] */
+@property (nonatomic, assign) CGFloat blackgroundOpacity;           /*!< 灰色背景透明度 [default: 0.3f] */
 @property (nonatomic, assign,getter=isNeedCancelButton) BOOL needCancelButton;              /*!< 是否需要取消按钮 */
-@property (nonatomic, assign) CGFloat maxShowButtonCount;           /*!< 显示按钮最大个数，支持小数 默认-1，全部显示*/
-@property (nonatomic, assign) NSInteger selectedIndex;       /*!< 默认选中的button index, 带默认选中样式 */
+@property (nonatomic, assign,getter=isShowSeparator) BOOL showSeparator;    /*!< 是否显示分割线 [default: YES]*/
+@property (nonatomic, assign) CGFloat separatorLeftMargin;          /*!< 分割线离左边的边距 [default:0] */
+
+@property (nonatomic, assign) CGFloat maxShowButtonCount;           /*!< 显示按钮最大个数，支持小数 [default:5.6，全部显示,可设置成 0] */
+@property (nonatomic, assign) NSInteger selectedIndex;              /*!< 默认选中的button index, 带默认选中样式 */
 //object Array
 @property (nonatomic, copy) NSString *titleKey;                     /*!< 传入为object array 时 指定 title 的字段名 */
 @property (nonatomic, copy) NSString *imageKey;                     /*!< 传入为object array 时 指定button image对应的字段名 */
@@ -236,4 +240,6 @@ typedef void(^MKActionSheetSetButtonImageWithUrlBlock)(MKActionSheet* actionShee
  */
 - (void)showWithMultiselectBlock:(MKActionSheetMultiselectBlock)multiselectblock;
 
+
+- (void)dismiss;
 @end
