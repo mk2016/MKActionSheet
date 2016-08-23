@@ -15,6 +15,8 @@
 #define MKSCREEN_HEIGHT    [UIScreen mainScreen].bounds.size.height
 #define MKSCREEN_BOUNDS    [UIScreen mainScreen].bounds
 #define MKCOLOR_RGBA(r, g, b, a)    [UIColor colorWithRed:(r/255.0f) green:(g/255.0f) blue:(b/255.0f) alpha:(a)]
+#define MKWEAKSELF typeof(self) __weak weakSelf = self;
+#define MKBlockExec(block, ...) if (block) { block(__VA_ARGS__); };
 #endif
 
 #pragma mark - ***** MKActionSheet ******
@@ -163,8 +165,10 @@
     _showSeparator = YES;
     _separatorLeftMargin = 0;
     
+    _multiselectConfirmButtonTitleColor = MKCOLOR_RGBA(100.0f, 100.0f, 100.0f, 1.0f);
+    
     //以 object array 初始化，默认没有取消按钮
-    if (self.paramIsObject) {
+    if (_paramIsObject) {
         _needCancelButton = NO;
     }
     
@@ -194,7 +198,7 @@
 }
 
 - (void)addButtonWithTitle:(NSString *)title{
-    NSAssert(!self.paramIsObject, @"以 objArray 初始化时，不能直接添加 title, 请使用 addButtonWithObj:(id)obj");
+    NSAssert(!_paramIsObject, @"以 objArray 初始化时，不能直接添加 title, 请使用 addButtonWithObj:(id)obj");
     if (!_buttonTitles) {
         _buttonTitles = [[NSMutableArray alloc] init];
     }
@@ -202,7 +206,7 @@
 }
 
 - (void)addButtonWithObj:(id)obj{
-    NSAssert(self.paramIsObject, @"不是由 objArray 初始化时，不能直接添加 object, 请使用 addButtonWithTitle:(NSString *)title");
+    NSAssert(_paramIsObject, @"不是由 objArray 初始化时，不能直接添加 object, 请使用 addButtonWithTitle:(NSString *)title");
     if (!_objArray) {
         _objArray = [[NSMutableArray alloc] init];
     }
@@ -210,7 +214,7 @@
 }
 
 
-#pragma mark - ***** show ******
+#pragma mark - ***** show methods******
 - (void)showWithDelegate:(id<MKActionSheetDelegate>)delegate{
     if (delegate) {
         _delegate = delegate;
@@ -251,8 +255,14 @@
     }
     
     [self setupMainView];
+    
     self.bgWindow.hidden = NO;
     [self.bgWindow addSubview:self];
+    
+    if (self.delegate && [self.delegate respondsToSelector:@selector(willPresentActionSheet:)]) {
+        [self.delegate willPresentActionSheet:self];
+    }
+    MKBlockExec(self.willPresentBlock, self);
     
     [UIView animateWithDuration:self.animationDuration delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
         [self.shadeView setAlpha:self.blackgroundOpacity];
@@ -261,7 +271,13 @@
         CGRect frame = self.sheetView.frame;
         frame.origin.y = MKSCREEN_HEIGHT - frame.size.height;
         self.sheetView.frame = frame;
-    } completion:nil];
+        
+    } completion:^(BOOL finished) {
+        if (self.delegate && [self.delegate respondsToSelector:@selector(didPresentActionSheet:)]) {
+            [self.delegate didPresentActionSheet:self];
+        }
+        MKBlockExec(self.didPresentBlock, self);
+    }];
 }
 
 #pragma mark - ***** dismiss ******
@@ -293,21 +309,43 @@
 - (void)dismissWithButtonIndex:(NSInteger)index{
     if (self.selectType == MKActionSheetSelectType_multiselect) {
         //多选样式下 只有 取消按钮才会走这里
-        if (self.multiselectBlock) {
-            self.multiselectBlock(self, nil);
+
+        if (self.delegate && [self.delegate respondsToSelector:@selector(actionSheet:willDismissWithSelectArray:)]) {
+            [self.delegate actionSheet:self willDismissWithSelectArray:nil];
         }
-        if ([self.delegate respondsToSelector:@selector(actionSheet:selectArray:)]) {
+        MKBlockExec(self.willDismissMultiselectBlock, self, nil);
+        
+        if (self.delegate && [self.delegate respondsToSelector:@selector(actionSheet:selectArray:)]) {
             [self.delegate actionSheet:self selectArray:nil];
         }
+        MKBlockExec(self.multiselectBlock, self, nil);
+
     }else{
-        if (self.block) {
-            self.block(self, index);
+        if (self.delegate && [self.delegate respondsToSelector:@selector(actionSheet:willDismissWithButtonIndex:)]) {
+            [self.delegate actionSheet:self willDismissWithButtonIndex:index];
         }
+        MKBlockExec(self.willDismissBlock, self, index);
+        
+        if (self.delegate && [self.delegate respondsToSelector:@selector(actionSheet:didClickButtonAtIndex:)]) {
+            [self.delegate actionSheet:self didClickButtonAtIndex:index];
+        }
+        MKBlockExec(self.block, self, index)
     }
-    if (self.delegate && [self.delegate respondsToSelector:@selector(actionSheet:didClickButtonAtIndex:)]) {
-        [self.delegate actionSheet:self didClickButtonAtIndex:index];
-    }
-    [self dismiss];
+    
+    MKWEAKSELF
+    [self dismissWithBlock:^(BOOL finished) {
+        if (_selectType == MKActionSheetSelectType_multiselect) {
+            if (_delegate && [_delegate respondsToSelector:@selector(actionSheet:didDismissWithSelectArray:)]) {
+                [_delegate actionSheet:weakSelf didDismissWithSelectArray:nil];
+            }
+            MKBlockExec(weakSelf.didDismissMultiselectBlock, weakSelf, nil);
+        }else{
+            if (_delegate && [_delegate respondsToSelector:@selector(actionSheet:didDismissWithButtonIndex:)]) {
+                [_delegate actionSheet:weakSelf didDismissWithButtonIndex:index];
+            }
+            MKBlockExec(weakSelf.didDismissBlock, weakSelf, index);
+        }
+    }];
 }
 
 /** 多选确认按钮 */
@@ -326,18 +364,30 @@
         }
     }
     
-    if (self.multiselectBlock) {
-        self.multiselectBlock(self, selectedArray);
+    if (self.delegate && [self.delegate respondsToSelector:@selector(actionSheet:willDismissWithSelectArray:)]) {
+        [self.delegate actionSheet:self willDismissWithSelectArray:selectedArray];
     }
+    MKBlockExec(self.willDismissMultiselectBlock, self, selectedArray);
     
     if ([self.delegate respondsToSelector:@selector(actionSheet:selectArray:)]) {
         [self.delegate actionSheet:self selectArray:selectedArray];
     }
-    
-    [self dismiss];
+    MKBlockExec(self.multiselectBlock, self, selectedArray);
+
+    MKWEAKSELF
+    [self dismissWithBlock:^(BOOL finished) {
+        if (_delegate && [_delegate respondsToSelector:@selector(actionSheet:didDismissWithSelectArray:)]) {
+            [_delegate actionSheet:weakSelf didDismissWithSelectArray:selectedArray];
+        }
+        MKBlockExec(weakSelf.didDismissMultiselectBlock, weakSelf, selectedArray);
+    }];
 }
 
 - (void)dismiss{
+    [self dismissWithBlock:nil];
+}
+
+- (void)dismissWithBlock:(void (^ __nullable)(BOOL finished))block{
     if (self.selectType == MKActionSheetSelectType_multiselect) {
         for (NSString *title in self.buttonTitles) {
             title.mk_isSelect = NO;
@@ -355,6 +405,7 @@
     } completion:^(BOOL finished) {
         [self removeFromSuperview];
         self.bgWindow.hidden = YES;
+        MKBlockExec(block, finished);
     }];
 }
 
@@ -526,10 +577,10 @@
             //由于加载url图片需要导入 SDWebImage，而且有些人在项目中用的也不一定是SDWebImage, 或用不到此类型，
             //为了不增加 使用MKActionSheet 的成本，加载url 图片  用一个block 或 delegate 回调出去，根据大家自己的实际情况设置 图片，并设置自己的默认图片。
             if ([imageValue isKindOfClass:[NSString class]]) {
-                if (self.buttonImageBlock) {
-                    self.buttonImageBlock(self, cell.btnCell, imageValue);
-                }else if (_delegate && [_delegate respondsToSelector:@selector(actionSheet:button:imageUrl:)]) {
+                if (_delegate && [_delegate respondsToSelector:@selector(actionSheet:button:imageUrl:)]) {
                     [_delegate actionSheet:self button:cell.btnCell imageUrl:imageValue];
+                }else{
+                    MKBlockExec(self.buttonImageBlock, self, cell.btnCell, imageValue);
                 }
             }
         }
@@ -690,7 +741,7 @@
     if (!_confirmButton) {
         _confirmButton = [UIButton buttonWithType:UIButtonTypeSystem];
         [_confirmButton setTitle:@"确定" forState:UIControlStateNormal];
-        [_confirmButton setTitleColor:self.titleColor forState:UIControlStateNormal];
+        [_confirmButton setTitleColor:self.multiselectConfirmButtonTitleColor forState:UIControlStateNormal];
         _confirmButton.titleLabel.font = [UIFont systemFontOfSize:16];
         [_confirmButton addTarget:self action:@selector(confirmButtonOnclick:) forControlEvents:UIControlEventTouchUpInside];
     }

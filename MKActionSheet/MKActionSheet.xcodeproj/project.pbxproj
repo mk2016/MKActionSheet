@@ -442,7 +442,6 @@
 				TargetAttributes = {
 					C5A125A81CFEE7E700FEA77A = {
 						CreatedOnToolsVersion = 7.3.1;
-						DevelopmentTeam = YPMA9SXXZT;
 					};
 					C5A125C11CFEE7E700FEA77A = {
 						CreatedOnToolsVersion = 7.3.1;

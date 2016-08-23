@@ -107,7 +107,7 @@
     [self.detailArray addObject:@"多选样式，block用例，默认居左、无取消按钮，可设置"];
 
     [self.datasArray addObject:@"imageValueType:imageName、block"];
-    [self.detailArray addObject:@"带icon 样式，图片字段类型为 imageName，block用例"];
+    [self.detailArray addObject:@"带icon 样式，图片字段类型为 imageName，block用例,无分割线"];
 
     [self.datasArray addObject:@"imageValueType:image delegate"];
     [self.detailArray addObject:@"带icon 样式，图片字段类型为 image，delegate用例"];
@@ -145,6 +145,18 @@
     if ([cellTitle isEqualToString:@"selectType:-common"]) {
         MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"初始化title为nil，将显示不带title样式。this is a longgggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg title" buttonTitleArray:@[@"button0", @"button1", @"button2",@"button3",@"button4"]];
         sheet.destructiveButtonIndex = 3;
+        sheet.willPresentBlock = ^(MKActionSheet *sheet){
+            NSLog(@"willPresentBlock");
+        };
+        sheet.didPresentBlock = ^(MKActionSheet *sheet){
+            NSLog(@"didPresentBlock");
+        };
+        sheet.willDismissBlock = ^(MKActionSheet* actionSheet, NSInteger buttonIndex){
+            NSLog(@"willDismissBlock");
+        };
+        sheet.didDismissBlock = ^(MKActionSheet* actionSheet, NSInteger buttonIndex){
+            NSLog(@"didDismissBlock");
+        };
         [sheet showWithBlock:^(MKActionSheet *actionSheet, NSInteger buttonIndex) {
             NSLog(@"buttonIndex:%ld",(long)buttonIndex);
             [self.view makeToast:[NSString stringWithFormat:@"button Index : %ld" ,(long)buttonIndex]];
@@ -168,11 +180,29 @@
             NSLog(@"array:%@",array);
             [self.view makeToast:[NSString stringWithFormat:@"array count : %ld ",array.count]];
         }];
+        sheet.willPresentBlock = ^(MKActionSheet *sheet){
+            NSLog(@"willPresentBlock");
+        };
+        sheet.didPresentBlock = ^(MKActionSheet *sheet){
+            NSLog(@"willPresentBlock");
+        };
+        sheet.willDismissBlock = ^(MKActionSheet* actionSheet, NSInteger buttonIndex){
+            NSLog(@"willDismissBlock");
+        };
+        sheet.didDismissBlock = ^(MKActionSheet* actionSheet, NSInteger buttonIndex){
+            NSLog(@"didDismissBlock");
+        };
+        sheet.willDismissMultiselectBlock = ^(MKActionSheet* actionSheet, NSArray *array){
+            NSLog(@"willDismissMultiselectBlock");
+        };
+        sheet.didDismissMultiselectBlock = ^(MKActionSheet* actionSheet, NSArray *array){
+            NSLog(@"didDismissMultiselectBlock");
+        };
     }
     
     //带 icon 图片 imageValueType:imageName   block
     else if ([cellTitle isEqualToString:@"imageValueType:imageName、block"]) {
-        MKActionSheet *sheet =[[MKActionSheet alloc] initWithTitle:@"imageValueType:imageName" objArray:self.modelArray titleKey:@"titleStr"];
+        MKActionSheet *sheet =[[MKActionSheet alloc] initWithTitle:@"imageValueType:imageName 无分割线" objArray:self.modelArray titleKey:@"titleStr"];
         [sheet setImageKey:@"imageName" imageValueType:MKActionSheetButtonImageValueType_name];
         sheet.showSeparator = NO;
         [sheet showWithBlock:^(MKActionSheet *actionSheet, NSInteger buttonIndex) {
@@ -193,11 +223,14 @@
     
     //带 icon 图片 imageValueType:imageUrl、delegate
     else if ([cellTitle isEqualToString:@"imageValueType:imageUrl delegate"]){
-        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"imageValueType:imageUrl、delegate" objArray:self.modelArray titleKey:@"titleStr" selectType:MKActionSheetSelectType_multiselect];
+        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"imageValueType:imageUrl、delegate 分割线设置边距" objArray:self.modelArray titleKey:@"titleStr" selectType:MKActionSheetSelectType_multiselect];
         [sheet setImageKey:@"imageUrl" imageValueType:MKActionSheetButtonImageValueType_url];
         sheet.needCancelButton = YES;
         sheet.maxShowButtonCount = 0;
         sheet.separatorLeftMargin = 60;
+        sheet.multiselectConfirmButtonTitleColor = [UIColor redColor];
+        sheet.titleColor = [UIColor blueColor];
+        
         //添加 对象
         InfoModel *model = [[InfoModel alloc] init];
         model.titleStr = @"add button";
@@ -264,6 +297,17 @@
         UIView *titleView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 100)];
         titleView.backgroundColor = [UIColor redColor];
         
+        UILabel *labTitle = [[UILabel alloc] init];
+        labTitle.text = @"自定义titleView";
+        labTitle.textColor = [UIColor greenColor];
+        labTitle.font = [UIFont boldSystemFontOfSize:17];
+        labTitle.textAlignment = NSTextAlignmentCenter;
+        [titleView addSubview:labTitle];
+        
+        [labTitle mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.right.top.equalTo(titleView);
+        }];
+        
         UIButton *btn = [UIButton buttonWithType:UIButtonTypeSystem];
         [btn setTitle:@"title button" forState:UIControlStateNormal];
         btn.backgroundColor = [UIColor greenColor];
@@ -299,6 +343,7 @@
         sheet.blackgroundOpacity = 0.6f;
         sheet.needCancelButton = YES;
         sheet.maxShowButtonCount = 5.6;
+        sheet.separatorLeftMargin = 20;
         [sheet addButtonWithTitle:@"button add"];
         [sheet showWithBlock:^(MKActionSheet *actionSheet, NSInteger buttonIndex) {
             NSLog(@"buttonIndex:%ld",(long)buttonIndex);
@@ -333,6 +378,8 @@
 
 //单选
 - (void)actionSheet:(MKActionSheet *)actionSheet didClickButtonAtIndex:(NSInteger)buttonIndex{
+    NSLog(@"didClickButtonAtIndex");
+
 //    if (actionSheet.selectType != MKActionSheetSelectType_multiselect) {
         NSLog(@"========== delegate ====");
         NSLog(@"actionSheet.tag:%ld",(long)actionSheet.tag);
@@ -342,11 +389,12 @@
 }
 
 //多选
-- (void)actionSheet:(MKActionSheet *)actionSheet selectArray:(NSArray *)array{
+- (void)actionSheet:(MKActionSheet *)actionSheet selectArray:(NSArray *)selectArray{
+    NSLog(@"selectArray");
     if (actionSheet.selectType == MKActionSheetSelectType_multiselect) {
         NSLog(@"actionSheet:%@",actionSheet);
-        NSLog(@"array:%@",array);
-        [self.view makeToast:[NSString stringWithFormat:@"array count : %ld ",array.count]];
+        NSLog(@"array:%@",selectArray);
+        [self.view makeToast:[NSString stringWithFormat:@"array count : %ld ",selectArray.count]];
     }
 }
 
@@ -354,6 +402,29 @@
     return [UIImage imageNamed:@"image_5"];
 }
 
+- (void)willPresentActionSheet:(MKActionSheet *)actionSheet{
+    NSLog(@"willPresentActionSheet");
+}
+
+- (void)didPresentActionSheet:(MKActionSheet *)actionSheet{
+    NSLog(@"didPresentActionSheet");
+}
+
+- (void)actionSheet:(MKActionSheet *)actionSheet willDismissWithButtonIndex:(NSInteger)buttonIndex{
+    NSLog(@"willDismissWithButtonIndex");
+}
+
+- (void)actionSheet:(MKActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex{
+    NSLog(@"didDismissWithButtonIndex");
+}
+
+- (void)actionSheet:(MKActionSheet *)actionSheet willDismissWithSelectArray:(NSArray *)selectArray{
+    NSLog(@"willDismissWithSelectArray");
+}
+
+- (void)actionSheet:(MKActionSheet *)actionSheet didDismissWithSelectArray:(NSArray *)selectArray{
+    NSLog(@"didDismissWithSelectArray");
+}
 
 #pragma mark - ***** UITableView delegate ******
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{

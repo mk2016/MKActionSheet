@@ -60,8 +60,14 @@ typedef void(^MKActionSheetMultiselectBlock)(MKActionSheet* actionSheet, NSArray
  */
 typedef void(^MKActionSheetSetButtonImageWithUrlBlock)(MKActionSheet* actionSheet, UIButton *button, NSString *imageUrl);
 
+/** before and after animation block */
+typedef void(^MKActionSheetWillPresentBlock)(MKActionSheet* actionSheet);
+typedef void(^MKActionSheetDidPresentBlock)(MKActionSheet* actionSheet);
 
-
+typedef void(^MKActionSheetWillDismissBlock)(MKActionSheet* actionSheet, NSInteger buttonIndex);
+typedef void(^MKActionSheetDidDismissBlock)(MKActionSheet* actionSheet, NSInteger buttonIndex);
+typedef void(^MKActionSheetWillDismissMultiselectBlock)(MKActionSheet* actionSheet, NSArray *array);
+typedef void(^MKActionSheetDidDismissMultiselectBlock)(MKActionSheet* actionSheet, NSArray *array);
 
 #pragma mark - ***** MKActionSheet Delegate ******
 @protocol MKActionSheetDelegate <NSObject>
@@ -81,7 +87,7 @@ typedef void(^MKActionSheetSetButtonImageWithUrlBlock)(MKActionSheet* actionShee
  *  @param actionSheet self
  *  @param array       被选中的button 对应数据的 array
  */
-- (void)actionSheet:(MKActionSheet *)actionSheet selectArray:(NSArray *)array;
+- (void)actionSheet:(MKActionSheet *)actionSheet selectArray:(NSArray *)selectArray;
 
 /**
  *  带 icon 图片，并 imageKey 对应的 图片类型是 URL方式， 调用此回调 设置图片（也可以使用 delegate)
@@ -91,17 +97,38 @@ typedef void(^MKActionSheetSetButtonImageWithUrlBlock)(MKActionSheet* actionShee
  *  @param imageUrl    button 的 URL， 即 object 对应 的 imageKey 字段
  */
 - (void)actionSheet:(MKActionSheet *)actionSheet button:(UIButton *)button imageUrl:(NSString *)imageUrl;
+
+
+/** before and after animation delegate */
+- (void)willPresentActionSheet:(MKActionSheet *)actionSheet;    /*!< before animation and showing view */
+- (void)didPresentActionSheet:(MKActionSheet *)actionSheet;     /*!< after animation */
+
+- (void)actionSheet:(MKActionSheet *)actionSheet willDismissWithButtonIndex:(NSInteger)buttonIndex; /*!< before animation and hiding view */
+- (void)actionSheet:(MKActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex;  /*!< after animation */
+
+- (void)actionSheet:(MKActionSheet *)actionSheet willDismissWithSelectArray:(NSArray *)selectArray; /*!< before animation and hiding view */
+- (void)actionSheet:(MKActionSheet *)actionSheet didDismissWithSelectArray:(NSArray *)selectArray;  /*!< after animation */
+
 @end
 
 
 #pragma mark - ***** MKActionSheet ******
 @interface MKActionSheet : UIView
 
+@property (nonatomic, weak) id <MKActionSheetDelegate> delegate;    /*!< 代理 */
+@property (nonatomic, assign) MKActionSheetSelectType selectType;   /*!< 选择模式：默认、单选(在初始选择的后面会有标示)、多选*/
+
 @property (nonatomic, copy) MKActionSheetBlock block;                           /*!< 点击按钮回调 */
 @property (nonatomic, copy) MKActionSheetMultiselectBlock multiselectBlock;     /*!< 多选样式的回调 返回选择的数组 */
 @property (nonatomic, copy) MKActionSheetSetButtonImageWithUrlBlock buttonImageBlock;   /*!< 设置 button image 的回调 */
-@property (nonatomic, weak) id <MKActionSheetDelegate> delegate;    /*!< 代理 */
-@property (nonatomic, assign) MKActionSheetSelectType selectType;   /*!< 选择模式：默认、单选(在初始选择的后面会有标示)、多选*/
+
+@property (nonatomic, copy) MKActionSheetWillPresentBlock willPresentBlock;
+@property (nonatomic, copy) MKActionSheetDidPresentBlock didPresentBlock;
+@property (nonatomic, copy) MKActionSheetWillDismissBlock willDismissBlock;
+@property (nonatomic, copy) MKActionSheetDidDismissBlock didDismissBlock;
+@property (nonatomic, copy) MKActionSheetWillDismissMultiselectBlock willDismissMultiselectBlock;
+@property (nonatomic, copy) MKActionSheetDidDismissMultiselectBlock didDismissMultiselectBlock;
+
 
 /**  custom UI */
 //title
@@ -129,18 +156,19 @@ typedef void(^MKActionSheetSetButtonImageWithUrlBlock)(MKActionSheet* actionShee
 @property (nonatomic, assign,getter=isNeedCancelButton) BOOL needCancelButton;              /*!< 是否需要取消按钮 */
 @property (nonatomic, assign,getter=isShowSeparator) BOOL showSeparator;    /*!< 是否显示分割线 [default: YES]*/
 @property (nonatomic, assign) CGFloat separatorLeftMargin;          /*!< 分割线离左边的边距 [default:0] */
-
 @property (nonatomic, assign) CGFloat maxShowButtonCount;           /*!< 显示按钮最大个数，支持小数 [default:5.6，全部显示,可设置成 0] */
-@property (nonatomic, assign) NSInteger selectedIndex;              /*!< 默认选中的button index, 带默认选中样式 */
 //object Array
 @property (nonatomic, copy) NSString *titleKey;                     /*!< 传入为object array 时 指定 title 的字段名 */
 @property (nonatomic, copy) NSString *imageKey;                     /*!< 传入为object array 时 指定button image对应的字段名 */
 @property (nonatomic, assign) MKActionSheetButtonImageValueType imageValueType;   /*!< imageKey对应的类型：image、imageName、imageUrl */
-
 //set image name
 @property (nonatomic, copy) NSString *selectedBtnImageName;         /*!< 带默认选中模式，选中图片的名字 */
 @property (nonatomic, copy) NSString *selectBtnImageNameNormal;     /*!< 多选模式，选择按钮非选中状态图片 */
 @property (nonatomic, copy) NSString *selectBtnImageNameSelected;   /*!< 多选模式，选择按钮选中状态图片 */
+//selected
+@property (nonatomic, assign) NSInteger selectedIndex;              /*!< 默认选中的button index, 带默认选中样式 */
+//multiselect
+@property (nonatomic, strong) UIColor *multiselectConfirmButtonTitleColor;  /*!< 多选 确定按钮 颜色 */
 
 #pragma mark - ***** init method ******
 /**
