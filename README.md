@@ -197,6 +197,8 @@ sheet.buttonImageBlock = ^(MKActionSheet* actionSheet, UIButton *button, NSStrin
 }
 ```
  
+ 
+## 版本记录
 ### V1.2.0
  * 默认最大显示按钮个数为5.6, 既 maxShowButtonCount 默认为 5.6;
  * 添加自定义属性
