@@ -122,6 +122,7 @@ typedef void(^MKActionSheetDidDismissMultiselectBlock)(MKActionSheet* actionShee
 @property (nonatomic, copy) MKActionSheetMultiselectBlock multiselectBlock;     /*!< 多选样式的回调 返回选择的数组 */
 @property (nonatomic, copy) MKActionSheetSetButtonImageWithUrlBlock buttonImageBlock;   /*!< 设置 button image 的回调 */
 
+/** before and after animation block */
 @property (nonatomic, copy) MKActionSheetWillPresentBlock willPresentBlock;
 @property (nonatomic, copy) MKActionSheetDidPresentBlock didPresentBlock;
 @property (nonatomic, copy) MKActionSheetWillDismissBlock willDismissBlock;
