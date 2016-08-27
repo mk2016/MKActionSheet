@@ -9,15 +9,9 @@
 #import "MKActionSheet.h"
 #import "MKActionSheetCell.h"
 #import "NSObject+MKASAdditions.h"
+#import "UIImage+MKExtension.h"
 
-#ifndef MKActionSheetDefine
-#define MKSCREEN_WIDTH     [UIScreen mainScreen].bounds.size.width
-#define MKSCREEN_HEIGHT    [UIScreen mainScreen].bounds.size.height
-#define MKSCREEN_BOUNDS    [UIScreen mainScreen].bounds
-#define MKCOLOR_RGBA(r, g, b, a)    [UIColor colorWithRed:(r/255.0f) green:(g/255.0f) blue:(b/255.0f) alpha:(a)]
-#define MKWEAKSELF typeof(self) __weak weakSelf = self;
-#define MKBlockExec(block, ...) if (block) { block(__VA_ARGS__); };
-#endif
+
 
 #pragma mark - ***** MKActionSheet ******
 @interface MKActionSheet()<UITableViewDelegate, UITableViewDataSource>{
@@ -541,81 +535,80 @@
 #pragma mark - ***** UITableView delegate ******
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     MKActionSheetCell *cell = [MKActionSheetCell cellWithTableView:tableView];
+    cell.titleMargin = self.titleMargin;
     
-    if (self.selectBtnImageNameNormal && self.selectBtnImageNameNormal.length > 0) {
-        [cell.btnSelect setImage:[UIImage imageNamed:self.selectedBtnImageName] forState:UIControlStateNormal];
+    if (indexPath.row >= self.buttonTitles.count) {
+        return cell;
     }
-    if (self.selectBtnImageNameSelected && self.selectBtnImageNameSelected.length > 0) {
-        [cell.btnSelect setImage:[UIImage imageNamed:self.selectBtnImageNameSelected] forState:UIControlStateSelected];
-        [cell.btnSelect setImage:[UIImage imageNamed:self.selectBtnImageNameSelected] forState:UIControlStateHighlighted];
-    }
-    if (self.selectedBtnImageName && self.selectedBtnImageName.length > 0) {
-        [cell.btnSelect setImage:[UIImage imageNamed:self.selectedBtnImageName] forState:UIControlStateDisabled];
-    }
-
-    [cell.btnCell setBackgroundImage:[self imageWithColor:MKCOLOR_RGBA(255, 255, 255, self.buttonOpacity)] forState:UIControlStateNormal];
-    [cell.btnCell setBackgroundImage:[self imageWithColor:MKCOLOR_RGBA(255, 255, 255, 0)] forState:UIControlStateHighlighted];
-    [cell.btnCell addTarget:self action:@selector(btnOnclicked:) forControlEvents:UIControlEventTouchUpInside];
-    cell.btnCell.titleLabel.font = self.buttonTitleFont;
-    [cell.btnCell setTitleColor:self.buttonTitleColor forState:UIControlStateNormal];
     
+    cell.titleLabel.text = self.buttonTitles[indexPath.row];
+    cell.titleLabel.textColor = self.buttonTitleColor;
+    cell.titleLabel.font = self.buttonTitleFont;
+    if (self.buttonTitleAlignment == MKActionSheetButtonTitleAlignment_left) {
+        cell.titleLabel.textAlignment = NSTextAlignmentLeft;
+    }else if (self.buttonTitleAlignment == MKActionSheetButtonTitleAlignment_right){
+        cell.titleLabel.textAlignment = NSTextAlignmentRight;
+    }else if (self.buttonTitleAlignment == MKActionSheetButtonTitleAlignment_center){
+        cell.titleLabel.textAlignment = NSTextAlignmentCenter;
+    }
+    
+    if (indexPath.row == self.destructiveButtonIndex) {
+        cell.titleLabel.textColor = self.destructiveButtonTitleColor;
+    }
     
     if (self.paramIsObject && self.imageKey && self.imageKey.length > 0 && self.imageValueType) {
         self.buttonTitleAlignment = MKActionSheetButtonTitleAlignment_left;
         
         id obj = [self.objArray objectAtIndex:indexPath.row];
         id imageValue = [obj valueForKey:self.imageKey];
-        if (self.imageValueType == MKActionSheetButtonImageValueType_name) {
-            if ([imageValue isKindOfClass:[NSString class]]) {
-                [cell.btnCell setImage:[UIImage imageNamed:imageValue] forState:UIControlStateNormal];
-            }
-        }else if (self.imageValueType == MKActionSheetButtonImageValueType_image){
-            if ([imageValue isKindOfClass:[UIImage class]]) {
-                [cell.btnCell setImage:imageValue forState:UIControlStateNormal];
-            }
-        }else if (self.imageValueType == MKActionSheetButtonImageValueType_url){
+        
+        if (self.imageValueType == MKActionSheetButtonImageValueType_name && [imageValue isKindOfClass:[NSString class]]) {
+            [cell.iconButton setImage:[UIImage imageNamed:imageValue] forState:UIControlStateNormal];
+
+        }else if (self.imageValueType == MKActionSheetButtonImageValueType_image && [imageValue isKindOfClass:[UIImage class]]){
+            [cell.iconButton setImage:imageValue forState:UIControlStateNormal];
+
+        }else if (self.imageValueType == MKActionSheetButtonImageValueType_url && [imageValue isKindOfClass:[NSString class]]){
             //由于加载url图片需要导入 SDWebImage，而且有些人在项目中用的也不一定是SDWebImage, 或用不到此类型，
             //为了不增加 使用MKActionSheet 的成本，加载url 图片  用一个block 或 delegate 回调出去，根据大家自己的实际情况设置 图片，并设置自己的默认图片。
-            if ([imageValue isKindOfClass:[NSString class]]) {
-                if (_delegate && [_delegate respondsToSelector:@selector(actionSheet:button:imageUrl:)]) {
-                    [_delegate actionSheet:self button:cell.btnCell imageUrl:imageValue];
-                }else{
-                    MKBlockExec(self.buttonImageBlock, self, cell.btnCell, imageValue);
-                }
+            if (_delegate && [_delegate respondsToSelector:@selector(actionSheet:button:imageUrl:)]) {
+                [_delegate actionSheet:self button:cell.iconButton imageUrl:imageValue];
+            }else{
+                MKBlockExec(self.buttonImageBlock, self, cell.iconButton, imageValue);
             }
         }
-        
-        [cell.btnCell setTitleEdgeInsets:UIEdgeInsetsMake(0, 16, 0, 0)];
-    }
-    
-    if (self.buttonTitleAlignment == MKActionSheetButtonTitleAlignment_left) {
-        cell.btnCell.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
-        [cell.btnCell setContentEdgeInsets:UIEdgeInsetsMake(0, self.titleMargin, 0, 0)];
-    }else if (self.buttonTitleAlignment == MKActionSheetButtonTitleAlignment_right){
-        cell.btnCell.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
-        [cell.btnCell setContentEdgeInsets:UIEdgeInsetsMake(0, 0, 0, self.titleMargin)];
-    }
-    
-    cell.btnCell.tag = indexPath.row;
-    [cell.btnCell setTitle:self.buttonTitles[indexPath.row] forState:UIControlStateNormal];
-    
-    if (indexPath.row == self.destructiveButtonIndex) {
-        [cell.btnCell setTitleColor:self.destructiveButtonTitleColor forState:UIControlStateNormal];
     }
 
+
+    //slect button
     cell.btnSelect.hidden = YES;
 
     if (self.selectType == MKActionSheetSelectType_multiselect) {
         cell.btnSelect.hidden = NO;
         NSString *title = [self.buttonTitles objectAtIndex:indexPath.row];
         cell.btnSelect.selected = title.mk_isSelect;
+        
+        if (self.selectBtnImageNameNormal && self.selectBtnImageNameNormal.length > 0) {
+            [cell.btnSelect setImage:[UIImage imageNamed:self.selectedBtnImageName] forState:UIControlStateNormal];
+        }
+        if (self.selectBtnImageNameSelected && self.selectBtnImageNameSelected.length > 0) {
+            [cell.btnSelect setImage:[UIImage imageNamed:self.selectBtnImageNameSelected] forState:UIControlStateSelected];
+            [cell.btnSelect setImage:[UIImage imageNamed:self.selectBtnImageNameSelected] forState:UIControlStateHighlighted];
+        }
     }else if (self.selectType == MKActionSheetSelectType_selected){
         cell.btnSelect.enabled = NO;
         if (self.selectedIndex == indexPath.row) {
             cell.btnSelect.hidden = NO;
         }
+        if (self.selectedBtnImageName && self.selectedBtnImageName.length > 0) {
+            [cell.btnSelect setImage:[UIImage imageNamed:self.selectedBtnImageName] forState:UIControlStateDisabled];
+        }
     }
     return cell;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
@@ -725,8 +718,8 @@
 - (UIButton *)cancelButton{
     if (!_cancelButton) {
         _cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_cancelButton setBackgroundImage:[self imageWithColor:MKCOLOR_RGBA(255, 255, 255, self.buttonOpacity)] forState:UIControlStateNormal];
-        [_cancelButton setBackgroundImage:[self imageWithColor:MKCOLOR_RGBA(255, 255, 255, 0)] forState:UIControlStateHighlighted];
+        [_cancelButton setBackgroundImage:[UIImage imageWithColor:MKCOLOR_RGBA(255, 255, 255, self.buttonOpacity)] forState:UIControlStateNormal];
+        [_cancelButton setBackgroundImage:[UIImage imageWithColor:MKCOLOR_RGBA(255, 255, 255, 0)] forState:UIControlStateHighlighted];
         [_cancelButton setTitle:self.cancelTitle forState:UIControlStateNormal];
         [_cancelButton setTitleColor:self.buttonTitleColor forState:UIControlStateNormal];
         _cancelButton.titleLabel.font = self.buttonTitleFont;
@@ -748,15 +741,5 @@
     return _confirmButton;
 }
 
-- (UIImage *)imageWithColor:(UIColor *)color{
-    CGRect rect = CGRectMake(0.0f, 0.0f, 1.0f, 1.0f);
-    UIGraphicsBeginImageContext(rect.size);
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    CGContextSetFillColorWithColor(context, [color CGColor]);
-    CGContextFillRect(context, rect);
-    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    return image;
-}
 
 @end

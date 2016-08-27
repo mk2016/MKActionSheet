@@ -29,6 +29,7 @@
 		C51FB2441D55AB9A00A766E1 /* NSObject+MKASAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = C51FB2431D55AB9A00A766E1 /* NSObject+MKASAdditions.m */; };
 		C51FB2481D55D9ED00A766E1 /* MKFPSStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = C51FB2471D55D9ED00A766E1 /* MKFPSStatus.m */; };
 		C53D40AE1D524DB1003E1545 /* InfoModel.m in Sources */ = {isa = PBXBuildFile; fileRef = C53D40AD1D524DB1003E1545 /* InfoModel.m */; };
+		C587C6141D7144BC00DA593B /* UIImage+MKExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = C587C6131D7144BC00DA593B /* UIImage+MKExtension.m */; };
 		C5A125C71CFEE7E700FEA77A /* MKActionSheetTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C5A125C61CFEE7E700FEA77A /* MKActionSheetTests.m */; };
 		C5A125D21CFEE7E700FEA77A /* MKActionSheetUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = C5A125D11CFEE7E700FEA77A /* MKActionSheetUITests.m */; };
 		C5A125EB1CFEE91900FEA77A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C5A125E11CFEE91900FEA77A /* AppDelegate.m */; };
@@ -113,6 +114,8 @@
 		C51FB2471D55D9ED00A766E1 /* MKFPSStatus.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKFPSStatus.m; sourceTree = "<group>"; };
 		C53D40AC1D524DB1003E1545 /* InfoModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfoModel.h; sourceTree = "<group>"; };
 		C53D40AD1D524DB1003E1545 /* InfoModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfoModel.m; sourceTree = "<group>"; };
+		C587C6121D7144BC00DA593B /* UIImage+MKExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+MKExtension.h"; sourceTree = "<group>"; };
+		C587C6131D7144BC00DA593B /* UIImage+MKExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+MKExtension.m"; sourceTree = "<group>"; };
 		C5A125A91CFEE7E700FEA77A /* MKActionSheet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MKActionSheet.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C5A125C21CFEE7E700FEA77A /* MKActionSheetTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MKActionSheetTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C5A125C61CFEE7E700FEA77A /* MKActionSheetTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MKActionSheetTests.m; sourceTree = "<group>"; };
@@ -273,6 +276,8 @@
 				C51FB20A1D54727600A766E1 /* MKActionSheetCell.m */,
 				C51FB2421D55AB9A00A766E1 /* NSObject+MKASAdditions.h */,
 				C51FB2431D55AB9A00A766E1 /* NSObject+MKASAdditions.m */,
+				C587C6121D7144BC00DA593B /* UIImage+MKExtension.h */,
+				C587C6131D7144BC00DA593B /* UIImage+MKExtension.m */,
 			);
 			path = MKActionSheet;
 			sourceTree = "<group>";
@@ -516,6 +521,7 @@
 				C51FB2441D55AB9A00A766E1 /* NSObject+MKASAdditions.m in Sources */,
 				C51FB2401D547DEF00A766E1 /* UIView+WebCacheOperation.m in Sources */,
 				C51FB20B1D54727600A766E1 /* MKActionSheetCell.m in Sources */,
+				C587C6141D7144BC00DA593B /* UIImage+MKExtension.m in Sources */,
 				C51FB2411D547DEF00A766E1 /* UIView+Toast.m in Sources */,
 				C51FB23A1D547DEF00A766E1 /* UIButton+WebCache.m in Sources */,
 				C5D6C1A71D67674A003598E7 /* ViewController+MASAdditions.m in Sources */,
