@@ -10,6 +10,7 @@
 #import "MKActionSheet.h"
 #import "InfoModel.h"
 #import "UIButton+WebCache.h"
+#import "UIImageView+WebCache.h"
 #import "NSObject+MKASAdditions.h"
 #import "UIView+Toast.h"
 #import "Masonry.h"
@@ -249,8 +250,9 @@
     else if ([cellTitle isEqualToString:@"imageValueType:imageUrl、block 无 title"]){
         MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:nil objArray:self.dicArray titleKey:@"titleStr" selectType:MKActionSheetSelectType_multiselect];
         [sheet setImageKey:@"imageUrl" imageValueType:MKActionSheetButtonImageValueType_url];
-        sheet.buttonImageBlock = ^(MKActionSheet* actionSheet, UIButton *button, NSString *imageUrl){
-            [button sd_setImageWithURL:[NSURL URLWithString:imageUrl] forState:UIControlStateNormal placeholderImage:[weakSelf getDefaultIcon]];
+        sheet.buttonImageBlock = ^(MKActionSheet* actionSheet, UIImageView *iconImageView, NSString *imageUrl){
+            [iconImageView sd_setImageWithURL:[NSURL URLWithString:imageUrl] placeholderImage:[weakSelf getDefaultIcon]];
+//            [button sd_setImageWithURL:[NSURL URLWithString:imageUrl] forState:UIControlStateNormal placeholderImage:[weakSelf getDefaultIcon]];
         };
         [sheet showWithMultiselectBlock:^(MKActionSheet *actionSheet, NSArray *array) {
             NSLog(@"actionSheet:%@",actionSheet);
@@ -307,6 +309,7 @@
         
         [labTitle mas_makeConstraints:^(MASConstraintMaker *make) {
             make.left.right.top.equalTo(titleView);
+            make.centerY.equalTo(titleView);
         }];
         
         UIButton *btn = [UIButton buttonWithType:UIButtonTypeSystem];

@@ -21,7 +21,7 @@
 
 @interface MKActionSheetCell : UITableViewCell
 
-@property (nonatomic, weak) UIButton *iconButton;
+@property (nonatomic, weak) UIImageView *iconImageView;
 @property (nonatomic, weak) UILabel *titleLabel;
 @property (nonatomic, weak) UIButton *btnSelect;
 

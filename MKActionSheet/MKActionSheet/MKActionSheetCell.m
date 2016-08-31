@@ -39,7 +39,6 @@
     
     UILabel *titleLabel = [[UILabel alloc] init];
     [self addSubview:titleLabel];
-    [titleLabel sizeToFit];
     self.titleLabel = titleLabel;
     
 }
@@ -54,83 +53,104 @@
     self.selectedImageView.frame = self.bounds;
     
     self.titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    NSString *formatH;
-    NSDictionary *views;
-    if (_iconButton || _btnSelect) {
-        if (_iconButton && _btnSelect) {
-            views = @{@"title"      : _titleLabel,
-                      @"icon"       : _iconButton,
-                      @"btnSelect"  : _btnSelect};
-            formatH = @"H:[icon][title][btnSelect]";
-        }else if (_iconButton){
-            views = @{@"title"      : _titleLabel,
-                      @"icon"       : _iconButton};
-            formatH = @"H:[icon][title]|";
-        }else if (_btnSelect){
-            views = @{@"title"      : _titleLabel,
-                      @"btnSelect"  : _btnSelect
-                      };
-            formatH = [NSString stringWithFormat:@"H:|-%f-[title][btnSelect]", _titleMargin];
-        }
-    }else{
-        views = @{@"title" : _titleLabel};
-        formatH = [NSString stringWithFormat:@"H:|-%f-[title]|", _titleMargin];
+    NSString *formatH = [NSString stringWithFormat:@"H:|-%f-", _titleMargin];
+    NSMutableDictionary *views = [[NSMutableDictionary alloc] init] ;
+    [views setObject:_titleLabel forKey:@"title"];
+    if (_iconImageView) {
+        _iconImageView.translatesAutoresizingMaskIntoConstraints = NO;
+        [views setObject:_iconImageView forKey:@"icon"];
+        formatH = [formatH stringByAppendingString:@"[icon]-"];
     }
+    formatH = [formatH stringByAppendingString:@"[title]-"];
+    if (_btnSelect) {
+        _btnSelect.translatesAutoresizingMaskIntoConstraints = NO;
+        [views setObject:_btnSelect forKey:@"btnSelect"];
+        formatH = [formatH stringByAppendingString:@"[btnSelect]-"];
+    }
+    formatH = [formatH stringByAppendingString:@"16-|"];
+    NSLog(@"formatH : %@",formatH);
+
+    
+//    NSDictionary *views;
+//    if (_iconImageView || _btnSelect) {
+//        if (_iconImageView && _btnSelect) {
+//            _iconImageView.translatesAutoresizingMaskIntoConstraints = NO;
+//            _btnSelect.translatesAutoresizingMaskIntoConstraints = NO;
+//
+//            views = @{@"title"      : _titleLabel,
+//                      @"icon"       : _iconImageView,
+//                      @"btnSelect"  : _btnSelect};
+//            formatH = [NSString stringWithFormat:@"H:|-%f-[icon]-[title]-[btnSelect]-16-|",_titleMargin];
+//        }else if (_iconImageView){
+//            _iconImageView.translatesAutoresizingMaskIntoConstraints = NO;
+//            views = @{@"title"      : _titleLabel,
+//                      @"icon"       : _iconImageView};
+//            formatH = [NSString stringWithFormat:@"H:|-%f-[icon]-[title]-16-|",_titleMargin];
+//        }else if (_btnSelect){
+//            _btnSelect.translatesAutoresizingMaskIntoConstraints = NO;
+//            views = @{@"title"      : _titleLabel,
+//                      @"btnSelect"  : _btnSelect
+//                      };
+//            formatH = [NSString stringWithFormat:@"H:|-%f-[title]-[btnSelect]-16-|", _titleMargin];
+//        }
+//    }else{
+//        views = @{@"title" : _titleLabel};
+//        formatH = [NSString stringWithFormat:@"H:|-%f-[title]-16-|", _titleMargin];
+//    }
     NSArray *title_vfl_H = [NSLayoutConstraint constraintsWithVisualFormat:formatH
-                                                                     options:0
-                                                                     metrics:nil
-                                                                       views:views];
+                                                                   options:0
+                                                                   metrics:nil
+                                                                     views:views];
     
     NSArray *title_vfl_V = [NSLayoutConstraint constraintsWithVisualFormat:@"V:|[title]|"
-                                                                     options:0
-                                                                     metrics:nil
-                                                                       views:views];
+                                                                   options:0
+                                                                   metrics:nil
+                                                                     views:views];
     [self addConstraints:title_vfl_H];
     [self addConstraints:title_vfl_V];
     
     
-    if (_iconButton) {
-        _iconButton.translatesAutoresizingMaskIntoConstraints = NO;
-        NSArray *icon_vfl_H = [NSLayoutConstraint constraintsWithVisualFormat:[NSString stringWithFormat:@"H:|-%f-[icon(<=60)][title]",_titleMargin]
-                                                                         options:0
-                                                                         metrics:nil
-                                                                           views:views];
-        
-        NSArray *icon_vfl_V = [NSLayoutConstraint constraintsWithVisualFormat:@"V:|[icon]|"
-                                                                         options:0
-                                                                         metrics:nil
-                                                                           views:views];
-        [self addConstraints:icon_vfl_H];
-        [self addConstraints:icon_vfl_V];
-    }
-    
-    if (_btnSelect) {
-        _btnSelect.translatesAutoresizingMaskIntoConstraints = NO;
-        NSArray *selectBtn_vfl_H = [NSLayoutConstraint constraintsWithVisualFormat:@"H:[title][btnSelect]-16-|"
-                                                                         options:0
-                                                                         metrics:nil
-                                                                           views:views];
-        
-        NSArray *selectBtn_vfl_V = [NSLayoutConstraint constraintsWithVisualFormat:@"V:|[btnSelect]|"
-                                                                         options:0
-                                                                         metrics:nil
-                                                                           views:views];
-        [self addConstraints:selectBtn_vfl_H];
-        [self addConstraints:selectBtn_vfl_V];
-    }
+//    if (_iconImageView) {
+//        _iconImageView.translatesAutoresizingMaskIntoConstraints = NO;
+//        NSArray *icon_vfl_H = [NSLayoutConstraint constraintsWithVisualFormat:[NSString stringWithFormat:@"H:|-%f-[icon][title]",_titleMargin]
+//                                                                         options:NSLayoutFormatAlignAllCenterY
+//                                                                         metrics:nil
+//                                                                           views:views];
+//        
+//        NSArray *icon_vfl_V = [NSLayoutConstraint constraintsWithVisualFormat:@"V:|[icon]|"
+//                                                                      options:0
+//                                                                      metrics:nil
+//                                                                        views:views];
+//        [self addConstraints:icon_vfl_H];
+//        [self addConstraints:icon_vfl_V];
+//    }
+//    
+//    if (_btnSelect) {
+//        _btnSelect.translatesAutoresizingMaskIntoConstraints = NO;
+//        NSArray *selectBtn_vfl_H = [NSLayoutConstraint constraintsWithVisualFormat:@"H:[title][btnSelect]-16-|"
+//                                                                           options:0
+//                                                                           metrics:nil
+//                                                                             views:views];
+//        
+//        NSArray *selectBtn_vfl_V = [NSLayoutConstraint constraintsWithVisualFormat:@"V:|[btnSelect]|"
+//                                                                           options:NSLayoutFormatAlignAllCenterY
+//                                                                           metrics:nil
+//                                                                             views:views];
+//        [self addConstraints:selectBtn_vfl_H];
+//        [self addConstraints:selectBtn_vfl_V];
+//    }
     
     
    
 }
 
-- (UIButton *)iconButton{
-    if (!_iconButton) {
-        UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
-        btn.userInteractionEnabled = NO;
-        [self addSubview:btn];
-        _iconButton = btn;
+- (UIImageView *)iconImageView{
+    if (!_iconImageView) {
+        UIImageView *imageView = [[UIImageView alloc] init];
+        [self addSubview:imageView];
+        _iconImageView = imageView;
     }
-    return _iconButton;
+    return _iconImageView;
 }
 
 - (UIButton *)btnSelect{

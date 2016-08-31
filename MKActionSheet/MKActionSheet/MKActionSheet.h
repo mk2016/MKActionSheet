@@ -58,7 +58,7 @@ typedef void(^MKActionSheetMultiselectBlock)(MKActionSheet* actionSheet, NSArray
  *  @param button      需要设置图片的按钮
  *  @param imageUrl    图片的 URL，即 'imageKey'  对应的值
  */
-typedef void(^MKActionSheetSetButtonImageWithUrlBlock)(MKActionSheet* actionSheet, UIButton *button, NSString *imageUrl);
+typedef void(^MKActionSheetSetButtonImageWithUrlBlock)(MKActionSheet* actionSheet, UIImageView *iconImageView, NSString *imageUrl);
 
 /** before and after animation block */
 typedef void(^MKActionSheetWillPresentBlock)(MKActionSheet* actionSheet);
@@ -96,7 +96,7 @@ typedef void(^MKActionSheetDidDismissMultiselectBlock)(MKActionSheet* actionShee
  *  @param button      要设置图片的 button
  *  @param imageUrl    button 的 URL， 即 object 对应 的 imageKey 字段
  */
-- (void)actionSheet:(MKActionSheet *)actionSheet button:(UIButton *)button imageUrl:(NSString *)imageUrl;
+- (void)actionSheet:(MKActionSheet *)actionSheet iconImageView:(UIImageView *)iconImageView imageUrl:(NSString *)imageUrl;
 
 
 /** before and after animation delegate */

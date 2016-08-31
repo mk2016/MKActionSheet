@@ -563,18 +563,20 @@
         id imageValue = [obj valueForKey:self.imageKey];
         
         if (self.imageValueType == MKActionSheetButtonImageValueType_name && [imageValue isKindOfClass:[NSString class]]) {
-            [cell.iconButton setImage:[UIImage imageNamed:imageValue] forState:UIControlStateNormal];
+            cell.iconImageView.image = [UIImage imageNamed:imageValue];
+//            [cell.iconButton setImage:[UIImage imageNamed:imageValue] forState:UIControlStateNormal];
 
         }else if (self.imageValueType == MKActionSheetButtonImageValueType_image && [imageValue isKindOfClass:[UIImage class]]){
-            [cell.iconButton setImage:imageValue forState:UIControlStateNormal];
+            cell.iconImageView.image = imageValue;
+//            [cell.iconButton setImage:imageValue forState:UIControlStateNormal];
 
         }else if (self.imageValueType == MKActionSheetButtonImageValueType_url && [imageValue isKindOfClass:[NSString class]]){
             //由于加载url图片需要导入 SDWebImage，而且有些人在项目中用的也不一定是SDWebImage, 或用不到此类型，
             //为了不增加 使用MKActionSheet 的成本，加载url 图片  用一个block 或 delegate 回调出去，根据大家自己的实际情况设置 图片，并设置自己的默认图片。
-            if (_delegate && [_delegate respondsToSelector:@selector(actionSheet:button:imageUrl:)]) {
-                [_delegate actionSheet:self button:cell.iconButton imageUrl:imageValue];
+            if (_delegate && [_delegate respondsToSelector:@selector(actionSheet:iconImageView:imageUrl:)]) {
+                [_delegate actionSheet:self iconImageView:cell.iconImageView imageUrl:imageValue];
             }else{
-                MKBlockExec(self.buttonImageBlock, self, cell.iconButton, imageValue);
+                MKBlockExec(self.buttonImageBlock, self, cell.iconImageView, imageValue);
             }
         }
     }
