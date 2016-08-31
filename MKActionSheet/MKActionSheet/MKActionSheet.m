@@ -535,57 +535,21 @@
 #pragma mark - ***** UITableView delegate ******
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     MKActionSheetCell *cell = [MKActionSheetCell cellWithTableView:tableView];
-    cell.titleMargin = self.titleMargin;
     
     if (indexPath.row >= self.buttonTitles.count) {
         return cell;
     }
     
-    cell.titleLabel.text = self.buttonTitles[indexPath.row];
-    cell.titleLabel.textColor = self.buttonTitleColor;
-    cell.titleLabel.font = self.buttonTitleFont;
-    if (self.buttonTitleAlignment == MKActionSheetButtonTitleAlignment_left) {
-        cell.titleLabel.textAlignment = NSTextAlignmentLeft;
-    }else if (self.buttonTitleAlignment == MKActionSheetButtonTitleAlignment_right){
-        cell.titleLabel.textAlignment = NSTextAlignmentRight;
-    }else if (self.buttonTitleAlignment == MKActionSheetButtonTitleAlignment_center){
-        cell.titleLabel.textAlignment = NSTextAlignmentCenter;
-    }
-    
+    [cell.btnCell setTitle:self.buttonTitles[indexPath.row] forState:UIControlStateNormal];
+    [cell.btnCell setTitleColor:self.buttonTitleColor forState:UIControlStateNormal];
+    cell.btnCell.titleLabel.font = self.buttonTitleFont;
+
     if (indexPath.row == self.destructiveButtonIndex) {
-        cell.titleLabel.textColor = self.destructiveButtonTitleColor;
+        [cell.btnCell setTitleColor:self.destructiveButtonTitleColor forState:UIControlStateNormal];
     }
     
-    if (self.paramIsObject && self.imageKey && self.imageKey.length > 0 && self.imageValueType) {
-        self.buttonTitleAlignment = MKActionSheetButtonTitleAlignment_left;
-        
-        id obj = [self.objArray objectAtIndex:indexPath.row];
-        id imageValue = [obj valueForKey:self.imageKey];
-        
-        if (self.imageValueType == MKActionSheetButtonImageValueType_name && [imageValue isKindOfClass:[NSString class]]) {
-            cell.iconImageView.image = [UIImage imageNamed:imageValue];
-//            [cell.iconButton setImage:[UIImage imageNamed:imageValue] forState:UIControlStateNormal];
-
-        }else if (self.imageValueType == MKActionSheetButtonImageValueType_image && [imageValue isKindOfClass:[UIImage class]]){
-            cell.iconImageView.image = imageValue;
-//            [cell.iconButton setImage:imageValue forState:UIControlStateNormal];
-
-        }else if (self.imageValueType == MKActionSheetButtonImageValueType_url && [imageValue isKindOfClass:[NSString class]]){
-            //由于加载url图片需要导入 SDWebImage，而且有些人在项目中用的也不一定是SDWebImage, 或用不到此类型，
-            //为了不增加 使用MKActionSheet 的成本，加载url 图片  用一个block 或 delegate 回调出去，根据大家自己的实际情况设置 图片，并设置自己的默认图片。
-            if (_delegate && [_delegate respondsToSelector:@selector(actionSheet:iconImageView:imageUrl:)]) {
-                [_delegate actionSheet:self iconImageView:cell.iconImageView imageUrl:imageValue];
-            }else{
-                MKBlockExec(self.buttonImageBlock, self, cell.iconImageView, imageValue);
-            }
-        }
-    }
-
-
-    //slect button
-    cell.btnSelect.hidden = YES;
-
-    if (self.selectType == MKActionSheetSelectType_multiselect) {
+    
+    if (self.selectType == MKActionSheetSelectType_multiselect) {   //多选
         cell.btnSelect.hidden = NO;
         NSString *title = [self.buttonTitles objectAtIndex:indexPath.row];
         cell.btnSelect.selected = title.mk_isSelect;
@@ -597,20 +561,78 @@
             [cell.btnSelect setImage:[UIImage imageNamed:self.selectBtnImageNameSelected] forState:UIControlStateSelected];
             [cell.btnSelect setImage:[UIImage imageNamed:self.selectBtnImageNameSelected] forState:UIControlStateHighlighted];
         }
-    }else if (self.selectType == MKActionSheetSelectType_selected){
+    }else if (self.selectType == MKActionSheetSelectType_selected){ //单选
+        cell.btnSelect.hidden = YES;
         cell.btnSelect.enabled = NO;
         if (self.selectedIndex == indexPath.row) {
             cell.btnSelect.hidden = NO;
         }
+        
         if (self.selectedBtnImageName && self.selectedBtnImageName.length > 0) {
             [cell.btnSelect setImage:[UIImage imageNamed:self.selectedBtnImageName] forState:UIControlStateDisabled];
         }
     }
+    
+    
+    
+    
+    if (self.paramIsObject && self.imageKey && self.imageKey.length > 0 && self.imageValueType) {
+        self.buttonTitleAlignment = MKActionSheetButtonTitleAlignment_left;
+        
+        id obj = [self.objArray objectAtIndex:indexPath.row];
+        id imageValue = [obj valueForKey:self.imageKey];
+        
+        if (self.imageValueType == MKActionSheetButtonImageValueType_name) {
+            if ([imageValue isKindOfClass:[NSString class]]) {
+                [cell.btnCell setImage:[UIImage imageNamed:imageValue] forState:UIControlStateNormal];
+            }
+        }else if (self.imageValueType == MKActionSheetButtonImageValueType_image){
+            if ([imageValue isKindOfClass:[UIImage class]]) {
+                [cell.btnCell setImage:imageValue forState:UIControlStateNormal];
+            }
+        }else if (self.imageValueType == MKActionSheetButtonImageValueType_url){
+            //由于加载url图片需要导入 SDWebImage，而且有些人在项目中用的也不一定是SDWebImage, 或用不到此类型，
+            //为了不增加 使用MKActionSheet 的成本，加载url 图片  用一个block 或 delegate 回调出去，根据大家自己的实际情况设置 图片，并设置自己的默认图片。
+            if ([imageValue isKindOfClass:[NSString class]]) {
+                if (_delegate && [_delegate respondsToSelector:@selector(actionSheet:button:imageUrl:)]) {
+                    [_delegate actionSheet:self button:cell.btnCell imageUrl:imageValue];
+                }else{
+                    MKBlockExec(self.buttonImageBlock, self, cell.btnCell, imageValue);
+                }
+            }
+        }
+        
+        [cell.btnCell setTitleEdgeInsets:UIEdgeInsetsMake(0, 16, 0, 0)];
+    }
+    
+    if (self.buttonTitleAlignment == MKActionSheetButtonTitleAlignment_left) {
+        cell.btnCell.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
+        [cell.btnCell setContentEdgeInsets:UIEdgeInsetsMake(0, self.titleMargin, 0, 0)];
+    }else if (self.buttonTitleAlignment == MKActionSheetButtonTitleAlignment_right){
+        cell.btnCell.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
+        [cell.btnCell setContentEdgeInsets:UIEdgeInsetsMake(0, 0, 0, self.titleMargin)];
+    }
+
     return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    NSInteger index = indexPath.row;
+    
+    if (self.selectType == MKActionSheetSelectType_multiselect){
+        //多选
+        NSString *title = [self.buttonTitles objectAtIndex:index];
+        title.mk_isSelect = !title.mk_isSelect;
+        [self.tableView reloadData];
+    }else if(self.selectType == MKActionSheetSelectType_selected){
+        self.selectedIndex = index;
+        [self.tableView reloadData];
+        [self dismissWithButtonIndex:index];
+    }else{
+        [self dismissWithButtonIndex:index];
+    }
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{

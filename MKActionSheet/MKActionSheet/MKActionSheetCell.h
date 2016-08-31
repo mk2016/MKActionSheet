@@ -21,14 +21,8 @@
 
 @interface MKActionSheetCell : UITableViewCell
 
-@property (nonatomic, weak) UIImageView *iconImageView;
-@property (nonatomic, weak) UILabel *titleLabel;
+@property (nonatomic, weak) UIButton *btnCell;
 @property (nonatomic, weak) UIButton *btnSelect;
-
-
-@property (nonatomic, assign) CGFloat titleMargin;                  /*!< title 边距 [default: 20] */
-
-
 
 + (instancetype)cellWithTableView:(UITableView *)tableView;
 
