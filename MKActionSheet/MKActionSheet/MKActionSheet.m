@@ -12,6 +12,15 @@
 #import "UIImage+MKExtension.h"
 
 
+#ifndef MKActionSheetDefine
+#define MKSCREEN_WIDTH     [UIScreen mainScreen].bounds.size.width
+#define MKSCREEN_HEIGHT    [UIScreen mainScreen].bounds.size.height
+#define MKSCREEN_BOUNDS    [UIScreen mainScreen].bounds
+#define MKCOLOR_RGBA(r, g, b, a)    [UIColor colorWithRed:(r/255.0f) green:(g/255.0f) blue:(b/255.0f) alpha:(a)]
+#define MKWEAKSELF typeof(self) __weak weakSelf = self;
+#define MKBlockExec(block, ...) if (block) { block(__VA_ARGS__); };
+#endif
+
 
 #pragma mark - ***** MKActionSheet ******
 @interface MKActionSheet()<UITableViewDelegate, UITableViewDataSource>{
@@ -184,7 +193,7 @@
 }
 
 - (void)setSelectedIndex:(NSInteger)selectedIndex{
-    if (self.selectType == MKActionSheetSelectType_selected) {
+    if (_selectType == MKActionSheetSelectType_selected) {
         _selectedIndex = selectedIndex;
     }else{
         NSAssert(NO, @"初始化 selectType = MKActionSheetSelectType_selected 时 设置 selectedIndex 才有效");
@@ -217,7 +226,7 @@
 }
 
 - (void)showWithBlock:(MKActionSheetBlock)block{
-    NSAssert(self.selectType != MKActionSheetSelectType_multiselect, @"多选样式 应该使用 showWithMultiselectBlock: 方法");
+    NSAssert(_selectType != MKActionSheetSelectType_multiselect, @"多选样式 应该使用 showWithMultiselectBlock: 方法");
     if (block) {
         _block = block;
     }
@@ -225,7 +234,7 @@
 }
 
 - (void)showWithMultiselectBlock:(MKActionSheetMultiselectBlock)multiselectblock{
-    NSAssert(self.selectType == MKActionSheetSelectType_multiselect, @"非多选模式，应该使用 showWithBlock: 方法");
+    NSAssert(_selectType == MKActionSheetSelectType_multiselect, @"非多选模式，应该使用 showWithBlock: 方法");
     if (multiselectblock) {
         _multiselectBlock = multiselectblock;
     }
@@ -275,29 +284,10 @@
 }
 
 #pragma mark - ***** dismiss ******
-- (void)btnOnclicked:(UIButton *)sender{
+/** 点击取消按钮 */
+- (void)btnCancelOnclicked:(UIButton *)sender{
     NSInteger index = sender.tag;
-    
-    if (self.selectType == MKActionSheetSelectType_multiselect){
-        //多选
-        if (self.isNeedCancelButton && sender.tag == self.buttonTitles.count) { //点击取消按钮
-            [self dismissWithButtonIndex:index];
-        }else{
-            NSString *title = [self.buttonTitles objectAtIndex:index];
-            
-            UIButton *btnSelect = (UIButton *)[sender viewWithTag:100];
-            if (btnSelect) {
-                btnSelect.selected = !btnSelect.selected;
-                title.mk_isSelect = btnSelect.isSelected;
-            }
-        }
-    }else if(self.selectType == MKActionSheetSelectType_selected){
-        self.selectedIndex = sender.tag;
-        [self.tableView reloadData];
-        [self dismissWithButtonIndex:index];
-    }else{
-        [self dismissWithButtonIndex:index];
-    }
+    [self dismissWithButtonIndex:index];
 }
 
 - (void)dismissWithButtonIndex:(NSInteger)index{
@@ -621,8 +611,7 @@
     
     NSInteger index = indexPath.row;
     
-    if (self.selectType == MKActionSheetSelectType_multiselect){
-        //多选
+    if (self.selectType == MKActionSheetSelectType_multiselect){    //多选
         NSString *title = [self.buttonTitles objectAtIndex:index];
         title.mk_isSelect = !title.mk_isSelect;
         [self.tableView reloadData];
@@ -672,7 +661,7 @@
 - (UIWindow *)bgWindow{
     if (!_bgWindow) {
         _bgWindow = [[UIWindow alloc] initWithFrame:MKSCREEN_BOUNDS];
-        _bgWindow.windowLevel = UIWindowLevelStatusBar;
+        _bgWindow.windowLevel = MKActionSheet_WindowLevel;
         _bgWindow.backgroundColor = [UIColor clearColor];
         _bgWindow.hidden = NO;
     }
@@ -748,7 +737,7 @@
         [_cancelButton setTitleColor:self.buttonTitleColor forState:UIControlStateNormal];
         _cancelButton.titleLabel.font = self.buttonTitleFont;
         _cancelButton.tag = self.buttonTitles.count;
-        [_cancelButton addTarget:self action:@selector(btnOnclicked:) forControlEvents:UIControlEventTouchUpInside];
+        [_cancelButton addTarget:self action:@selector(btnCancelOnclicked:) forControlEvents:UIControlEventTouchUpInside];
         _cancelButton.frame = CGRectMake(0, 6, MKSCREEN_WIDTH, self.buttonHeight);
     }
     return _cancelButton;

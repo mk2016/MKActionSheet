@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+#define MKActionSheet_WindowLevel   UIWindowLevelStatusBar - 1
+
 @class MKActionSheet;
 
 #pragma mark - ***** 枚举 ******
