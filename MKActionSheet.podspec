@@ -9,6 +9,6 @@ Pod::Spec.new do |s|
   s.platform     = :ios, "7.0"
   s.source       = { :git => "https://github.com/mk2016/MKActionSheet.git", :tag => s.version }
   s.source_files = "MKActionSheet/MKActionSheet"
-  s.resource	 = "MKActionSheet/MKActionSheet.bundle"
+  s.resource	 = "MKActionSheet/MKActionSheet/MKActionSheet.bundle"
   s.requires_arc = true
 end
