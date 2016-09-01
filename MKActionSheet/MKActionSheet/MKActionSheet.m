@@ -476,18 +476,6 @@
         UIView *sepView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, MKSCREEN_WIDTH, 6)];
         sepView.backgroundColor = MKCOLOR_RGBA(100, 100, 100, 0.1);
         [cancelView addSubview:sepView];
-        
-//        if (_showSeparator) {
-//            CALayer *topBorderLayer = [CALayer layer];
-//            topBorderLayer.frame = CGRectMake(0, 0, sepView.frame.size.width, 0.5);
-//            topBorderLayer.backgroundColor = MKCOLOR_RGBA(0, 0, 0, 0.1).CGColor;
-//            [sepView.layer addSublayer:topBorderLayer];
-//            
-//            CALayer *botBorderLayer = [CALayer layer];
-//            botBorderLayer.frame = CGRectMake(0, sepView.frame.size.height - 0.5, sepView.frame.size.width, 0.5);
-//            botBorderLayer.backgroundColor = MKCOLOR_RGBA(0, 0, 0, 0.1).CGColor;
-//            [sepView.layer addSublayer:botBorderLayer];
-//        }
     }
     
     self.sheetView.frame = CGRectMake(0, MKSCREEN_HEIGHT, MKSCREEN_WIDTH, sheetViewH);
@@ -703,7 +691,6 @@
         }
         _tableView.bounces = NO;
         _tableView.backgroundColor = [UIColor clearColor];
-//        _tableView.tableFooterView = [UIView new];
     }
     return _tableView;
 }
