@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "MKActionSheet"
-  s.version      = "1.2.2"
+  s.version      = "1.2.3"
   s.summary      = "multi styles and multifunctional actionSheet"
   s.homepage     = "https://github.com/mk2016/MKActionSheet"
   s.license      = "MIT"
