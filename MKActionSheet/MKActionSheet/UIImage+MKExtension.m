@@ -18,7 +18,6 @@
     CGContextFillRect(context, rect);
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
-    CGContextRelease(context);
     return image;
 }
 @end
