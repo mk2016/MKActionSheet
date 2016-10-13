@@ -145,6 +145,7 @@
 #pragma mark - ***** methods ******
 /** init data */
 - (void)initData{
+    _windwoLevel = MKActionSheet_WindowLevel;
     //默认样式
     _titleColor = MKCOLOR_RGBA(100.0f, 100.0f, 100.0f, 1.0f);
     _titleFont = [UIFont systemFontOfSize:14];
@@ -649,7 +650,7 @@
 - (UIWindow *)bgWindow{
     if (!_bgWindow) {
         _bgWindow = [[UIWindow alloc] initWithFrame:MKSCREEN_BOUNDS];
-        _bgWindow.windowLevel = MKActionSheet_WindowLevel;
+        _bgWindow.windowLevel = self.windwoLevel;
         _bgWindow.backgroundColor = [UIColor clearColor];
         _bgWindow.hidden = NO;
     }

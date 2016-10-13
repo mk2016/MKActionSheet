@@ -134,6 +134,7 @@ typedef void(^MKActionSheetDidDismissMultiselectBlock)(MKActionSheet* actionShee
 
 
 /**  custom UI */
+@property (nonatomic, assign) CGFloat windwoLevel;
 //title
 @property (nonatomic, weak) UIView *customTitleView;                /*!< 自定义标题View */
 @property (nonatomic, copy) NSString *title;                        /*!< 标题 */
