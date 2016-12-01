@@ -39,6 +39,7 @@
 		C5A125EE1CFEE91900FEA77A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C5A125E51CFEE91900FEA77A /* Main.storyboard */; };
 		C5A125F01CFEE91900FEA77A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C5A125E81CFEE91900FEA77A /* main.m */; };
 		C5A125F11CFEE91900FEA77A /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C5A125EA1CFEE91900FEA77A /* ViewController.m */; };
+		C5ACFAF31DF03FEC008BFE90 /* MKUIHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = C5ACFAF21DF03FEC008BFE90 /* MKUIHelper.m */; };
 		C5D6C19E1D67674A003598E7 /* MASCompositeConstraint.m in Sources */ = {isa = PBXBuildFile; fileRef = C5D6C1851D67674A003598E7 /* MASCompositeConstraint.m */; };
 		C5D6C19F1D67674A003598E7 /* MASConstraint.m in Sources */ = {isa = PBXBuildFile; fileRef = C5D6C1881D67674A003598E7 /* MASConstraint.m */; };
 		C5D6C1A01D67674A003598E7 /* MASConstraintMaker.m in Sources */ = {isa = PBXBuildFile; fileRef = C5D6C18A1D67674A003598E7 /* MASConstraintMaker.m */; };
@@ -134,6 +135,8 @@
 		C5A125E81CFEE91900FEA77A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = MKActionSheetDemo/main.m; sourceTree = SOURCE_ROOT; };
 		C5A125E91CFEE91900FEA77A /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		C5A125EA1CFEE91900FEA77A /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		C5ACFAF11DF03FEC008BFE90 /* MKUIHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKUIHelper.h; sourceTree = "<group>"; };
+		C5ACFAF21DF03FEC008BFE90 /* MKUIHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKUIHelper.m; sourceTree = "<group>"; };
 		C5D6C1841D67674A003598E7 /* MASCompositeConstraint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASCompositeConstraint.h; sourceTree = "<group>"; };
 		C5D6C1851D67674A003598E7 /* MASCompositeConstraint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASCompositeConstraint.m; sourceTree = "<group>"; };
 		C5D6C1861D67674A003598E7 /* MASConstraint+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MASConstraint+Private.h"; sourceTree = "<group>"; };
@@ -253,6 +256,8 @@
 				C567284D1D9054F2002D0245 /* MKActionSheet.m */,
 				C567284E1D9054F2002D0245 /* MKActionSheetCell.h */,
 				C567284F1D9054F2002D0245 /* MKActionSheetCell.m */,
+				C5ACFAF11DF03FEC008BFE90 /* MKUIHelper.h */,
+				C5ACFAF21DF03FEC008BFE90 /* MKUIHelper.m */,
 				C56728501D9054F2002D0245 /* NSObject+MKASAdditions.h */,
 				C56728511D9054F2002D0245 /* NSObject+MKASAdditions.m */,
 				C56728521D9054F2002D0245 /* UIImage+MKExtension.h */,
@@ -514,6 +519,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C5A125F11CFEE91900FEA77A /* ViewController.m in Sources */,
+				C5ACFAF31DF03FEC008BFE90 /* MKUIHelper.m in Sources */,
 				C51FB2381D547DEF00A766E1 /* SDWebImageManager.m in Sources */,
 				C56728571D9054F2002D0245 /* NSObject+MKASAdditions.m in Sources */,
 				C51FB2331D547DEF00A766E1 /* SDImageCache.m in Sources */,

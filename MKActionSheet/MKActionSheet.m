@@ -10,6 +10,7 @@
 #import "MKActionSheetCell.h"
 #import "NSObject+MKASAdditions.h"
 #import "UIImage+MKExtension.h"
+#import "MKUIHelper.h"
 
 
 #ifndef MKActionSheetDefine
@@ -29,7 +30,7 @@
 @property (nonatomic, strong) NSMutableArray *buttonTitles;             /*!< button titles array */
 @property (nonatomic, strong) NSMutableArray *objArray;                 /*!< objects array */
 
-@property (nonatomic, strong) UIWindow *bgWindow;
+@property (nonatomic, weak) UIWindow *bgWindow;
 @property (nonatomic, strong) UIView *shadeView;
 @property (nonatomic, strong) UIView *sheetView;
 @property (nonatomic, strong) UITableView *tableView;
@@ -145,7 +146,8 @@
 #pragma mark - ***** methods ******
 /** init data */
 - (void)initData{
-    _windwoLevel = MKActionSheet_WindowLevel;
+    _windowLevel = MKActionSheet_WindowLevel;
+    _enableBgTap = YES;
     //默认样式
     _titleColor = MKCOLOR_RGBA(100.0f, 100.0f, 100.0f, 1.0f);
     _titleFont = [UIFont systemFontOfSize:14];
@@ -276,6 +278,10 @@
         frame.origin.y = MKSCREEN_HEIGHT - frame.size.height;
         self.sheetView.frame = frame;
         
+        CGRect sFrame = self.shadeView.frame;
+        sFrame.size.height = self.sheetView.frame.origin.y;
+        self.shadeView.frame = sFrame;
+        
     } completion:^(BOOL finished) {
         if (self.delegate && [self.delegate respondsToSelector:@selector(didPresentActionSheet:)]) {
             [self.delegate didPresentActionSheet:self];
@@ -382,14 +388,17 @@
     [UIView animateWithDuration:self.animationDuration delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
         [self.shadeView setAlpha:0];
         [self.shadeView setUserInteractionEnabled:NO];
-        
+        self.shadeView.frame = MKSCREEN_BOUNDS;
+
         CGRect frame = self.sheetView.frame;
         frame.origin.y = MKSCREEN_HEIGHT;
         self.sheetView.frame = frame;
         
     } completion:^(BOOL finished) {
         [self removeFromSuperview];
-        self.bgWindow.hidden = YES;
+        if (self.needNewWindow) {
+            self.bgWindow.hidden = YES;
+        }
         MKBlockExec(block, finished);
     }];
 }
@@ -649,10 +658,15 @@
 #pragma mark - ***** lazy ******
 - (UIWindow *)bgWindow{
     if (!_bgWindow) {
-        _bgWindow = [[UIWindow alloc] initWithFrame:MKSCREEN_BOUNDS];
-        _bgWindow.windowLevel = self.windwoLevel;
-        _bgWindow.backgroundColor = [UIColor clearColor];
-        _bgWindow.hidden = NO;
+        if (_needNewWindow) {
+            UIWindow *bgWindow = [[UIWindow alloc] initWithFrame:MKSCREEN_BOUNDS];
+            bgWindow.windowLevel = self.windowLevel;
+            bgWindow.backgroundColor = [UIColor clearColor];
+            bgWindow.hidden = NO;
+            _bgWindow = bgWindow;
+        }else{
+            _bgWindow = [MKUIHelper getCurrentViewController].view.window;
+        }
     }
     return _bgWindow;
 }
@@ -664,8 +678,10 @@
         [_shadeView setBackgroundColor:MKCOLOR_RGBA(0, 0, 0, 1)];
         [_shadeView setUserInteractionEnabled:NO];
         [_shadeView setAlpha:0];
-        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismiss)];
-        [_shadeView addGestureRecognizer:tap];
+        if (_enableBgTap) {
+            UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismiss)];
+            [_shadeView addGestureRecognizer:tap];
+        }
     }
     return _shadeView;
 }
