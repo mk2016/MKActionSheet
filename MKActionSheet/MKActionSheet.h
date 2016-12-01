@@ -141,7 +141,7 @@ typedef void(^MKActionSheetDidDismissMultiselectBlock)(MKActionSheet* actionShee
 
 /**  custom UI */
 @property (nonatomic, assign) CGFloat windowLevel;
-@property (nonatomic, assign) BOOL needNewWindow;
+@property (nonatomic, assign) BOOL needNewWindow;                   /*!< 是否新建window 默认为 NO */
 @property (nonatomic, assign) BOOL enableBgTap;                     /*!< 蒙版是否可以点击 收起*/
 //title
 @property (nonatomic, weak) UIView *customTitleView;                /*!< 自定义标题View */
