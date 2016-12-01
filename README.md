@@ -22,7 +22,7 @@
 
 ##添加
 * cocoapods  
-  pod 'MKActionSheet', '~> 1.3.0'
+  pod 'MKActionSheet', '~> 1.3.1'
 
 * Manually (手动导入)  
   只需将 MKActionSheet 文件添加到项目中即可
@@ -216,6 +216,8 @@ sheet.buttonImageBlock = ^(MKActionSheet* actionSheet, UIButton *button, NSStrin
  * 但如果您的项目使用了多个window,当顶部window不是keywindow时，sheetView会被顶部window遮住。
  * 此时建议 将 needNewWindow 设置为 YES; 并在项目info.plist 中 新增 “View controller-based status bar appearance” 设置为 NO。
  * 这样也可以让 status bar 不变色
+ 
+ 感谢 @leshengping 的建议和反馈
  
 ### V1.2.0
  * 默认最大显示按钮个数为5.6, 既 maxShowButtonCount 默认为 5.6;
