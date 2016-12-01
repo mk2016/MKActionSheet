@@ -209,6 +209,7 @@ sheet.buttonImageBlock = ^(MKActionSheet* actionSheet, UIButton *button, NSStrin
  * 新增属性
  ```
  @property (nonatomic, assign) BOOL enableBgTap;                     /*!< 蒙版是否可以点击 收起*/
+ @property (nonatomic, assign) BOOL needNewWindow;                   /*!< 是否新建window 默认为 NO */
 ```
  * 有使用者反馈，status bar原来白色会变为黑色，这是由于新建了 window 导致的。
  * 现默认使用不新建window的模式，
