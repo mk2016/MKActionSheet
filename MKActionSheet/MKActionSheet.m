@@ -30,7 +30,7 @@
 @property (nonatomic, strong) NSMutableArray *buttonTitles;             /*!< button titles array */
 @property (nonatomic, strong) NSMutableArray *objArray;                 /*!< objects array */
 
-@property (nonatomic, weak) UIWindow *bgWindow;
+@property (nonatomic, strong) UIWindow *bgWindow;
 @property (nonatomic, strong) UIView *shadeView;
 @property (nonatomic, strong) UIView *sheetView;
 @property (nonatomic, strong) UITableView *tableView;
@@ -398,6 +398,7 @@
         [self removeFromSuperview];
         if (self.needNewWindow) {
             self.bgWindow.hidden = YES;
+            self.bgWindow = nil;
         }
         MKBlockExec(block, finished);
     }];
@@ -659,11 +660,10 @@
 - (UIWindow *)bgWindow{
     if (!_bgWindow) {
         if (_needNewWindow) {
-            UIWindow *bgWindow = [[UIWindow alloc] initWithFrame:MKSCREEN_BOUNDS];
-            bgWindow.windowLevel = self.windowLevel;
-            bgWindow.backgroundColor = [UIColor clearColor];
-            bgWindow.hidden = NO;
-            _bgWindow = bgWindow;
+            _bgWindow = [[UIWindow alloc] initWithFrame:MKSCREEN_BOUNDS];
+            _bgWindow.windowLevel = self.windowLevel;
+            _bgWindow.backgroundColor = [UIColor clearColor];
+            _bgWindow.hidden = NO;
         }else{
             _bgWindow = [MKUIHelper getCurrentViewController].view.window;
         }
@@ -757,6 +757,5 @@
     }
     return _confirmButton;
 }
-
 
 @end
