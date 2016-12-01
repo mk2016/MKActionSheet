@@ -217,7 +217,7 @@ sheet.buttonImageBlock = ^(MKActionSheet* actionSheet, UIButton *button, NSStrin
  * 此时建议 将 needNewWindow 设置为 YES; 并在项目info.plist 中 新增 “View controller-based status bar appearance” 设置为 NO。
  * 这样也可以让 status bar 不变色
  
- 感谢 @leshengping 的建议和反馈
+ 感谢 [@leshengping](https://github.com/leshengping) 的建议和反馈 
  
 ### V1.2.0
  * 默认最大显示按钮个数为5.6, 既 maxShowButtonCount 默认为 5.6;
