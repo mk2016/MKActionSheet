@@ -22,7 +22,7 @@
 
 ##添加
 * cocoapods  
-  pod 'MKActionSheet', '~> 1.2.6'
+  pod 'MKActionSheet', '~> 1.3.0'
 
 * Manually (手动导入)  
   只需将 MKActionSheet 文件添加到项目中即可
@@ -31,6 +31,12 @@
 ##用法 详细用法参见demo
 * 支持 block 和 delegate
 
+ * 有使用者反馈，status bar原来白色会变为黑色，这是由于新建了 window 导致的。
+ * 现默认使用不新建window的模式，
+ * 但如果您的项目使用了多个window,当顶部window不是keywindow时，sheetView会被顶部window遮住。
+ * 此时建议 将 needNewWindow 设置为 YES; 并在项目info.plist 中 新增 “View controller-based status bar appearance” 设置为 NO。
+ * 这样也可以让 status bar 不变色
+ 
 ```
 //单选 block
 - (void)showWithBlock:(MKActionSheetBlock)block;
@@ -199,6 +205,18 @@ sheet.buttonImageBlock = ^(MKActionSheet* actionSheet, UIButton *button, NSStrin
  
  
 ## 版本记录
+### V1.3.0
+ * 新增属性
+ ```
+ @property (nonatomic, assign) BOOL enableBgTap;                     /*!< 蒙版是否可以点击 收起*/
+ @property (nonatomic, assign) BOOL needNewWindow;                   /*!< 是否新建window 默认为 NO */
+```
+ * 有使用者反馈，status bar原来白色会变为黑色，这是由于新建了 window 导致的。
+ * 现默认使用不新建window的模式，
+ * 但如果您的项目使用了多个window,当顶部window不是keywindow时，sheetView会被顶部window遮住。
+ * 此时建议 将 needNewWindow 设置为 YES; 并在项目info.plist 中 新增 “View controller-based status bar appearance” 设置为 NO。
+ * 这样也可以让 status bar 不变色
+ 
 ### V1.2.0
  * 默认最大显示按钮个数为5.6, 既 maxShowButtonCount 默认为 5.6;
  * 添加自定义属性
