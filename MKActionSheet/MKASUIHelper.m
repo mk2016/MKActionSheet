@@ -1,15 +1,15 @@
 //
-//  MKUIHelper.m
+//  MKASUIHelper.m
 //  MKToolsKit
 //
 //  Created by xmk on 16/9/23.
 //  Copyright © 2016年 mk. All rights reserved.
 //
 
-#import "MKUIHelper.h"
+#import "MKASUIHelper.h"
 #import <MessageUI/MessageUI.h>
 
-@implementation MKUIHelper
+@implementation MKASUIHelper
 
 #pragma mark - ***** top View ******
 + (UIView *)getTopView{

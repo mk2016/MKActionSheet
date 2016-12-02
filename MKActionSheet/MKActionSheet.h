@@ -143,6 +143,7 @@ typedef void(^MKActionSheetDidDismissMultiselectBlock)(MKActionSheet* actionShee
 @property (nonatomic, assign) CGFloat windowLevel;
 @property (nonatomic, assign) BOOL needNewWindow;                   /*!< 是否新建window 默认为 NO */
 @property (nonatomic, assign) BOOL enableBgTap;                     /*!< 蒙版是否可以点击 收起*/
+@property (nonatomic, weak) UIViewController *currentVC;            /*!< 当前viewController 控制 stabar 保持当前样式 */
 //title
 @property (nonatomic, weak) UIView *customTitleView;                /*!< 自定义标题View */
 @property (nonatomic, copy) NSString *title;                        /*!< 标题 */

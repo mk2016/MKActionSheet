@@ -1,5 +1,5 @@
 //
-//  MKUIHelper.h
+//  MKASUIHelper.h
 //  MKToolsKit
 //
 //  Created by xmk on 16/9/23.
@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-@interface MKUIHelper : NSObject
+@interface MKASUIHelper : NSObject
 
 #pragma mark - ***** top View ******
 + (UIView *)getTopView;

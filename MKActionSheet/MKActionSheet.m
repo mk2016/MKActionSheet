@@ -10,7 +10,8 @@
 #import "MKActionSheetCell.h"
 #import "NSObject+MKASAdditions.h"
 #import "UIImage+MKExtension.h"
-#import "MKUIHelper.h"
+#import "MKASUIHelper.h"
+#import "MKASRootViewController.h"
 
 
 #ifndef MKActionSheetDefine
@@ -148,6 +149,7 @@
 - (void)initData{
     _windowLevel = MKActionSheet_WindowLevel;
     _enableBgTap = YES;
+    _needNewWindow = YES;
     //默认样式
     _titleColor = MKCOLOR_RGBA(100.0f, 100.0f, 100.0f, 1.0f);
     _titleFont = [UIFont systemFontOfSize:14];
@@ -664,8 +666,13 @@
             _bgWindow.windowLevel = self.windowLevel;
             _bgWindow.backgroundColor = [UIColor clearColor];
             _bgWindow.hidden = NO;
+            if (_currentVC) {
+                MKASRootViewController *rootVC = [[MKASRootViewController alloc] init];
+                rootVC.vc = _currentVC;
+                _bgWindow.rootViewController = rootVC;
+            }
         }else{
-            _bgWindow = [MKUIHelper getCurrentViewController].view.window;
+            _bgWindow = [MKASUIHelper getCurrentViewController].view.window;
         }
     }
     return _bgWindow;

@@ -169,7 +169,6 @@
     else if ([cellTitle isEqualToString:@"selectType:-selected"]){
         MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"带默认选中样式，设置 selectedIndex 默认选中第几个按钮,默认居左、无取消按钮，可设置" buttonTitleArray:@[@"button0", @"button1", @"button2",@"button3",@"button4"] selectType:MKActionSheetSelectType_selected];
         sheet.selectedIndex = 2;
-        sheet.needNewWindow = YES;
         [sheet showWithBlock:^(MKActionSheet *actionSheet, NSInteger buttonIndex) {
             NSLog(@"buttonIndex:%ld",(long)buttonIndex);
             [weakSelf.view makeToast:[NSString stringWithFormat:@"button Index : %ld" ,(long)buttonIndex]];
