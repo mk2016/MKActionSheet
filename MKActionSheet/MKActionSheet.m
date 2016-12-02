@@ -10,8 +10,6 @@
 #import "MKActionSheetCell.h"
 #import "NSObject+MKASAdditions.h"
 #import "UIImage+MKExtension.h"
-#import "MKASUIHelper.h"
-#import "MKASRootViewController.h"
 
 
 #ifndef MKActionSheetDefine
@@ -149,7 +147,7 @@
 - (void)initData{
     _windowLevel = MKActionSheet_WindowLevel;
     _enableBgTap = YES;
-    _needNewWindow = YES;
+
     //默认样式
     _titleColor = MKCOLOR_RGBA(100.0f, 100.0f, 100.0f, 1.0f);
     _titleFont = [UIFont systemFontOfSize:14];
@@ -398,10 +396,8 @@
         
     } completion:^(BOOL finished) {
         [self removeFromSuperview];
-        if (self.needNewWindow) {
-            self.bgWindow.hidden = YES;
-            self.bgWindow = nil;
-        }
+        self.bgWindow.hidden = YES;
+        self.bgWindow = nil;
         MKBlockExec(block, finished);
     }];
 }
@@ -661,18 +657,14 @@
 #pragma mark - ***** lazy ******
 - (UIWindow *)bgWindow{
     if (!_bgWindow) {
-        if (_needNewWindow) {
-            _bgWindow = [[UIWindow alloc] initWithFrame:MKSCREEN_BOUNDS];
-            _bgWindow.windowLevel = self.windowLevel;
-            _bgWindow.backgroundColor = [UIColor clearColor];
-            _bgWindow.hidden = NO;
-            if (_currentVC) {
-                MKASRootViewController *rootVC = [[MKASRootViewController alloc] init];
-                rootVC.vc = _currentVC;
-                _bgWindow.rootViewController = rootVC;
-            }
-        }else{
-            _bgWindow = [MKASUIHelper getCurrentViewController].view.window;
+        _bgWindow = [[UIWindow alloc] initWithFrame:MKSCREEN_BOUNDS];
+        _bgWindow.windowLevel = self.windowLevel;
+        _bgWindow.backgroundColor = [UIColor clearColor];
+        _bgWindow.hidden = NO;
+        if (_currentVC) {
+            MKASRootViewController *rootVC = [[MKASRootViewController alloc] init];
+            rootVC.vc = _currentVC;
+            _bgWindow.rootViewController = rootVC;
         }
     }
     return _bgWindow;
@@ -766,3 +758,29 @@
 }
 
 @end
+
+
+
+#pragma mark - ***** MKASRootViewController *****
+@implementation MKASRootViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+}
+
+- (BOOL)prefersStatusBarHidden{
+    [super prefersStatusBarHidden];
+    return [self.vc prefersStatusBarHidden];
+}
+
+- (UIStatusBarStyle)preferredStatusBarStyle{
+    [super preferredStatusBarStyle];
+    return [self.vc preferredStatusBarStyle];
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+@end
+
