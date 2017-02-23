@@ -33,7 +33,7 @@
 - (void)initUI{
     
     //selected imageView
-    UIImageView *imgView = [[UIImageView alloc] initWithImage:[UIImage imageWithColor:[UIColor colorWithRed:1.0f green:1.0f blue:1.0f alpha:0.6]]];
+    UIImageView *imgView = [[UIImageView alloc] initWithImage:[UIImage mkas_imageWithColor:[UIColor colorWithRed:1.0f green:1.0f blue:1.0f alpha:0.6]]];
     [self addSubview:imgView];
     self.selectedImageView = imgView;
     

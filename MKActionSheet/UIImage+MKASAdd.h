@@ -11,6 +11,6 @@
 
 @interface UIImage(MKExtension)
 
-+ (UIImage *)imageWithColor:(UIColor *)color;
++ (UIImage *)mkas_imageWithColor:(UIColor *)color;
 
 @end

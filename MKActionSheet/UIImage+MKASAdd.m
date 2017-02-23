@@ -10,7 +10,7 @@
 
 @implementation UIImage(MKExtension)
 
-+ (UIImage *)imageWithColor:(UIColor *)color;{
++ (UIImage *)mkas_imageWithColor:(UIColor *)color;{
     CGRect rect = CGRectMake(0.0f, 0.0f, 1.0f, 1.0f);
     UIGraphicsBeginImageContext(rect.size);
     CGContextRef context = UIGraphicsGetCurrentContext();

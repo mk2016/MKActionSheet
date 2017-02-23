@@ -734,8 +734,8 @@
 - (UIButton *)cancelButton{
     if (!_cancelButton) {
         _cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_cancelButton setBackgroundImage:[UIImage imageWithColor:MKCOLOR_RGBA(255, 255, 255, self.buttonOpacity)] forState:UIControlStateNormal];
-        [_cancelButton setBackgroundImage:[UIImage imageWithColor:MKCOLOR_RGBA(255, 255, 255, 0)] forState:UIControlStateHighlighted];
+        [_cancelButton setBackgroundImage:[UIImage mkas_imageWithColor:MKCOLOR_RGBA(255, 255, 255, self.buttonOpacity)] forState:UIControlStateNormal];
+        [_cancelButton setBackgroundImage:[UIImage mkas_imageWithColor:MKCOLOR_RGBA(255, 255, 255, 0)] forState:UIControlStateHighlighted];
         [_cancelButton setTitle:self.cancelTitle forState:UIControlStateNormal];
         [_cancelButton setTitleColor:self.buttonTitleColor forState:UIControlStateNormal];
         _cancelButton.titleLabel.font = self.buttonTitleFont;
