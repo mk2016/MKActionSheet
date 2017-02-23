@@ -29,8 +29,8 @@
 		C56728541D9054F2002D0245 /* MKActionSheet.bundle in Resources */ = {isa = PBXBuildFile; fileRef = C567284B1D9054F2002D0245 /* MKActionSheet.bundle */; };
 		C56728551D9054F2002D0245 /* MKActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = C567284D1D9054F2002D0245 /* MKActionSheet.m */; };
 		C56728561D9054F2002D0245 /* MKActionSheetCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C567284F1D9054F2002D0245 /* MKActionSheetCell.m */; };
-		C56728571D9054F2002D0245 /* NSObject+MKASAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = C56728511D9054F2002D0245 /* NSObject+MKASAdditions.m */; };
-		C56728581D9054F2002D0245 /* UIImage+MKExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = C56728531D9054F2002D0245 /* UIImage+MKExtension.m */; };
+		C56728571D9054F2002D0245 /* NSObject+MKASAdd.m in Sources */ = {isa = PBXBuildFile; fileRef = C56728511D9054F2002D0245 /* NSObject+MKASAdd.m */; };
+		C56728581D9054F2002D0245 /* UIImage+MKASAdd.m in Sources */ = {isa = PBXBuildFile; fileRef = C56728531D9054F2002D0245 /* UIImage+MKASAdd.m */; };
 		C5A125C71CFEE7E700FEA77A /* MKActionSheetTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C5A125C61CFEE7E700FEA77A /* MKActionSheetTests.m */; };
 		C5A125D21CFEE7E700FEA77A /* MKActionSheetUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = C5A125D11CFEE7E700FEA77A /* MKActionSheetUITests.m */; };
 		C5A125EB1CFEE91900FEA77A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C5A125E11CFEE91900FEA77A /* AppDelegate.m */; };
@@ -114,10 +114,10 @@
 		C567284D1D9054F2002D0245 /* MKActionSheet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKActionSheet.m; sourceTree = "<group>"; };
 		C567284E1D9054F2002D0245 /* MKActionSheetCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKActionSheetCell.h; sourceTree = "<group>"; };
 		C567284F1D9054F2002D0245 /* MKActionSheetCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKActionSheetCell.m; sourceTree = "<group>"; };
-		C56728501D9054F2002D0245 /* NSObject+MKASAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+MKASAdditions.h"; sourceTree = "<group>"; };
-		C56728511D9054F2002D0245 /* NSObject+MKASAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+MKASAdditions.m"; sourceTree = "<group>"; };
-		C56728521D9054F2002D0245 /* UIImage+MKExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+MKExtension.h"; sourceTree = "<group>"; };
-		C56728531D9054F2002D0245 /* UIImage+MKExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+MKExtension.m"; sourceTree = "<group>"; };
+		C56728501D9054F2002D0245 /* NSObject+MKASAdd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+MKASAdd.h"; sourceTree = "<group>"; };
+		C56728511D9054F2002D0245 /* NSObject+MKASAdd.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+MKASAdd.m"; sourceTree = "<group>"; };
+		C56728521D9054F2002D0245 /* UIImage+MKASAdd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+MKASAdd.h"; sourceTree = "<group>"; };
+		C56728531D9054F2002D0245 /* UIImage+MKASAdd.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+MKASAdd.m"; sourceTree = "<group>"; };
 		C5A125A91CFEE7E700FEA77A /* MKActionSheet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MKActionSheet.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C5A125C21CFEE7E700FEA77A /* MKActionSheetTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MKActionSheetTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C5A125C61CFEE7E700FEA77A /* MKActionSheetTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MKActionSheetTests.m; sourceTree = "<group>"; };
@@ -253,10 +253,10 @@
 				C567284D1D9054F2002D0245 /* MKActionSheet.m */,
 				C567284E1D9054F2002D0245 /* MKActionSheetCell.h */,
 				C567284F1D9054F2002D0245 /* MKActionSheetCell.m */,
-				C56728501D9054F2002D0245 /* NSObject+MKASAdditions.h */,
-				C56728511D9054F2002D0245 /* NSObject+MKASAdditions.m */,
-				C56728521D9054F2002D0245 /* UIImage+MKExtension.h */,
-				C56728531D9054F2002D0245 /* UIImage+MKExtension.m */,
+				C56728501D9054F2002D0245 /* NSObject+MKASAdd.h */,
+				C56728511D9054F2002D0245 /* NSObject+MKASAdd.m */,
+				C56728521D9054F2002D0245 /* UIImage+MKASAdd.h */,
+				C56728531D9054F2002D0245 /* UIImage+MKASAdd.m */,
 			);
 			path = MKActionSheet;
 			sourceTree = "<group>";
@@ -515,14 +515,14 @@
 			files = (
 				C5A125F11CFEE91900FEA77A /* ViewController.m in Sources */,
 				C51FB2381D547DEF00A766E1 /* SDWebImageManager.m in Sources */,
-				C56728571D9054F2002D0245 /* NSObject+MKASAdditions.m in Sources */,
+				C56728571D9054F2002D0245 /* NSObject+MKASAdd.m in Sources */,
 				C51FB2331D547DEF00A766E1 /* SDImageCache.m in Sources */,
 				C51FB2371D547DEF00A766E1 /* SDWebImageDownloaderOperation.m in Sources */,
 				C5D6C19E1D67674A003598E7 /* MASCompositeConstraint.m in Sources */,
 				C5D6C1A21D67674A003598E7 /* MASViewAttribute.m in Sources */,
 				C51FB2401D547DEF00A766E1 /* UIView+WebCacheOperation.m in Sources */,
 				C51FB2411D547DEF00A766E1 /* UIView+Toast.m in Sources */,
-				C56728581D9054F2002D0245 /* UIImage+MKExtension.m in Sources */,
+				C56728581D9054F2002D0245 /* UIImage+MKASAdd.m in Sources */,
 				C51FB23A1D547DEF00A766E1 /* UIButton+WebCache.m in Sources */,
 				C5D6C1A71D67674A003598E7 /* ViewController+MASAdditions.m in Sources */,
 				C5D6C1A51D67674A003598E7 /* NSLayoutConstraint+MASDebugAdditions.m in Sources */,

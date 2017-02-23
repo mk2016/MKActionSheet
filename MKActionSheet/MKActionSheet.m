@@ -8,8 +8,8 @@
 
 #import "MKActionSheet.h"
 #import "MKActionSheetCell.h"
-#import "NSObject+MKASAdditions.h"
-#import "UIImage+MKExtension.h"
+#import "NSObject+MKASAdd.h"
+#import "UIImage+MKASAdd.h"
 
 
 #ifndef MKActionSheetDefine
@@ -346,7 +346,7 @@
     
     for (NSInteger i = 0; i < self.buttonTitles.count; i++) {
         NSString *title = [self.buttonTitles objectAtIndex:i];
-        if (title.mk_isSelect) {
+        if (title.mk_selected) {
             if (self.paramIsObject){
                 [selectedArray addObject:[self.objArray objectAtIndex:i]];
             }else{
@@ -381,7 +381,7 @@
 - (void)dismissWithBlock:(void (^ __nullable)(BOOL finished))block{
     if (self.selectType == MKActionSheetSelectType_multiselect) {
         for (NSString *title in self.buttonTitles) {
-            title.mk_isSelect = NO;
+            title.mk_selected = NO;
         }
     }
     
@@ -539,7 +539,7 @@
     if (self.selectType == MKActionSheetSelectType_multiselect) {   //多选
         cell.btnSelect.hidden = NO;
         NSString *title = [self.buttonTitles objectAtIndex:indexPath.row];
-        cell.btnSelect.selected = title.mk_isSelect;
+        cell.btnSelect.selected = title.mk_selected;
         
         if (self.selectBtnImageNameNormal && self.selectBtnImageNameNormal.length > 0) {
             [cell.btnSelect setImage:[UIImage imageNamed:self.selectedBtnImageName] forState:UIControlStateNormal];
@@ -610,7 +610,7 @@
     
     if (self.selectType == MKActionSheetSelectType_multiselect){    //多选
         NSString *title = [self.buttonTitles objectAtIndex:index];
-        title.mk_isSelect = !title.mk_isSelect;
+        title.mk_selected = !title.mk_selected;
         [self.tableView reloadData];
     }else if(self.selectType == MKActionSheetSelectType_selected){
         self.selectedIndex = index;

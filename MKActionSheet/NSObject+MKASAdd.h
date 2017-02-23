@@ -1,5 +1,5 @@
 //
-//  NSObject+MKASAdditions.h
+//  NSObject+MKASAdd.h
 //  MKActionSheet
 //
 //  Created by xiaomk on 16/8/6.
@@ -10,6 +10,6 @@
 
 @interface NSObject (MKASAdditions)
 
-@property (nonatomic, assign) BOOL mk_isSelect;
+@property (nonatomic, assign) BOOL mk_selected;
 
 @end

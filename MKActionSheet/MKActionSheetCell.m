@@ -7,7 +7,7 @@
 //
 
 #import "MKActionSheetCell.h"
-#import "UIImage+MKExtension.h"
+#import "UIImage+MKASAdd.h"
 
 
 @interface MKActionSheetCell(){

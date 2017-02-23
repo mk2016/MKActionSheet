@@ -11,7 +11,7 @@
 #import "InfoModel.h"
 #import "UIButton+WebCache.h"
 #import "UIImageView+WebCache.h"
-#import "NSObject+MKASAdditions.h"
+#import "NSObject+MKASAdd.h"
 #import "UIView+Toast.h"
 #import "Masonry.h"
 
