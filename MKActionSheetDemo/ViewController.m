@@ -15,7 +15,7 @@
 #import "UIView+Toast.h"
 #import "Masonry.h"
 
-@interface ViewController ()<UITableViewDelegate, UITableViewDataSource, MKActionSheetDelegate>
+@interface ViewController ()<UITableViewDelegate, UITableViewDataSource>
 
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) NSMutableArray *datasArray;
@@ -167,7 +167,7 @@
     
     //带默认选中 按钮  样式
     else if ([cellTitle isEqualToString:@"selectType:-selected"]){
-        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"带默认选中样式，设置 selectedIndex 默认选中第几个按钮,默认居左、无取消按钮，可设置" buttonTitleArray:@[@"button0", @"button1", @"button2",@"button3",@"button4"] selectType:MKActionSheetSelectType_selected];
+        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:nil buttonTitleArray:@[@"button0", @"button1", @"button2",@"button3",@"button4"] selectType:MKActionSheetSelectType_selected];
         sheet.selectedIndex = 2;
         [sheet showWithBlock:^(MKActionSheet *actionSheet, NSInteger buttonIndex) {
             NSLog(@"buttonIndex:%ld",(long)buttonIndex);
@@ -221,7 +221,9 @@
         sheet.selectedIndex = 0;
         sheet.separatorLeftMargin = sheet.titleMargin;
         sheet.needCancelButton = YES;
-        [sheet showWithDelegate:self];
+        [sheet showWithBlock:^(MKActionSheet *actionSheet, NSInteger buttonIndex) {
+            
+        }];
     }
     
     //带 icon 图片 imageValueType:imageUrl、delegate
@@ -244,7 +246,9 @@
         model.imageUrl = @"https://github.com/mk2016/MKActionSheet/raw/MKActionSheet_dev/Resource/image_5@2x.png";
         [sheet addButtonWithObj:model];
         
-        [sheet showWithDelegate:self];
+        [sheet showWithMultiselectBlock:^(MKActionSheet *actionSheet, NSArray *array) {
+            
+        }];
     }
     
     //带 icon 图片 多选样式  imageValueType:imageUrl、block
@@ -291,7 +295,9 @@
         sheet.destructiveButtonIndex = 3;
         sheet.destructiveButtonTitleColor = [UIColor blueColor];
         sheet.needCancelButton = YES;
-        [sheet showWithDelegate:self];
+        [sheet showWithBlock:^(MKActionSheet *actionSheet, NSInteger buttonIndex) {
+            
+        }];
     }
     
     else if ([cellTitle isEqualToString:@"custom title View"]){
@@ -326,7 +332,9 @@
         }];
         
         [sheet setCustomTitleView:titleView];
-        [sheet showWithDelegate:self];
+        [sheet showWithBlock:^(MKActionSheet *actionSheet, NSInteger buttonIndex) {
+            
+        }];
     }
     
     //自定义UI

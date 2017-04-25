@@ -24,7 +24,7 @@
 
 #pragma mark - ***** MKActionSheet ******
 @interface MKActionSheet()<UITableViewDelegate, UITableViewDataSource>{
-    CGFloat _titleViewH;    /*!< title view height */
+    CGFloat _titleViewH;                /*!< title view height */
 }
 @property (nonatomic, strong) NSMutableArray *buttonTitles;             /*!< button titles array */
 @property (nonatomic, strong) NSMutableArray *objArray;                 /*!< objects array */
@@ -53,21 +53,14 @@
 #pragma mark - ***** init method ******
 
 - (instancetype)initWithTitle:(NSString *)title buttonTitleArray:(NSArray *)buttonTitleArray{
-    if (self = [super init]) {
-        self.title = title;
-        self.buttonTitles = [[NSMutableArray alloc] initWithArray:buttonTitleArray];
-        self.selectType = MKActionSheetSelectType_common;
-        [self initData];
-    }
-    
-    return self;
+    return [self initWithTitle:title buttonTitleArray:buttonTitleArray selectType:MKActionSheetSelectType_common];
 }
 
 - (instancetype)initWithTitle:(NSString *)title buttonTitleArray:(NSArray *)buttonTitleArray selectType:(MKActionSheetSelectType)selectType{
     if (self = [super init]) {
-        self.title = title;
-        self.buttonTitles = [[NSMutableArray alloc] initWithArray:buttonTitleArray];
-        self.selectType = selectType;
+        _title = title;
+        _buttonTitles = [[NSMutableArray alloc] initWithArray:buttonTitleArray];
+        _selectType = selectType;
         [self initData];
     }
     return self;
@@ -75,71 +68,20 @@
 
 /** init with object array */
 - (instancetype)initWithTitle:(NSString *)title objArray:(NSArray *)objArray titleKey:(NSString *)titleKey{
-    if (self = [super init]) {
-        self.title = title;
-        self.titleKey = titleKey;
-        self.objArray = [[NSMutableArray alloc] initWithArray:objArray];
-        self.selectType = MKActionSheetSelectType_common;
-        self.paramIsObject = YES;
-        [self initData];
-    }
-    return self;
+    return [self initWithTitle:title objArray:objArray titleKey:titleKey selectType:MKActionSheetSelectType_common];
 }
 
 - (instancetype)initWithTitle:(NSString *)title objArray:(NSArray *)objArray titleKey:(NSString *)titleKey selectType:(MKActionSheetSelectType)selectType{
     if (self = [super init]) {
-        self.title = title;
-        self.titleKey = titleKey;
-        self.objArray = [[NSMutableArray alloc] initWithArray:objArray];
-        self.selectType = selectType;
-        self.paramIsObject = YES;
+        _title = title;
+        _titleKey = titleKey;
+        _objArray = [[NSMutableArray alloc] initWithArray:objArray];
+        _selectType = selectType;
+        _paramIsObject = YES;
         [self initData];
     }
     return self;
 }
-
-- (instancetype)initWithTitle:(NSString *)title buttonTitles:(NSString *)buttonTitle, ... NS_REQUIRES_NIL_TERMINATION{
-    if (self = [super init]) {
-        self.title = title;
-        self.selectType = MKActionSheetSelectType_common;
-
-        self.buttonTitles = [[NSMutableArray alloc] init];
-        if (buttonTitle) {
-            [self.buttonTitles addObject:buttonTitle];
-            va_list args;
-            va_start(args, buttonTitle);
-            NSString *btnTitle;
-            while ((btnTitle = va_arg(args, NSString *))) {
-                [self.buttonTitles addObject:btnTitle];
-            }
-            va_end(args);
-        }
-        [self initData];
-    }
-    return self;
-}
-
-- (instancetype)initWithTitle:(NSString *)title selectType:(MKActionSheetSelectType)selectType buttonTitles:(NSString *)buttonTitle, ... NS_REQUIRES_NIL_TERMINATION{
-    if (self = [super init]) {
-        self.title = title;
-        self.selectType = selectType;
-
-        self.buttonTitles = [[NSMutableArray alloc] init];
-        if (buttonTitle) {
-            [self.buttonTitles addObject:buttonTitle];
-            va_list args;
-            va_start(args, buttonTitle);
-            NSString *btnTitle;
-            while ((btnTitle = va_arg(args, NSString *))) {
-                [self.buttonTitles addObject:btnTitle];
-            }
-            va_end(args);
-        }
-        [self initData];
-    }
-    return self;
-}
-
 
 
 #pragma mark - ***** methods ******
@@ -221,53 +163,40 @@
 
 
 #pragma mark - ***** show methods******
-- (void)showWithDelegate:(id<MKActionSheetDelegate>)delegate{
-    if (delegate) {
-        _delegate = delegate;
-    }
-    [self show];
-}
-
 - (void)showWithBlock:(MKActionSheetBlock)block{
     NSAssert(_selectType != MKActionSheetSelectType_multiselect, @"多选样式 应该使用 showWithMultiselectBlock: 方法");
-    if (block) {
-        _block = block;
-    }
+    _block = block;
     [self show];
 }
 
 - (void)showWithMultiselectBlock:(MKActionSheetMultiselectBlock)multiselectblock{
     NSAssert(_selectType == MKActionSheetSelectType_multiselect, @"非多选模式，应该使用 showWithBlock: 方法");
-    if (multiselectblock) {
-        _multiselectBlock = multiselectblock;
-    }
+    _multiselectBlock = multiselectblock;
     [self show];
 }
 
 - (void)show{
-    if (self.paramIsObject) {
-        NSAssert(self.titleKey && self.titleKey.length > 0, @"titleKey 不能为nil 或者 空, 必须是有效的 NSString");
-        for (id obj in self.objArray) {
-            id titleValue = [obj valueForKey:self.titleKey];
+    if (_paramIsObject) {
+        NSAssert(_titleKey && _titleKey.length > 0, @"titleKey 不能为nil 或者 空, 必须是有效的 NSString");
+        NSAssert(_objArray, @"_objArray 不能为 nil");
+        for (id obj in _objArray) {
+            id titleValue = [obj valueForKey:_titleKey];
             if (!titleValue || ![titleValue isKindOfClass:[NSString class]]) {
                 NSAssert(NO, @"obj.titleKey 必须为 有效的 NSString");
             }
         }
-        self.buttonTitles = [self.objArray valueForKey:self.titleKey];
+        _buttonTitles = [_objArray valueForKey:_titleKey];
     }
     
-    if (self.blackgroundOpacity < 0.1f) {
-        self.blackgroundOpacity = 0.1f;
+    if (_blackgroundOpacity < 0.1f) {
+        _blackgroundOpacity = 0.1f;
     }
     
     [self setupMainView];
     
     self.bgWindow.hidden = NO;
     [self.bgWindow addSubview:self];
-    
-    if (self.delegate && [self.delegate respondsToSelector:@selector(willPresentActionSheet:)]) {
-        [self.delegate willPresentActionSheet:self];
-    }
+
     MKBlockExec(self.willPresentBlock, self);
     
     [UIView animateWithDuration:self.animationDuration delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
@@ -283,9 +212,6 @@
         self.shadeView.frame = sFrame;
         
     } completion:^(BOOL finished) {
-        if (self.delegate && [self.delegate respondsToSelector:@selector(didPresentActionSheet:)]) {
-            [self.delegate didPresentActionSheet:self];
-        }
         MKBlockExec(self.didPresentBlock, self);
     }];
 }
@@ -300,40 +226,18 @@
 - (void)dismissWithButtonIndex:(NSInteger)index{
     if (self.selectType == MKActionSheetSelectType_multiselect) {
         //多选样式下 只有 取消按钮才会走这里
-
-        if (self.delegate && [self.delegate respondsToSelector:@selector(actionSheet:willDismissWithSelectArray:)]) {
-            [self.delegate actionSheet:self willDismissWithSelectArray:nil];
-        }
         MKBlockExec(self.willDismissMultiselectBlock, self, nil);
-        
-        if (self.delegate && [self.delegate respondsToSelector:@selector(actionSheet:selectArray:)]) {
-            [self.delegate actionSheet:self selectArray:nil];
-        }
         MKBlockExec(self.multiselectBlock, self, nil);
-
     }else{
-        if (self.delegate && [self.delegate respondsToSelector:@selector(actionSheet:willDismissWithButtonIndex:)]) {
-            [self.delegate actionSheet:self willDismissWithButtonIndex:index];
-        }
         MKBlockExec(self.willDismissBlock, self, index);
-        
-        if (self.delegate && [self.delegate respondsToSelector:@selector(actionSheet:didClickButtonAtIndex:)]) {
-            [self.delegate actionSheet:self didClickButtonAtIndex:index];
-        }
         MKBlockExec(self.block, self, index)
     }
     
     MKWEAKSELF
     [self dismissWithBlock:^(BOOL finished) {
         if (_selectType == MKActionSheetSelectType_multiselect) {
-            if (_delegate && [_delegate respondsToSelector:@selector(actionSheet:didDismissWithSelectArray:)]) {
-                [_delegate actionSheet:weakSelf didDismissWithSelectArray:nil];
-            }
             MKBlockExec(weakSelf.didDismissMultiselectBlock, weakSelf, nil);
         }else{
-            if (_delegate && [_delegate respondsToSelector:@selector(actionSheet:didDismissWithButtonIndex:)]) {
-                [_delegate actionSheet:weakSelf didDismissWithButtonIndex:index];
-            }
             MKBlockExec(weakSelf.didDismissBlock, weakSelf, index);
         }
     }];
@@ -354,22 +258,12 @@
             }
         }
     }
-    
-    if (self.delegate && [self.delegate respondsToSelector:@selector(actionSheet:willDismissWithSelectArray:)]) {
-        [self.delegate actionSheet:self willDismissWithSelectArray:selectedArray];
-    }
+
     MKBlockExec(self.willDismissMultiselectBlock, self, selectedArray);
-    
-    if ([self.delegate respondsToSelector:@selector(actionSheet:selectArray:)]) {
-        [self.delegate actionSheet:self selectArray:selectedArray];
-    }
     MKBlockExec(self.multiselectBlock, self, selectedArray);
 
     MKWEAKSELF
     [self dismissWithBlock:^(BOOL finished) {
-        if (_delegate && [_delegate respondsToSelector:@selector(actionSheet:didDismissWithSelectArray:)]) {
-            [_delegate actionSheet:weakSelf didDismissWithSelectArray:selectedArray];
-        }
         MKBlockExec(weakSelf.didDismissMultiselectBlock, weakSelf, selectedArray);
     }];
 }
@@ -581,11 +475,7 @@
             //由于加载url图片需要导入 SDWebImage，而且有些人在项目中用的也不一定是SDWebImage, 或用不到此类型，
             //为了不增加 使用MKActionSheet 的成本，加载url 图片  用一个block 或 delegate 回调出去，根据大家自己的实际情况设置 图片，并设置自己的默认图片。
             if ([imageValue isKindOfClass:[NSString class]]) {
-                if (_delegate && [_delegate respondsToSelector:@selector(actionSheet:button:imageUrl:)]) {
-                    [_delegate actionSheet:self button:cell.btnCell imageUrl:imageValue];
-                }else{
-                    MKBlockExec(self.buttonImageBlock, self, cell.btnCell, imageValue);
-                }
+                MKBlockExec(self.buttonImageBlock, self, cell.btnCell, imageValue);
             }
         }
         
@@ -658,7 +548,7 @@
 - (UIWindow *)bgWindow{
     if (!_bgWindow) {
         _bgWindow = [[UIWindow alloc] initWithFrame:MKSCREEN_BOUNDS];
-        _bgWindow.windowLevel = self.windowLevel;
+        _bgWindow.windowLevel = _windowLevel;
         _bgWindow.backgroundColor = [UIColor clearColor];
         _bgWindow.hidden = NO;
         if (_currentVC) {
@@ -699,7 +589,7 @@
         _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
         _tableView.delegate = self;
         _tableView.dataSource = self;
-        _tableView.rowHeight = self.buttonHeight;
+        _tableView.rowHeight = _buttonHeight;
         _tableView.showsVerticalScrollIndicator = NO;
         _tableView.showsHorizontalScrollIndicator = NO;
         if (!_showSeparator) {
@@ -714,7 +604,7 @@
 - (UIView *)titleView{
     if (!_titleView) {
         _titleView = [[UIView alloc] init];
-        _titleView.backgroundColor = MKCOLOR_RGBA(255, 255, 255, self.buttonOpacity);
+        _titleView.backgroundColor = MKCOLOR_RGBA(255, 255, 255, _buttonOpacity);
     }
     return _titleView;
 }
@@ -722,11 +612,11 @@
 - (UILabel *)titleLabel{
     if (!_titleLabel) {
         _titleLabel = [[UILabel alloc] init];
-        _titleLabel.text = self.title;
+        _titleLabel.text = _title;
         _titleLabel.numberOfLines = 0;
-        _titleLabel.textColor = self.titleColor;
+        _titleLabel.textColor = _titleColor;
         _titleLabel.textAlignment = _titleAlignment;
-        _titleLabel.font = self.titleFont;
+        _titleLabel.font = _titleFont;
     }
     return _titleLabel;
 }
@@ -734,14 +624,14 @@
 - (UIButton *)cancelButton{
     if (!_cancelButton) {
         _cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_cancelButton setBackgroundImage:[UIImage mkas_imageWithColor:MKCOLOR_RGBA(255, 255, 255, self.buttonOpacity)] forState:UIControlStateNormal];
+        [_cancelButton setBackgroundImage:[UIImage mkas_imageWithColor:MKCOLOR_RGBA(255, 255, 255, _buttonOpacity)] forState:UIControlStateNormal];
         [_cancelButton setBackgroundImage:[UIImage mkas_imageWithColor:MKCOLOR_RGBA(255, 255, 255, 0)] forState:UIControlStateHighlighted];
-        [_cancelButton setTitle:self.cancelTitle forState:UIControlStateNormal];
-        [_cancelButton setTitleColor:self.buttonTitleColor forState:UIControlStateNormal];
-        _cancelButton.titleLabel.font = self.buttonTitleFont;
-        _cancelButton.tag = self.buttonTitles.count;
+        [_cancelButton setTitle:_cancelTitle forState:UIControlStateNormal];
+        [_cancelButton setTitleColor:_buttonTitleColor forState:UIControlStateNormal];
+        _cancelButton.titleLabel.font = _buttonTitleFont;
+        _cancelButton.tag = _buttonTitles.count;
         [_cancelButton addTarget:self action:@selector(btnCancelOnclicked:) forControlEvents:UIControlEventTouchUpInside];
-        _cancelButton.frame = CGRectMake(0, 6, MKSCREEN_WIDTH, self.buttonHeight);
+        _cancelButton.frame = CGRectMake(0, 6, MKSCREEN_WIDTH, _buttonHeight);
     }
     return _cancelButton;
 }
