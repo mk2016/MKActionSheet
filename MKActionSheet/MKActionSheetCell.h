@@ -15,6 +15,8 @@
 @property (nonatomic, weak) UIButton *btnCell;
 @property (nonatomic, weak) UIButton *btnSelect;
 
-+ (instancetype)cellWithTableView:(UITableView *)tableView;
+
+
++ (instancetype)cellWithTableView:(UITableView *)tableView buttonAlpha:(CGFloat)alpha;
 
 @end

@@ -7,24 +7,26 @@
 //
 
 #import "MKActionSheetCell.h"
-#import "UIImage+MKASAdd.h"
+#import "MKActionSheetAdd.h"
 
 
 @interface MKActionSheetCell(){
+    
 }
 @property (nonatomic, weak) UIImageView *selectedImageView;
-
+@property (nonatomic, assign) CGFloat btnAlpha;
 @end
 
 @implementation MKActionSheetCell
 
-+ (instancetype)cellWithTableView:(UITableView *)tableView{
++ (instancetype)cellWithTableView:(UITableView *)tableView buttonAlpha:(CGFloat)alpha{
     static NSString *identifier = @"MKActionSheetCell";
     MKActionSheetCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier];
     if (!cell) {
         cell = [[MKActionSheetCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
         cell.backgroundColor = [UIColor clearColor];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        cell.btnAlpha = alpha;
         [cell initUI];
     }
     return cell;
@@ -33,7 +35,7 @@
 - (void)initUI{
     
     //selected imageView
-    UIImageView *imgView = [[UIImageView alloc] initWithImage:[UIImage mkas_imageWithColor:[UIColor colorWithRed:1.0f green:1.0f blue:1.0f alpha:0.6]]];
+    UIImageView *imgView = [[UIImageView alloc] initWithImage:[UIImage mkas_imageWithColor:[UIColor colorWithRed:1.0f green:1.0f blue:1.0f alpha:self.btnAlpha]]];
     [self addSubview:imgView];
     self.selectedImageView = imgView;
     

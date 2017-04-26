@@ -8,8 +8,7 @@
 
 #import "MKActionSheet.h"
 #import "MKActionSheetCell.h"
-#import "NSObject+MKASAdd.h"
-#import "UIImage+MKASAdd.h"
+#import "MKActionSheetAdd.h"
 
 
 #ifndef MKActionSheetDefine
@@ -35,7 +34,6 @@
 @property (nonatomic, strong) UITableView *tableView;
 
 @property (nonatomic, strong) UIView *blurView;
-@property (nonatomic, strong) UIToolbar *blurBar;
 
 @property (nonatomic, strong) UIView *titleView;
 @property (nonatomic, strong) UILabel *titleLabel;
@@ -250,7 +248,7 @@
     
     for (NSInteger i = 0; i < self.buttonTitles.count; i++) {
         NSString *title = [self.buttonTitles objectAtIndex:i];
-        if (title.mk_selected) {
+        if (title.mkas_selected) {
             if (self.paramIsObject){
                 [selectedArray addObject:[self.objArray objectAtIndex:i]];
             }else{
@@ -275,7 +273,7 @@
 - (void)dismissWithBlock:(void (^ __nullable)(BOOL finished))block{
     if (self.selectType == MKActionSheetSelectType_multiselect) {
         for (NSString *title in self.buttonTitles) {
-            title.mk_selected = NO;
+            title.mkas_selected = NO;
         }
     }
     
@@ -386,36 +384,24 @@
     
     self.blurView = [[UIView alloc] initWithFrame:self.sheetView.bounds];
     [self.blurView setClipsToBounds:YES];
-    self.blurView.backgroundColor = [UIColor clearColor];
-    
-    self.blurBar = [[UIToolbar alloc] initWithFrame:self.blurView.bounds];
-    self.blurBar = [[UIToolbar alloc] initWithFrame:[self bounds]];
-    [self.blurView.layer insertSublayer:[self.blurBar layer] atIndex:0];
-    
+    self.blurView.backgroundColor = MKCOLOR_RGBA(100, 100, 100, 0.5);
+
+    UIBlurEffect *effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+    UIVisualEffectView *effectView = [[UIVisualEffectView alloc] initWithEffect:effect];
+    effectView.frame = self.blurView.bounds;
+    [self.blurView addSubview:effectView];
     [self.sheetView addSubview:self.blurView];
     [self.sheetView sendSubviewToBack:self.blurView];
-    [self setBlurAlpha:self.blurOpacity];
 
     [self.tableView reloadData];
 }
 
-- (void)setBlurAlpha:(CGFloat)alpha{
-    unsigned long numComponents = CGColorGetNumberOfComponents([[self.blurView backgroundColor] CGColor]);
-    if (numComponents == 4){
-        const CGFloat *components = CGColorGetComponents([[self.blurView backgroundColor] CGColor]);
-        CGFloat red = components[0];
-        CGFloat green = components[1];
-        CGFloat blue = components[2];
-        [self.blurView setBackgroundColor:[UIColor colorWithRed:red green:green blue:blue alpha:alpha]];
-    }else{
-        [self.blurView setBackgroundColor:[UIColor colorWithRed:1 green:1 blue:1 alpha:alpha]];
-    }
-}
+
 
 
 #pragma mark - ***** UITableView delegate ******
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-    MKActionSheetCell *cell = [MKActionSheetCell cellWithTableView:tableView];
+    MKActionSheetCell *cell = [MKActionSheetCell cellWithTableView:tableView buttonAlpha:_buttonOpacity];
     
     if (indexPath.row >= self.buttonTitles.count) {
         return cell;
@@ -433,7 +419,7 @@
     if (self.selectType == MKActionSheetSelectType_multiselect) {   //多选
         cell.btnSelect.hidden = NO;
         NSString *title = [self.buttonTitles objectAtIndex:indexPath.row];
-        cell.btnSelect.selected = title.mk_selected;
+        cell.btnSelect.selected = title.mkas_selected;
         
         if (self.selectBtnImageNameNormal && self.selectBtnImageNameNormal.length > 0) {
             [cell.btnSelect setImage:[UIImage imageNamed:self.selectedBtnImageName] forState:UIControlStateNormal];
@@ -500,7 +486,7 @@
     
     if (self.selectType == MKActionSheetSelectType_multiselect){    //多选
         NSString *title = [self.buttonTitles objectAtIndex:index];
-        title.mk_selected = !title.mk_selected;
+        title.mkas_selected = !title.mkas_selected;
         [self.tableView reloadData];
     }else if(self.selectType == MKActionSheetSelectType_selected){
         self.selectedIndex = index;
@@ -595,6 +581,7 @@
         if (!_showSeparator) {
             _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
         }
+        _tableView.separatorEffect = [UIVibrancyEffect effectForBlurEffect:[UIBlurEffect effectWithStyle:UIBlurEffectStyleLight]];
         _tableView.bounces = NO;
         _tableView.backgroundColor = [UIColor clearColor];
     }
