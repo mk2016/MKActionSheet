@@ -22,15 +22,15 @@
 
 ##添加
 * cocoapods  
-  pod 'MKActionSheet', '~> 1.4.0'
+  pod 'MKActionSheet', '~> 1.4.1'
 
 * Manually (手动导入)  
   只需将 MKActionSheet 文件添加到项目中即可
 
 
-##用法 详细用法参见demo
+## 用法 详细用法参见demo
+#### 1.4.0 版本之后 化烦为简 去除 delegate 用法, 适配到iOS8。  需要delegate或者想支持iOS7可以使用V1.3.2版本。
  * 支持 block 
- * 1.4.0 版本之后 化烦为简 去除 delegate 用法。
  * 有使用者反馈，status bar原来白色会变为黑色，这是由于新建了 window 导致的。
  * 现默认使用不新建window的模式，
  * 但如果您的项目使用了多个window,当顶部window不是keywindow时，sheetView会被顶部window遮住。
@@ -179,6 +179,8 @@ sheet.buttonImageBlock = ^(MKActionSheet* actionSheet, UIButton *button, NSStrin
  
  
 ## 版本记录
+### V1.4.1
+ * fix: blurOpacity 设置毛玻璃透明度无效的bug 
 ### V1.4.0
  * 去除 delegate 模式
  * 适配到iOS8
