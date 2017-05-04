@@ -116,7 +116,7 @@ typedef void(^MKActionSheetDidDismissMultiselectBlock)(MKActionSheet *actionShee
 //action sheet
 @property (nonatomic, assign) CGFloat titleMargin;                  /*!< title 边距 [default: 20] */
 @property (nonatomic, assign) CGFloat animationDuration;            /*!< 动画化时间 [default: 0.3f] */
-@property (nonatomic, assign) CGFloat blurOpacity;                  /*!< 毛玻璃透明度 [default: 0.0f] */
+@property (nonatomic, assign) CGFloat blurOpacity;                  /*!< 毛玻璃透明度 [default: 0.3f] */
 @property (nonatomic, assign) CGFloat blackgroundOpacity;           /*!< 灰色背景透明度 [default: 0.3f] */
 @property (nonatomic, assign,getter=isNeedCancelButton) BOOL needCancelButton;  /*!< 是否需要取消按钮 */
 @property (nonatomic, assign,getter=isShowSeparator) BOOL showSeparator;        /*!< 是否显示分割线 [default: YES]*/

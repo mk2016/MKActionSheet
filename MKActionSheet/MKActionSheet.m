@@ -104,7 +104,7 @@
     _cancelTitle = @"取消";
     _titleMargin = 20.0f;
     _animationDuration = 0.3f;
-    _blurOpacity = 0.0f;
+    _blurOpacity = 0.3f;
     _blackgroundOpacity = 0.3f;
     _maxShowButtonCount = 5.6;
     _needCancelButton = YES;
@@ -384,7 +384,7 @@
     
     self.blurView = [[UIView alloc] initWithFrame:self.sheetView.bounds];
     [self.blurView setClipsToBounds:YES];
-    self.blurView.backgroundColor = MKCOLOR_RGBA(100, 100, 100, 0.5);
+    self.blurView.backgroundColor = MKCOLOR_RGBA(100, 100, 100, _blurOpacity);
 
     UIBlurEffect *effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
     UIVisualEffectView *effectView = [[UIVisualEffectView alloc] initWithEffect:effect];
