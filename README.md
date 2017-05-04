@@ -14,7 +14,7 @@
  * 支持带 icon 图片样式
  * 支持多按钮，可设置最大显示数量（支持小数），超过最大数量，以tableView模式显示
  * 支持 Model 或 NSDictionary 数组初始化
- * 支持 block 和 delegate
+ * 支持 block 
  
 #### 先上效果图
  ![image](https://github.com/mk2016/MKActionSheet/raw/master/Screenshots/gif2.gif)
@@ -22,15 +22,15 @@
 
 ##添加
 * cocoapods  
-  pod 'MKActionSheet', '~> 1.3.1'
+  pod 'MKActionSheet', '~> 1.4.0'
 
 * Manually (手动导入)  
   只需将 MKActionSheet 文件添加到项目中即可
 
 
 ##用法 详细用法参见demo
-* 支持 block 和 delegate
-
+ * 支持 block 
+ * 1.4.0 版本之后 化烦为简 去除 delegate 用法。
  * 有使用者反馈，status bar原来白色会变为黑色，这是由于新建了 window 导致的。
  * 现默认使用不新建window的模式，
  * 但如果您的项目使用了多个window,当顶部window不是keywindow时，sheetView会被顶部window遮住。
@@ -42,27 +42,9 @@
 - (void)showWithBlock:(MKActionSheetBlock)block;
 //多选 block
 - (void)showWithMultiselectBlock:(MKActionSheetMultiselectBlock)multiselectblock;
-//delegate
-- (void)showWithDelegate:(id <MKActionSheetDelegate>)delegate;
-/**
- *  单选 delegage
- *  @param buttonIndex 被点击按钮的 index
- */
-- (void)actionSheet:(MKActionSheet *)actionSheet didClickButtonAtIndex:(NSInteger)buttonIndex;
-/**
- *  多选样式 的delegate 点击确认后 返回 选中的 array， 如果有 取消 按钮，取消按钮返回的 array 为nil
- *  @param array       被选中的button 对应数据的 array
- */
-- (void)actionSheet:(MKActionSheet *)actionSheet selectArray:(NSArray *)array;
-/**
- *  带icon图片，imageKey 对应的 图片类型是 URL方式， 调用此回调 设置图片
- *  @param button      要设置图片的 button
- *  @param imageUrl    图片的URL， 即 object 对应 的 imageKey 字段
- */
-- (void)actionSheet:(MKActionSheet *)actionSheet button:(UIButton *)button imageUrl:(NSString *)imageUrl;
 ```
 
-* 普通样式，多参数初始化， block
+* 普通样式，多参数初始化
  
 ```
  MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"初始化title为nil，将显示不带title样式。title" buttonTitleArray:@[@"button0", @"button1", @"button2",@"button3",@"button4"]];
@@ -70,14 +52,6 @@ sheet.destructiveButtonIndex = 3;
 [sheet showWithBlock:^(MKActionSheet *actionSheet, NSInteger buttonIndex) {
 	NSLog(@"buttonIndex:%ld",(long)buttonIndex);
 }];
-```
-
-* 普通样式，数组初始化， delegate
- 
-```
-MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:nil buttonTitleArray:@[@"button0", @"button1", @"button2",@"button3",@"button4"]];
-sheet.selectedIndex = 2;
-[sheet showWithDelegate:self];
 ```
 
 * 对象数组初始化，支持 model 和 NSDictionary 数组。titleKey是对象中用来显示按钮title对应的字段。
@@ -113,6 +87,7 @@ sheet.buttonImageBlock = ^(MKActionSheet* actionSheet, UIButton *button, NSStrin
 }];
 //
 // setImageKey:(NSString *)imageKey imageValueType:(MKActionSheetButtonImageValueType)imageValueType;
+
 //imageKey：对象中对应图片的字段， imageValueType：imageKey字段对应的类型
 typedef NS_ENUM(NSInteger, MKActionSheetButtonImageValueType) {
     MKActionSheetButtonImageValueType_none = 0,        //default
@@ -122,8 +97,8 @@ typedef NS_ENUM(NSInteger, MKActionSheetButtonImageValueType) {
 };
 ```
 
-* 带icon图标的样式，imageValueType 为 url 时加载图片的方法。
-  - 由于大家可能在项目中使用的加载图片的框架不一样，为了不增加使用MKActionSheet控件的成本。将加载url图片的方法 用block和delegate 回调出来让大家自己实现。以下是以比较常用的SDWebimage为例。
+##### 带icon图标的样式，imageValueType 为 url 时加载图片的方法。
+ * 由于大家可能在项目中使用的加载图片的框架不一样，为了不增加使用MKActionSheet控件的成本。将加载url图片的方法 用block 回调出来让大家自己实现。以下是以比较常用的SDWebimage为例。
 
 ```
 //button: 要被设置icon的按钮, imageUrl:图片的URL, 既前面设置的 ImageKey 的值，且imageValueType 为 MKActionSheetButtonImageValueType_url。
@@ -132,17 +107,16 @@ typedef NS_ENUM(NSInteger, MKActionSheetButtonImageValueType) {
 sheet.buttonImageBlock = ^(MKActionSheet* actionSheet, UIButton *button, NSString *imageUrl){
 	[button sd_setImageWithURL:[NSURL URLWithString:imageUrl] forState:UIControlStateNormal placeholderImage:[self getDefaultIcon]];
 };
-//
-//delegete
-- (void)actionSheet:(MKActionSheet *)actionSheet button:(UIButton *)button imageUrl:(NSString *)imageUrl{
-    [button sd_setImageWithURL:[NSURL URLWithString:imageUrl] forState:UIControlStateNormal placeholderImage:[self getDefaultIcon]];
-}
+
 ```
 
 
 #### 可以根据自己的需求定制UI
 ```
 /**  custom UI */
+@property (nonatomic, assign) CGFloat windowLevel;
+@property (nonatomic, assign) BOOL enableBgTap;                     /*!< 蒙版是否可以点击 收起*/
+@property (nonatomic, weak) UIViewController *currentVC;            /*!< 当前viewController 控制 stabar 保持当前样式 */
 //title
 @property (nonatomic, weak) UIView *customTitleView;                /*!< 自定义标题View */
 @property (nonatomic, copy) NSString *title;                        /*!< 标题 */
@@ -165,8 +139,8 @@ sheet.buttonImageBlock = ^(MKActionSheet* actionSheet, UIButton *button, NSStrin
 @property (nonatomic, assign) CGFloat animationDuration;            /*!< 动画化时间 [default: 0.3f] */
 @property (nonatomic, assign) CGFloat blurOpacity;                  /*!< 毛玻璃透明度 [default: 0.0f] */
 @property (nonatomic, assign) CGFloat blackgroundOpacity;           /*!< 灰色背景透明度 [default: 0.3f] */
-@property (nonatomic, assign,getter=isNeedCancelButton) BOOL needCancelButton;              /*!< 是否需要取消按钮 */
-@property (nonatomic, assign,getter=isShowSeparator) BOOL showSeparator;    /*!< 是否显示分割线 [default: YES]*/
+@property (nonatomic, assign,getter=isNeedCancelButton) BOOL needCancelButton;  /*!< 是否需要取消按钮 */
+@property (nonatomic, assign,getter=isShowSeparator) BOOL showSeparator;        /*!< 是否显示分割线 [default: YES]*/
 @property (nonatomic, assign) CGFloat separatorLeftMargin;          /*!< 分割线离左边的边距 [default:0] */
 @property (nonatomic, assign) CGFloat maxShowButtonCount;           /*!< 显示按钮最大个数，支持小数 [default:5.6，全部显示,可设置成 0] */
 //object Array
@@ -205,6 +179,11 @@ sheet.buttonImageBlock = ^(MKActionSheet* actionSheet, UIButton *button, NSStrin
  
  
 ## 版本记录
+### V1.4.0
+ * 去除 delegate 模式
+ * 适配到iOS8
+ * 模态改为使用 UIVisualEffectView，优化样式。
+
 ### V1.3.0
  * 新增属性
  ```
