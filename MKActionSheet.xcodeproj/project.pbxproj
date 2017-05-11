@@ -25,6 +25,7 @@
 		C51FB2401D547DEF00A766E1 /* UIView+WebCacheOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = C51FB22D1D547DEF00A766E1 /* UIView+WebCacheOperation.m */; };
 		C51FB2411D547DEF00A766E1 /* UIView+Toast.m in Sources */ = {isa = PBXBuildFile; fileRef = C51FB2301D547DEF00A766E1 /* UIView+Toast.m */; };
 		C51FB2481D55D9ED00A766E1 /* MKFPSStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = C51FB2471D55D9ED00A766E1 /* MKFPSStatus.m */; };
+		C52062FA1EBC218A0005F3D2 /* MKASRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C52062F91EBC218A0005F3D2 /* MKASRootViewController.m */; };
 		C53D40AE1D524DB1003E1545 /* InfoModel.m in Sources */ = {isa = PBXBuildFile; fileRef = C53D40AD1D524DB1003E1545 /* InfoModel.m */; };
 		C56728541D9054F2002D0245 /* MKActionSheet.bundle in Resources */ = {isa = PBXBuildFile; fileRef = C567284B1D9054F2002D0245 /* MKActionSheet.bundle */; };
 		C56728551D9054F2002D0245 /* MKActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = C567284D1D9054F2002D0245 /* MKActionSheet.m */; };
@@ -106,6 +107,8 @@
 		C51FB2301D547DEF00A766E1 /* UIView+Toast.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+Toast.m"; sourceTree = "<group>"; };
 		C51FB2461D55D9ED00A766E1 /* MKFPSStatus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKFPSStatus.h; sourceTree = "<group>"; };
 		C51FB2471D55D9ED00A766E1 /* MKFPSStatus.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKFPSStatus.m; sourceTree = "<group>"; };
+		C52062F81EBC218A0005F3D2 /* MKASRootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKASRootViewController.h; sourceTree = "<group>"; };
+		C52062F91EBC218A0005F3D2 /* MKASRootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKASRootViewController.m; sourceTree = "<group>"; };
 		C53D40AC1D524DB1003E1545 /* InfoModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfoModel.h; sourceTree = "<group>"; };
 		C53D40AD1D524DB1003E1545 /* InfoModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfoModel.m; sourceTree = "<group>"; };
 		C567284B1D9054F2002D0245 /* MKActionSheet.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = MKActionSheet.bundle; sourceTree = "<group>"; };
@@ -252,6 +255,8 @@
 				C567284F1D9054F2002D0245 /* MKActionSheetCell.m */,
 				C5AEE5BB1EB0483C00D3BF3C /* MKActionSheetAdd.h */,
 				C5AEE5BC1EB0483C00D3BF3C /* MKActionSheetAdd.m */,
+				C52062F81EBC218A0005F3D2 /* MKASRootViewController.h */,
+				C52062F91EBC218A0005F3D2 /* MKASRootViewController.m */,
 			);
 			path = MKActionSheet;
 			sourceTree = "<group>";
@@ -522,6 +527,7 @@
 				C51FB2321D547DEF00A766E1 /* NSData+ImageContentType.m in Sources */,
 				C5D6C1A11D67674A003598E7 /* MASLayoutConstraint.m in Sources */,
 				C51FB2391D547DEF00A766E1 /* SDWebImagePrefetcher.m in Sources */,
+				C52062FA1EBC218A0005F3D2 /* MKASRootViewController.m in Sources */,
 				C51FB2481D55D9ED00A766E1 /* MKFPSStatus.m in Sources */,
 				C51FB2361D547DEF00A766E1 /* SDWebImageDownloader.m in Sources */,
 				C53D40AE1D524DB1003E1545 /* InfoModel.m in Sources */,

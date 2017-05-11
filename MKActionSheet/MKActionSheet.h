@@ -14,7 +14,7 @@
 
 #pragma mark - ***** 枚举 ******
 typedef NS_ENUM(NSInteger, MKActionSheetSelectType) {
-    MKActionSheetSelectType_common              = 1,      //default
+    MKActionSheetSelectType_common  = 1,        //default
     MKActionSheetSelectType_selected,           //默认带有一个 已选择的 选项
     MKActionSheetSelectType_multiselect,        //多选 样式
 };
@@ -39,7 +39,7 @@ typedef NS_ENUM(NSInteger, MKActionSheetButtonImageValueType) {
  *  单选的 block
  *
  *  @param actionSheet self
- *  @param buttonIndex clicked button's index
+ *  @param buttonIndex index with clicked button
  */
 typedef void(^MKActionSheetBlock)(MKActionSheet *actionSheet, NSInteger buttonIndex);
 
@@ -55,19 +55,11 @@ typedef void(^MKActionSheetMultiselectBlock)(MKActionSheet *actionSheet, NSArray
  *  imageKey 的类型为 url时，可用 这个block 加载 图片
  *
  *  @param actionSheet self
- *  @param button      需要设置图片的按钮
- *  @param imageUrl    图片的 URL，即 'imageKey'  对应的值
+ *  @param button      button with need load image by url
+ *  @param imageUrl    image URL，即 'imageKey'  对应的值
  */
 typedef void(^MKActionSheetSetButtonImageWithUrlBlock)(MKActionSheet *actionSheet, UIButton *button, NSString *imageUrl);
 
-/** before and after animation block */
-typedef void(^MKActionSheetWillPresentBlock)(MKActionSheet *actionSheet);
-typedef void(^MKActionSheetDidPresentBlock)(MKActionSheet *actionSheet);
-
-typedef void(^MKActionSheetWillDismissBlock)(MKActionSheet *actionSheet, NSInteger buttonIndex);
-typedef void(^MKActionSheetDidDismissBlock)(MKActionSheet *actionSheet, NSInteger buttonIndex);
-typedef void(^MKActionSheetWillDismissMultiselectBlock)(MKActionSheet *actionSheet, NSArray *array);
-typedef void(^MKActionSheetDidDismissMultiselectBlock)(MKActionSheet *actionSheet, NSArray *array);
 
 /** 
  * 有使用者反馈，status bar原来白色会变为黑色，这是由于新建了 window 导致的。
@@ -78,19 +70,11 @@ typedef void(^MKActionSheetDidDismissMultiselectBlock)(MKActionSheet *actionShee
  */
 #pragma mark - ***** MKActionSheet ******
 @interface MKActionSheet : UIView
-@property (nonatomic, assign) MKActionSheetSelectType selectType;   /*!< 选择模式：默认、单选(在初始选择的后面会有标示)、多选*/
 
 @property (nonatomic, copy) MKActionSheetBlock block;                           /*!< 点击按钮回调 */
 @property (nonatomic, copy) MKActionSheetMultiselectBlock multiselectBlock;     /*!< 多选样式的回调 返回选择的数组 */
 @property (nonatomic, copy) MKActionSheetSetButtonImageWithUrlBlock buttonImageBlock;   /*!< 设置 button image 的回调 */
 
-/** before and after animation block */
-@property (nonatomic, copy) MKActionSheetWillPresentBlock willPresentBlock;
-@property (nonatomic, copy) MKActionSheetDidPresentBlock didPresentBlock;
-@property (nonatomic, copy) MKActionSheetWillDismissBlock willDismissBlock;
-@property (nonatomic, copy) MKActionSheetDidDismissBlock didDismissBlock;
-@property (nonatomic, copy) MKActionSheetWillDismissMultiselectBlock willDismissMultiselectBlock;
-@property (nonatomic, copy) MKActionSheetDidDismissMultiselectBlock didDismissMultiselectBlock;
 
 /**  custom UI */
 @property (nonatomic, assign) CGFloat windowLevel;
@@ -154,39 +138,33 @@ typedef void(^MKActionSheetDidDismissMultiselectBlock)(MKActionSheet *actionShee
              buttonTitleArray:(NSArray *)buttonTitleArray;
 
 
-/**
- *  init MKActionSheet with objects array and selectType
- *
- *  支持直接传入 model 或 NSDictionary 数据的初始化方法。必须设置titleKey，object中的titleKey字段将用于显示按钮title,
- *  参照普遍需求，传入object模式默认去除取消按钮。如果需要取消按钮可自己设置  needCancelButton = YES;
- *  有取消按钮时，点击取消按钮  block 和 delegate 中返回 的 obj 为 nil。
- *
- *  @param title    title string
- *  @param objArray objects array
- *  @param titleKey object中titleKey的值，用于显示按钮title,
- *
- *  @return self
- */
 - (instancetype)initWithTitle:(NSString *)title
                      objArray:(NSArray *)objArray
-                     titleKey:(NSString *)titleKey
+               buttonTitleKey:(NSString *)buttonTitleKey
                    selectType:(MKActionSheetSelectType)selectType;
 
 /** selectType default: MKActionSheetSelectType_common */
 - (instancetype)initWithTitle:(NSString *)title
                      objArray:(NSArray *)objArray
-                     titleKey:(NSString *)titleKey;
+               buttonTitleKey:(NSString *)buttonTitleKey;
 
-/** other method */
-/**
- *  设置 带icon 的样式，imageKey 为 图片对应的字段， imageValueType
- *
- *  @param imageKey       imageKey
- *  @param imageValueType imageKey 的 类型
- */
-- (void)setImageKey:(NSString *)imageKey imageValueType:(MKActionSheetButtonImageValueType)imageValueType;
+
+- (instancetype)initWithTitle:(NSString *)title
+                     objArray:(NSArray *)objArray
+               buttonTitleKey:(NSString *)buttonTitleKey
+                     imageKey:(NSString *)imageKey
+               imageValueType:(MKActionSheetButtonImageValueType)imageValueType
+                   selectType:(MKActionSheetSelectType)selectType;
+
+
+
+- (void)addButtonWithButtonTitle:(NSString *)title;
+- (void)removeButtonWithButtonTitle:(NSString *)title;
+
 - (void)addButtonWithObj:(id)obj;
-- (void)addButtonWithTitle:(NSString *)title;
+- (void)removeButtonWithObj:(id)obj;
+
+- (void)removeButtonWithIndex:(NSInteger)index;
 
 /** show method */
 /**
@@ -208,6 +186,3 @@ typedef void(^MKActionSheetDidDismissMultiselectBlock)(MKActionSheet *actionShee
 @end
 
 
-@interface MKASRootViewController : UIViewController
-@property (nonatomic, weak) UIViewController *vc;
-@end
