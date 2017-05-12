@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Masonry.h"
 
 #define MKActionSheet_WindowLevel   UIWindowLevelStatusBar - 1
 
@@ -60,7 +61,7 @@ typedef void(^MKActionSheetMultiselectBlock)(MKActionSheet *actionSheet, NSArray
  */
 typedef void(^MKActionSheetSetButtonImageWithUrlBlock)(MKActionSheet *actionSheet, UIButton *button, NSString *imageUrl);
 
-
+typedef void(^MKActionSheetCustomLayoutBlock)(MASConstraintMaker *make, UIView *superview);
 /** 
  * 有使用者反馈，status bar原来白色会变为黑色，这是由于新建了 window 导致的。
  * 现默认使用不新建window的模式，
@@ -81,7 +82,6 @@ typedef void(^MKActionSheetSetButtonImageWithUrlBlock)(MKActionSheet *actionShee
 @property (nonatomic, assign) BOOL enableBgTap;                     /*!< 蒙版是否可以点击 收起*/
 @property (nonatomic, weak) UIViewController *currentVC;            /*!< 当前viewController 控制 stabar 保持当前样式 */
 //title
-@property (nonatomic, weak) UIView *customTitleView;                /*!< 自定义标题View */
 @property (nonatomic, copy) NSString *title;                        /*!< 标题 */
 @property (nonatomic, strong) UIColor *titleColor;                  /*!< 标题颜色 [default: RGBA(100.0f, 100.0f, 100.0f, 1.0f)]*/
 @property (nonatomic, strong) UIFont *titleFont;                    /*!< 标题字体 [default: sys 14] */
@@ -91,6 +91,7 @@ typedef void(^MKActionSheetSetButtonImageWithUrlBlock)(MKActionSheet *actionShee
 @property (nonatomic, strong) UIFont  *buttonTitleFont;             /*!< 按钮 字体 [default: sys 18] */
 @property (nonatomic, assign) CGFloat buttonOpacity;                /*!< 按钮透明度 [default: 0.6] */
 @property (nonatomic, assign) CGFloat buttonHeight;                 /*!< 按钮高度 [default: 48.0f] */
+@property (nonatomic, assign) CGFloat buttonImageRightSpace;        /*!< 带图片样式 图片右边离 title 的距离 [default: 12.f] */
 @property (nonatomic, assign) MKActionSheetButtonTitleAlignment buttonTitleAlignment;   /*!< button title 对齐方式 [default: center] */
 //destructive Button
 @property (nonatomic, assign) NSInteger destructiveButtonIndex;     /*!< 特殊按钮位置 [default:-1]*/
@@ -119,6 +120,7 @@ typedef void(^MKActionSheetSetButtonImageWithUrlBlock)(MKActionSheet *actionShee
 //multiselect
 @property (nonatomic, strong) UIColor *multiselectConfirmButtonTitleColor;  /*!< 多选 确定按钮 颜色 */
 
+@property (nonatomic, assign) BOOL manualDismiss;
 #pragma mark - ***** init method ******
 /**
  *  init MKActionSheet with buttonTitles array and selectType
@@ -148,6 +150,12 @@ typedef void(^MKActionSheetSetButtonImageWithUrlBlock)(MKActionSheet *actionShee
                      objArray:(NSArray *)objArray
                buttonTitleKey:(NSString *)buttonTitleKey;
 
+/** selectType default: MKActionSheetSelectType_common */
+- (instancetype)initWithTitle:(NSString *)title
+                     objArray:(NSArray *)objArray
+               buttonTitleKey:(NSString *)buttonTitleKey
+                     imageKey:(NSString *)imageKey
+               imageValueType:(MKActionSheetButtonImageValueType)imageValueType;
 
 - (instancetype)initWithTitle:(NSString *)title
                      objArray:(NSArray *)objArray
@@ -157,7 +165,7 @@ typedef void(^MKActionSheetSetButtonImageWithUrlBlock)(MKActionSheet *actionShee
                    selectType:(MKActionSheetSelectType)selectType;
 
 
-
+- (void)setCustomTitleView:(UIView *)view makeConstraints:(MKActionSheetCustomLayoutBlock)block;
 - (void)addButtonWithButtonTitle:(NSString *)title;
 - (void)removeButtonWithButtonTitle:(NSString *)title;
 

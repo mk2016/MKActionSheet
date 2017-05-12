@@ -7,9 +7,7 @@
 //
 
 #import "MKActionSheet.h"
-#import "MKActionSheetCell.h"
 #import "MKActionSheetAdd.h"
-#import "Masonry.h"
 #import "MKASRootViewController.h"
 
 #ifndef MKActionSheetDefine
@@ -22,8 +20,9 @@
 #endif
 
 
-#define MKAS_BUTTON_SEPARATOR_HEIGHT    0.3f
+#define MKAS_BUTTON_SEPARATOR_HEIGHT    (1 / [UIScreen mainScreen].scale)
 #define MKAS_BUTTON_TAG_BASE            100
+#define MKAS_BUTTON_SELECT_TAG          999
 
 #pragma mark - ***** MKActionSheet ******
 @interface MKActionSheet()<UIScrollViewDelegate>
@@ -40,6 +39,7 @@
 @property (nonatomic, strong) UIView *titleView;
 @property (nonatomic, strong) UILabel *titleLabel;
 @property (nonatomic, strong) UIButton *confirmButton;
+@property (nonatomic, weak) UIView *customTitleView;                    /*!< 自定义标题View */
 
 @property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, strong) NSMutableArray *buttonViewsArray;
@@ -51,6 +51,8 @@
 
 @property (nonatomic, assign) CGFloat sheetHeight;
 @property (nonatomic, assign) BOOL isShow;
+
+@property (nonatomic, copy) MKActionSheetCustomLayoutBlock customLayoutBlock;
 @end
 
 
@@ -79,6 +81,14 @@
 
 - (instancetype)initWithTitle:(NSString *)title objArray:(NSArray *)objArray buttonTitleKey:(NSString *)buttonTitleKey selectType:(MKActionSheetSelectType)selectType{
     return [self initWithTitle:title objArray:objArray buttonTitleKey:buttonTitleKey imageKey:nil imageValueType:MKActionSheetButtonImageValueType_none selectType:selectType];
+}
+
+- (instancetype)initWithTitle:(NSString *)title
+                     objArray:(NSArray *)objArray
+               buttonTitleKey:(NSString *)buttonTitleKey
+                     imageKey:(NSString *)imageKey
+               imageValueType:(MKActionSheetButtonImageValueType)imageValueType{
+    return [self initWithTitle:title objArray:objArray buttonTitleKey:buttonTitleKey imageKey:imageKey imageValueType:imageValueType selectType:MKActionSheetSelectType_common];
 }
 
 - (instancetype)initWithTitle:(NSString *)title
@@ -136,6 +146,7 @@
     _enableBgTap = YES;
 
     //默认样式
+
     _titleColor = MKCOLOR_RGBA(100.0f, 100.0f, 100.0f, 1.0f);
     _titleFont = [UIFont systemFontOfSize:14];
     _titleAlignment = NSTextAlignmentCenter;
@@ -144,6 +155,7 @@
     _buttonTitleFont = [UIFont systemFontOfSize:18.0f];
     _buttonOpacity = 0.6;
     _buttonHeight = 48.0f;
+    _buttonImageRightSpace = 12.f;
     _buttonTitleAlignment = MKActionSheetButtonTitleAlignment_center;
 
     _destructiveButtonTitleColor = MKCOLOR_RGBA(250.0f, 10.0f, 10.0f, 1.0f);
@@ -157,7 +169,6 @@
     _needCancelButton = YES;
     _showSeparator = YES;
     _separatorLeftMargin = 0;
-    
     
     _multiselectConfirmButtonTitleColor = MKCOLOR_RGBA(100.0f, 100.0f, 100.0f, 1.0f);
     
@@ -179,6 +190,30 @@
         _buttonTitleAlignment = MKActionSheetButtonTitleAlignment_center;
     }
 }
+
+
+- (void)setCustomTitleView:(UIView *)view makeConstraints:(MKActionSheetCustomLayoutBlock)block{
+    [_customTitleView removeFromSuperview];
+    _customTitleView = nil;
+    _customTitleView = view;
+    _customLayoutBlock = block;
+    if (_customLayoutBlock == nil) {
+        CGRect tempFrame = _customTitleView.frame;
+        if (tempFrame.origin.x != 0 || tempFrame.origin.y != 0 || tempFrame.size.width != 0 || tempFrame.size.height != 0) {
+            _customLayoutBlock = ^(MASConstraintMaker *make, UIView *superview) {
+                make.left.equalTo(superview).offset(tempFrame.origin.x);
+                make.top.equalTo(superview).offset(tempFrame.origin.y);
+                make.width.mas_equalTo(tempFrame.size.width);
+                make.height.mas_equalTo(tempFrame.size.height);
+                make.bottom.equalTo(superview);
+            };
+        }
+    }
+//    [self setNeedsUpdateConstraints];
+//    [self updateConstraintsIfNeeded];
+//    [self layoutIfNeeded];
+}
+
 
 #pragma mark - ***** show methods******
 - (void)showWithBlock:(MKActionSheetBlock)block{
@@ -207,7 +242,7 @@
     }else{
         MKBlockExec(self.block, self, index)
     }
-    [self dismiss];
+    [self chekcManualDismiss];
 }
 
 /** 多选确认按钮 */
@@ -226,9 +261,25 @@
         }
     }
     MKBlockExec(self.multiselectBlock, self, selectedArray);
-    [self dismiss];
+    [self chekcManualDismiss];
 }
 
+
+- (void)btnClick:(UIButton *)sender{
+    NSInteger index = sender.tag-MKAS_BUTTON_TAG_BASE;
+    if (self.selectType == MKActionSheetSelectType_multiselect){    //多选
+        NSString *title = [self.buttonTitles objectAtIndex:index];
+        title.mkas_selected = !title.mkas_selected;
+        UIView *view = self.buttonViewsArray[index];
+        UIButton *btn = [view viewWithTag:MKAS_BUTTON_SELECT_TAG];
+        btn.selected = title.mkas_selected;
+    }else if(self.selectType == MKActionSheetSelectType_selected){
+        self.selectedIndex = index;
+        [self dismissWithButtonIndex:index];
+    }else{
+        [self dismissWithButtonIndex:index];
+    }
+}
 
 
 - (void)show{
@@ -259,7 +310,12 @@
     } completion:nil];
 }
 
-
+- (void)chekcManualDismiss{
+    if (self.manualDismiss) {
+        return;
+    }
+    [self dismiss];
+}
 
 - (void)dismiss{
     if (self.selectType == MKActionSheetSelectType_multiselect) {
@@ -289,6 +345,9 @@
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     if (orientation == UIInterfaceOrientationLandscapeRight || orientation == UIInterfaceOrientationLandscapeLeft){
         NSLog(@"LR");
+        if (self.maxShowButtonCount > 3) {
+            self.maxShowButtonCount = 3;
+        }
     }if (orientation == UIInterfaceOrientationPortrait){
         NSLog(@"P");
     }
@@ -324,51 +383,101 @@
     }
 
     //UIScrollView
-    self.scrollView.contentSize = CGSizeMake(MKSCREEN_WIDTH, self.buttonTitles.count *(self.buttonHeight+MKAS_BUTTON_SEPARATOR_HEIGHT)-MKAS_BUTTON_SEPARATOR_HEIGHT);
+    self.scrollView.contentSize = CGSizeMake(MKSCREEN_WIDTH, self.buttonTitles.count*self.buttonHeight);
     [self.buttonViewsArray removeAllObjects];
     for (NSInteger i = 0; i < self.buttonTitles.count; i++) {
         UIView *view = [[UIView alloc] init];
         view.backgroundColor = [UIColor clearColor];
         [self.scrollView addSubview:view];
         [self.buttonViewsArray addObject:view];
-        CGRect viewFrame = CGRectMake(0, (self.buttonHeight+MKAS_BUTTON_SEPARATOR_HEIGHT)*i, MKSCREEN_WIDTH, self.buttonHeight);
+        CGRect viewFrame = CGRectMake(0, self.buttonHeight*i, MKSCREEN_WIDTH, self.buttonHeight);
         view.frame = viewFrame;
         
         UIButton *btn = [self createButton];
         [view addSubview:btn];
-        btn.frame = CGRectMake(0, 0, viewFrame.size.width, self.buttonHeight);
+        btn.frame = CGRectMake(0, 0, viewFrame.size.width, viewFrame.size.height-MKAS_BUTTON_SEPARATOR_HEIGHT);
         btn.tag = i + MKAS_BUTTON_TAG_BASE;
         [btn setTitle:self.buttonTitles[i] forState:UIControlStateNormal];
         [btn addTarget:self action:@selector(btnClick:) forControlEvents:UIControlEventTouchUpInside];
-    
+        
         if (i == self.destructiveButtonIndex) {
             [btn setTitleColor:self.destructiveButtonTitleColor forState:UIControlStateNormal];
         }
-//
-//        UIButton *btnSelect = [UIButton buttonWithType:UIButtonTypeCustom];
-//        if (self.selectType == MKActionSheetSelectType_multiselect) {   //多选
-//            btnSelect.hidden = NO;
-//            NSString *title = [self.buttonTitles objectAtIndex:i];
-//            btnSelect.selected = title.mkas_selected;
-//            
-//            if (self.selectBtnImageNameNormal && self.selectBtnImageNameNormal.length > 0) {
-//                [btnSelect setImage:[UIImage imageNamed:self.selectedBtnImageName] forState:UIControlStateNormal];
-//            }
-//            if (self.selectBtnImageNameSelected && self.selectBtnImageNameSelected.length > 0) {
-//                [btnSelect setImage:[UIImage imageNamed:self.selectBtnImageNameSelected] forState:UIControlStateSelected];
-//                [btnSelect setImage:[UIImage imageNamed:self.selectBtnImageNameSelected] forState:UIControlStateHighlighted];
-//            }
-//        }else if (self.selectType == MKActionSheetSelectType_selected){ //单选
-//            btnSelect.hidden = YES;
-//            btnSelect.enabled = NO;
-//            if (self.selectedIndex == i) {
-//                btnSelect.hidden = NO;
-//            }
-//            
-//            if (self.selectedBtnImageName && self.selectedBtnImageName.length > 0) {
-//                [btnSelect setImage:[UIImage imageNamed:self.selectedBtnImageName] forState:UIControlStateDisabled];
-//            }
-//        }
+
+        if (self.selectType != MKActionSheetSelectType_common) {
+            UIButton *btnSelect = [self createSelectButton];
+            [view addSubview:btnSelect];
+            
+            btnSelect.translatesAutoresizingMaskIntoConstraints = NO;
+            NSDictionary *views = @{@"btnSelect" : btnSelect};
+            NSArray *btnSelect_vfl_H = [NSLayoutConstraint constraintsWithVisualFormat:@"H:[btnSelect]-16-|"
+                                                                               options:0
+                                                                               metrics:nil
+                                                                                 views:views];
+            NSArray *btnSelect_vfl_V = [NSLayoutConstraint constraintsWithVisualFormat:@"V:|[btnSelect]|"
+                                                                               options:0
+                                                                               metrics:nil
+                                                                                 views:views];
+            [self addConstraints:btnSelect_vfl_H];
+            [self addConstraints:btnSelect_vfl_V];
+            
+            if (self.selectType == MKActionSheetSelectType_selected){ //单选
+                if (self.selectedBtnImageName && self.selectedBtnImageName.length > 0) {
+                    [btnSelect setImage:[UIImage imageNamed:self.selectedBtnImageName] forState:UIControlStateDisabled];
+                }
+                btnSelect.hidden = YES;
+                btnSelect.enabled = NO;
+                if (self.selectedIndex == i) {
+                    btnSelect.hidden = NO;
+                }
+            }else if (self.selectType == MKActionSheetSelectType_multiselect) {   //多选
+                if (self.selectBtnImageNameNormal && self.selectBtnImageNameNormal.length > 0) {
+                    [btnSelect setImage:[UIImage imageNamed:self.selectedBtnImageName] forState:UIControlStateNormal];
+                }
+                if (self.selectBtnImageNameSelected && self.selectBtnImageNameSelected.length > 0) {
+                    [btnSelect setImage:[UIImage imageNamed:self.selectBtnImageNameSelected] forState:UIControlStateSelected];
+                    [btnSelect setImage:[UIImage imageNamed:self.selectBtnImageNameSelected] forState:UIControlStateHighlighted];
+                }
+                btnSelect.hidden = NO;
+                NSString *title = [self.buttonTitles objectAtIndex:i];
+                btnSelect.selected = title.mkas_selected;
+            }
+        }
+        
+        
+        if (self.buttonTitleAlignment == MKActionSheetButtonTitleAlignment_left) {
+            btn.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
+            [btn setContentEdgeInsets:UIEdgeInsetsMake(0, self.titleMargin, 0, 0)];
+        }else if (self.buttonTitleAlignment == MKActionSheetButtonTitleAlignment_right){
+            btn.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
+            [btn setContentEdgeInsets:UIEdgeInsetsMake(0, 0, 0, self.titleMargin)];
+        }else if (self.buttonTitleAlignment == MKActionSheetButtonTitleAlignment_center){
+            btn.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
+            [btn setContentEdgeInsets:UIEdgeInsetsZero];
+        }
+        
+        if (self.paramIsObject && self.imageKey && self.imageKey.length > 0 && self.imageValueType) {
+            btn.titleEdgeInsets = UIEdgeInsetsMake(0, _buttonImageRightSpace, 0, 0);
+//            btn.titleEdgeInsets = UIEdgeInsetsZero;
+            id obj = [self.objArray objectAtIndex:i];
+            id imageValue = [obj valueForKey:self.imageKey];
+            
+            if (self.imageValueType == MKActionSheetButtonImageValueType_name) {
+                if ([imageValue isKindOfClass:[NSString class]]) {
+                    [btn setImage:[UIImage imageNamed:imageValue] forState:UIControlStateNormal];
+                }
+            }else if (self.imageValueType == MKActionSheetButtonImageValueType_image){
+                if ([imageValue isKindOfClass:[UIImage class]]) {
+                    [btn setImage:imageValue forState:UIControlStateNormal];
+                }
+            }else if (self.imageValueType == MKActionSheetButtonImageValueType_url){
+                //由于加载url图片需要导入 SDWebImage，而且有些人在项目中用的也不一定是SDWebImage, 或用不到此类型，
+                //为了不增加 使用MKActionSheet 的成本，加载url 图片  用一个block 或 delegate 回调出去，根据大家自己的实际情况设置 图片，并设置自己的默认图片。
+                if ([imageValue isKindOfClass:[NSString class]] || [imageValue isKindOfClass:[NSURL class]]) {
+                    MKBlockExec(self.buttonImageBlock, self, btn, imageValue);
+                }
+            }
+        }
     }
     
     //title
@@ -376,124 +485,36 @@
         self.title = @"";
     }
 
-    if (self.title || self.customTitleView) {
-        if (self.customTitleView) {
-            [self.customTitleView removeFromSuperview];
-            [self.titleView addSubview:self.customTitleView];
-        }else if (self.title){
-            [self.titleView addSubview:self.titleLabel];
-            self.titleLabel.text = self.title;
-                
-            if (self.selectType == MKActionSheetSelectType_multiselect) {
-                [self.titleView addSubview:self.confirmButton];
-                UIView *leftLine = [[UIView alloc] init];
-                leftLine.backgroundColor = MKCOLOR_RGBA(0, 0, 0, 0.2);
-                [_confirmButton addSubview:leftLine];
-                
-                [leftLine mas_makeConstraints:^(MASConstraintMaker *make) {
-                    make.left.centerY.equalTo(self.confirmButton);
-                    make.width.mas_equalTo(1);
-                    make.height.mas_equalTo(20);
-                }];
-            }
+    if (self.customTitleView) {
+        [self.titleView addSubview:self.customTitleView];
+    }else if (self.title){
+        [self.titleView addSubview:self.titleLabel];
+        self.titleLabel.text = self.title;
+        
+        if (self.selectType == MKActionSheetSelectType_multiselect) {
+            [self.titleView addSubview:self.confirmButton];
+            UIView *leftLine = [[UIView alloc] init];
+            leftLine.backgroundColor = MKCOLOR_RGBA(0, 0, 0, 0.2);
+            [_confirmButton addSubview:leftLine];
+            
+            [leftLine mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.left.centerY.equalTo(self.confirmButton);
+                make.width.mas_equalTo(1);
+                make.height.mas_equalTo(20);
+            }];
         }
     }
-    
-    
-    
     
     [self.bgWindow.rootViewController.view addSubview:self];
     [self mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(self.bgWindow.rootViewController.view);
     }];
     [_bgWindow layoutIfNeeded];
-
-    
- 
-
-
-
-  
-    
-
-    
-//    
-//    if (self.title || self.customTitleView) {
-//  
-//        
-//        if (self.customTitleView) {
-//            [self.customTitleView removeFromSuperview];
-//            [self.titleView addSubview:self.customTitleView];
-//            [self.customTitleView mas_makeConstraints:^(MASConstraintMaker *make) {
-//                make.edges.equalTo(self.titleView);
-//            }];
-//        }else if (self.title){
-//            [self.titleView addSubview:self.titleLabel];
-//            
-//            UIView *separator = [[UIView alloc] init];
-//            separator.backgroundColor = MKCOLOR_RGBA(0, 0, 0, 0.2);
-//            [self.titleView addSubview:separator];
-//            [separator mas_makeConstraints:^(MASConstraintMaker *make) {
-//                make.left.right.bottom.equalTo(self.titleView);
-//                make.height.mas_equalTo(0.5);
-//            }];
-//            
-//            CGFloat titleLabWidth = MKSCREEN_WIDTH - self.titleMargin*2;
-//            if (self.selectType == MKActionSheetSelectType_multiselect) {
-//                titleLabWidth = titleLabWidth-80-4+self.titleMargin;
-//                [self.titleView addSubview:self.confirmButton];
-//            }
-//            CGSize titleSize = [self.titleLabel.text boundingRectWithSize:CGSizeMake(titleLabWidth, MAXFLOAT)
-//                                                                  options:NSStringDrawingUsesLineFragmentOrigin
-//                                                               attributes:@{NSFontAttributeName: self.titleLabel.font}
-//                                                                  context:nil].size;
-//            self.sheetHeight += titleSize.height+20;
-//
-//            [self.titleView mas_makeConstraints:^(MASConstraintMaker *make) {
-//                make.left.right.top.equalTo(self.sheetView);
-//                make.bottom.equalTo(self.tableView.mas_top);
-//                make.height.mas_equalTo(titleSize.height+20);
-//            }];
-//            
-//    
-//            
-//            if (self.selectType == MKActionSheetSelectType_multiselect) {
-//                [self.titleView addSubview:self.confirmButton];
-//                
-//                [self.confirmButton mas_makeConstraints:^(MASConstraintMaker *make) {
-//                    make.centerY.equalTo(self.titleView);
-//                    make.width.mas_equalTo(80);
-//                    make.right.equalTo(self.titleView);
-//                }];
-//                
-//                
-//                UIView *leftLine = [[UIView alloc] init];
-//                leftLine.backgroundColor = MKCOLOR_RGBA(0, 0, 0, 0.2);
-//                [_confirmButton addSubview:leftLine];
-//                
-//                [leftLine mas_makeConstraints:^(MASConstraintMaker *make) {
-//                    make.left.centerY.equalTo(self.confirmButton);
-//                    make.width.mas_equalTo(1);
-//                    make.height.mas_equalTo(20);
-//                }];
-//                [[UIDevice currentDevice] identifierForVendor];
-//                [self.titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-//                    make.centerY.equalTo(self.titleView);
-//                    make.left.equalTo(self.titleView).offset(self.titleMargin);
-//                    make.right.equalTo(self.confirmButton.mas_left).offset(-4);
-//                }];
-//            }
-//        }
-//    }
-}
-
-- (void)btnClick:(UIButton *)sender{
-    NSLog(@"%ld", (long)sender.tag);
 }
 
 - (void)updateConstraints{
     
-    [self.shadeView mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self.shadeView mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.left.right.top.equalTo(self);
         make.bottom.equalTo(self.sheetView.mas_top);
     }];
@@ -510,7 +531,7 @@
         }];
     }
     
-    [self.blurView mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self.blurView mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(self.sheetView);
     }];
     
@@ -521,25 +542,31 @@
     
     if (self.customTitleView) {
         [self.customTitleView mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.edges.equalTo(self.titleView);
+//            make.left.right.equalTo(self.titleView);
+//            make.top.equalTo(self.titleView).offset(0);
+//            make.bottom.equalTo(self.titleView).offset(0);
+//            make.edges.equalTo(self.titleView);
+//            make.height.mas_equalTo(100);
+            MKBlockExec(self.customLayoutBlock, make, self.titleView);
         }];
-    }else if (self.title){
+    } else if (self.title){
         if (self.selectType == MKActionSheetSelectType_multiselect) {
-            [self.titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-                [self.confirmButton mas_makeConstraints:^(MASConstraintMaker *make) {
-                    make.centerY.equalTo(self.titleView);
-                    make.width.mas_equalTo(80);
-                    make.right.equalTo(self.titleView);
-                }];
-                
-                [self.titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-                    make.centerY.equalTo(self.titleView);
-                    make.left.equalTo(self.titleView).offset(self.titleMargin);
-                    make.right.equalTo(self.confirmButton.mas_left).offset(-4);
-                }];
+            [self.confirmButton mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.centerY.equalTo(self.titleView);
+                make.width.mas_equalTo(80);
+                make.right.equalTo(self.titleView);
+                make.top.bottom.equalTo(self.titleView);
+            }];
+            
+            [self.titleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.centerY.equalTo(self.titleView);
+                make.left.equalTo(self.titleView).offset(self.titleMargin);
+                make.right.equalTo(self.confirmButton.mas_left).offset(-4);
+                make.top.equalTo(self.titleView).offset(10);
+                make.bottom.equalTo(self.titleView).offset(-10);
             }];
         }else{
-            [self.titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+            [self.titleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
                 make.centerY.equalTo(self.titleView);
                 make.left.equalTo(self.titleView).offset(self.titleMargin);
                 make.right.equalTo(self.titleView).offset(-self.titleMargin);
@@ -550,11 +577,12 @@
     }else{
         [self.titleView mas_remakeConstraints:^(MASConstraintMaker *make) {
             make.left.right.top.equalTo(self.sheetView);
-            make.height.mas_equalTo(0.1);
+            make.height.mas_equalTo(0);
         }];
     }
     
-    [self.cancelView mas_makeConstraints:^(MASConstraintMaker *make) {
+    
+    [self.cancelView mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.left.right.bottom.equalTo(self.sheetView);
     }];
     
@@ -585,8 +613,7 @@
         maxCount = self.buttonTitles.count > self.maxShowButtonCount ? self.maxShowButtonCount : self.buttonTitles.count;
     }
     CGFloat viewH = maxCount * (self.buttonHeight+MKAS_BUTTON_SEPARATOR_HEIGHT)-MKAS_BUTTON_SEPARATOR_HEIGHT;
-//    self.scrollView.frame = CGRectMake(0, self.titleView.bounds.size.height, MKSCREEN_WIDTH, viewH);
-    [self.scrollView mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self.scrollView mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.left.right.equalTo(self.sheetView);
         make.height.mas_equalTo(viewH);
         make.top.equalTo(self.titleView.mas_bottom).offset(0.5);
@@ -613,137 +640,6 @@
 
 
 
-
-
-//#pragma mark - ***** UITableView delegate ******
-//- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-//    MKActionSheetCell *cell = [MKActionSheetCell cellWithTableView:tableView buttonAlpha:_buttonOpacity];
-//    
-//    if (indexPath.row >= self.buttonTitles.count) {
-//        return cell;
-//    }
-//    
-//    [cell.btnCell setTitle:self.buttonTitles[indexPath.row] forState:UIControlStateNormal];
-//    [cell.btnCell setTitleColor:self.buttonTitleColor forState:UIControlStateNormal];
-//    cell.btnCell.titleLabel.font = self.buttonTitleFont;
-//
-//    if (indexPath.row == self.destructiveButtonIndex) {
-//        [cell.btnCell setTitleColor:self.destructiveButtonTitleColor forState:UIControlStateNormal];
-//    }
-//    
-//    
-//    if (self.selectType == MKActionSheetSelectType_multiselect) {   //多选
-//        cell.btnSelect.hidden = NO;
-//        NSString *title = [self.buttonTitles objectAtIndex:indexPath.row];
-//        cell.btnSelect.selected = title.mkas_selected;
-//        
-//        if (self.selectBtnImageNameNormal && self.selectBtnImageNameNormal.length > 0) {
-//            [cell.btnSelect setImage:[UIImage imageNamed:self.selectedBtnImageName] forState:UIControlStateNormal];
-//        }
-//        if (self.selectBtnImageNameSelected && self.selectBtnImageNameSelected.length > 0) {
-//            [cell.btnSelect setImage:[UIImage imageNamed:self.selectBtnImageNameSelected] forState:UIControlStateSelected];
-//            [cell.btnSelect setImage:[UIImage imageNamed:self.selectBtnImageNameSelected] forState:UIControlStateHighlighted];
-//        }
-//    }else if (self.selectType == MKActionSheetSelectType_selected){ //单选
-//        cell.btnSelect.hidden = YES;
-//        cell.btnSelect.enabled = NO;
-//        if (self.selectedIndex == indexPath.row) {
-//            cell.btnSelect.hidden = NO;
-//        }
-//        
-//        if (self.selectedBtnImageName && self.selectedBtnImageName.length > 0) {
-//            [cell.btnSelect setImage:[UIImage imageNamed:self.selectedBtnImageName] forState:UIControlStateDisabled];
-//        }
-//    }
-//    
-//    
-//    
-//    
-//    if (self.paramIsObject && self.imageKey && self.imageKey.length > 0 && self.imageValueType) {
-//        self.buttonTitleAlignment = MKActionSheetButtonTitleAlignment_left;
-//        
-//        id obj = [self.objArray objectAtIndex:indexPath.row];
-//        id imageValue = [obj valueForKey:self.imageKey];
-//        
-//        if (self.imageValueType == MKActionSheetButtonImageValueType_name) {
-//            if ([imageValue isKindOfClass:[NSString class]]) {
-//                [cell.btnCell setImage:[UIImage imageNamed:imageValue] forState:UIControlStateNormal];
-//            }
-//        }else if (self.imageValueType == MKActionSheetButtonImageValueType_image){
-//            if ([imageValue isKindOfClass:[UIImage class]]) {
-//                [cell.btnCell setImage:imageValue forState:UIControlStateNormal];
-//            }
-//        }else if (self.imageValueType == MKActionSheetButtonImageValueType_url){
-//            //由于加载url图片需要导入 SDWebImage，而且有些人在项目中用的也不一定是SDWebImage, 或用不到此类型，
-//            //为了不增加 使用MKActionSheet 的成本，加载url 图片  用一个block 或 delegate 回调出去，根据大家自己的实际情况设置 图片，并设置自己的默认图片。
-//            if ([imageValue isKindOfClass:[NSString class]]) {
-//                MKBlockExec(self.buttonImageBlock, self, cell.btnCell, imageValue);
-//            }
-//        }
-//        
-//        [cell.btnCell setTitleEdgeInsets:UIEdgeInsetsMake(0, 16, 0, 0)];
-//    }
-//    
-//    if (self.buttonTitleAlignment == MKActionSheetButtonTitleAlignment_left) {
-//        cell.btnCell.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
-//        [cell.btnCell setContentEdgeInsets:UIEdgeInsetsMake(0, self.titleMargin, 0, 0)];
-//    }else if (self.buttonTitleAlignment == MKActionSheetButtonTitleAlignment_right){
-//        cell.btnCell.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
-//        [cell.btnCell setContentEdgeInsets:UIEdgeInsetsMake(0, 0, 0, self.titleMargin)];
-//    }
-//
-//    return cell;
-//}
-//
-//- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-//    [tableView deselectRowAtIndexPath:indexPath animated:YES];
-//    
-//    NSInteger index = indexPath.row;
-//    
-//    if (self.selectType == MKActionSheetSelectType_multiselect){    //多选
-//        NSString *title = [self.buttonTitles objectAtIndex:index];
-//        title.mkas_selected = !title.mkas_selected;
-//        [self.tableView reloadData];
-//    }else if(self.selectType == MKActionSheetSelectType_selected){
-//        self.selectedIndex = index;
-//        [self.tableView reloadData];
-//        [self dismissWithButtonIndex:index];
-//    }else{
-//        [self dismissWithButtonIndex:index];
-//    }
-//}
-//
-//- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-//    return self.buttonTitles.count > 0 ? self.buttonTitles.count : 0;
-//}
-//
-//- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-//    return self.buttonHeight;
-//}
-//
-//- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
-//    return 1;
-//}
-//
-//- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{
-//    return 0.1;
-//}
-//
-//- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
-//    return 0.1;
-//}
-//
-//- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath{\
-//    if ([tableView respondsToSelector:@selector(setSeparatorInset:)]) {
-//        [tableView setSeparatorInset:UIEdgeInsetsMake(0, self.separatorLeftMargin, 0, 0)];
-//    }
-//    if ([tableView respondsToSelector:@selector(setLayoutMargins:)]) {
-//        [tableView setLayoutMargins:UIEdgeInsetsMake(0, self.separatorLeftMargin, 0, 0)];
-//    }
-//    if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
-//        [cell setLayoutMargins:UIEdgeInsetsMake(0, self.separatorLeftMargin, 0, 0)];
-//    }
-//}
 
 
 #pragma mark - ***** lazy ******
@@ -855,17 +751,36 @@
 - (UIButton *)createButton{
     UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
     btn.backgroundColor = [UIColor clearColor];
-    [btn setBackgroundImage:[UIImage mkas_imageWithColor:[UIColor colorWithRed:255.f green:255.f blue:255.f alpha:_buttonOpacity]] forState:UIControlStateNormal];
-    [btn setBackgroundImage:[UIImage mkas_imageWithColor:[UIColor colorWithRed:255.f green:255.f blue:255.f alpha:0.1]] forState:UIControlStateHighlighted];
+    [btn setBackgroundImage:[UIImage mkas_imageWithColor:[UIColor colorWithRed:1.f green:1.f blue:1.f alpha:_buttonOpacity]] forState:UIControlStateNormal];
+    [btn setBackgroundImage:[UIImage mkas_imageWithColor:[UIColor colorWithRed:1.f green:1.f blue:1.f alpha:0.1]] forState:UIControlStateHighlighted];
     [btn setTitleColor:_buttonTitleColor forState:UIControlStateNormal];
     btn.titleLabel.font = _buttonTitleFont;
     return btn;
 }
 
+- (UIButton *)createSelectButton{
+    NSString *bundle = [[NSBundle bundleForClass:self.class] pathForResource:@"MKActionSheet" ofType:@"bundle"];
+    NSString *selectImgPath0 = [bundle stringByAppendingPathComponent:@"img_select_0.png"];
+    NSString *selectImgPath1 = [bundle stringByAppendingPathComponent:@"img_select_1.png"];
+    NSString *selectImgPath2 = [bundle stringByAppendingPathComponent:@"img_selected.png"];
+    UIImage *selectImg0 = [UIImage imageWithContentsOfFile:selectImgPath0];
+    UIImage *selectImg1 = [UIImage imageWithContentsOfFile:selectImgPath1];
+    UIImage *selectImg2 = [UIImage imageWithContentsOfFile:selectImgPath2];
+    
+    UIButton *selectBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    selectBtn.tag = MKAS_BUTTON_SELECT_TAG;
+    selectBtn.userInteractionEnabled = NO;
+    [selectBtn setImage:selectImg0 forState:UIControlStateNormal];
+    [selectBtn setImage:selectImg1 forState:UIControlStateSelected];
+    [selectBtn setImage:selectImg1 forState:UIControlStateHighlighted];
+    [selectBtn setImage:selectImg2 forState:UIControlStateDisabled];
+    return selectBtn;
+}
+
 - (UIView *)cancelSeparatorView{
     if (!_cancelSeparatorView) {
         _cancelSeparatorView = [[UIView alloc] init];
-        _cancelSeparatorView.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.0f];
+        _cancelSeparatorView.backgroundColor = [UIColor clearColor];
     }
     return _cancelSeparatorView;
 }

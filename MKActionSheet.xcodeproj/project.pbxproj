@@ -29,7 +29,6 @@
 		C53D40AE1D524DB1003E1545 /* InfoModel.m in Sources */ = {isa = PBXBuildFile; fileRef = C53D40AD1D524DB1003E1545 /* InfoModel.m */; };
 		C56728541D9054F2002D0245 /* MKActionSheet.bundle in Resources */ = {isa = PBXBuildFile; fileRef = C567284B1D9054F2002D0245 /* MKActionSheet.bundle */; };
 		C56728551D9054F2002D0245 /* MKActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = C567284D1D9054F2002D0245 /* MKActionSheet.m */; };
-		C56728561D9054F2002D0245 /* MKActionSheetCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C567284F1D9054F2002D0245 /* MKActionSheetCell.m */; };
 		C5A125C71CFEE7E700FEA77A /* MKActionSheetTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C5A125C61CFEE7E700FEA77A /* MKActionSheetTests.m */; };
 		C5A125D21CFEE7E700FEA77A /* MKActionSheetUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = C5A125D11CFEE7E700FEA77A /* MKActionSheetUITests.m */; };
 		C5A125EB1CFEE91900FEA77A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C5A125E11CFEE91900FEA77A /* AppDelegate.m */; };
@@ -114,8 +113,6 @@
 		C567284B1D9054F2002D0245 /* MKActionSheet.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = MKActionSheet.bundle; sourceTree = "<group>"; };
 		C567284C1D9054F2002D0245 /* MKActionSheet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKActionSheet.h; sourceTree = "<group>"; };
 		C567284D1D9054F2002D0245 /* MKActionSheet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKActionSheet.m; sourceTree = "<group>"; };
-		C567284E1D9054F2002D0245 /* MKActionSheetCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKActionSheetCell.h; sourceTree = "<group>"; };
-		C567284F1D9054F2002D0245 /* MKActionSheetCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKActionSheetCell.m; sourceTree = "<group>"; };
 		C5A125A91CFEE7E700FEA77A /* MKActionSheet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MKActionSheet.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C5A125C21CFEE7E700FEA77A /* MKActionSheetTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MKActionSheetTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C5A125C61CFEE7E700FEA77A /* MKActionSheetTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MKActionSheetTests.m; sourceTree = "<group>"; };
@@ -251,8 +248,6 @@
 				C567284B1D9054F2002D0245 /* MKActionSheet.bundle */,
 				C567284C1D9054F2002D0245 /* MKActionSheet.h */,
 				C567284D1D9054F2002D0245 /* MKActionSheet.m */,
-				C567284E1D9054F2002D0245 /* MKActionSheetCell.h */,
-				C567284F1D9054F2002D0245 /* MKActionSheetCell.m */,
 				C5AEE5BB1EB0483C00D3BF3C /* MKActionSheetAdd.h */,
 				C5AEE5BC1EB0483C00D3BF3C /* MKActionSheetAdd.m */,
 				C52062F81EBC218A0005F3D2 /* MKASRootViewController.h */,
@@ -531,7 +526,6 @@
 				C51FB2481D55D9ED00A766E1 /* MKFPSStatus.m in Sources */,
 				C51FB2361D547DEF00A766E1 /* SDWebImageDownloader.m in Sources */,
 				C53D40AE1D524DB1003E1545 /* InfoModel.m in Sources */,
-				C56728561D9054F2002D0245 /* MKActionSheetCell.m in Sources */,
 				C51FB23D1D547DEF00A766E1 /* UIImage+WebP.m in Sources */,
 				C51FB23F1D547DEF00A766E1 /* UIImageView+WebCache.m in Sources */,
 				C51FB2351D547DEF00A766E1 /* SDWebImageDecoder.m in Sources */,
