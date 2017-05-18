@@ -61,7 +61,7 @@ typedef void(^MKActionSheetMultiselectBlock)(MKActionSheet *actionSheet, NSArray
  */
 typedef void(^MKActionSheetSetButtonImageWithUrlBlock)(MKActionSheet *actionSheet, UIButton *button, NSString *imageUrl);
 
-typedef void(^MKActionSheetCustomLayoutBlock)(MASConstraintMaker *make, UIView *superview);
+typedef void(^MKActionSheetCustomTitleViewLayoutBlock)(MASConstraintMaker *make, UIView *superview);
 /** 
  * 有使用者反馈，status bar原来白色会变为黑色，这是由于新建了 window 导致的。
  * 现默认使用不新建window的模式，
@@ -72,14 +72,14 @@ typedef void(^MKActionSheetCustomLayoutBlock)(MASConstraintMaker *make, UIView *
 #pragma mark - ***** MKActionSheet ******
 @interface MKActionSheet : UIView
 
-@property (nonatomic, copy) MKActionSheetBlock block;                           /*!< 点击按钮回调 */
-@property (nonatomic, copy) MKActionSheetMultiselectBlock multiselectBlock;     /*!< 多选样式的回调 返回选择的数组 */
-@property (nonatomic, copy) MKActionSheetSetButtonImageWithUrlBlock buttonImageBlock;   /*!< 设置 button image 的回调 */
+@property (nonatomic, copy) MKActionSheetBlock block;                                   /*!< callback for click button  */
+@property (nonatomic, copy) MKActionSheetMultiselectBlock multiselectBlock;             /*!< callback for multiselect style, return selected array */
+@property (nonatomic, copy) MKActionSheetSetButtonImageWithUrlBlock buttonImageBlock;   /*!< callback for set button image */
 
 
 /**  custom UI */
 @property (nonatomic, assign) CGFloat windowLevel;
-@property (nonatomic, assign) BOOL enableBgTap;                     /*!< 蒙版是否可以点击 收起*/
+@property (nonatomic, assign) BOOL enabledForBgTap;                 /*!< 蒙版是否可以点击 收起*/
 @property (nonatomic, weak) UIViewController *currentVC;            /*!< 当前viewController 控制 stabar 保持当前样式 */
 //title
 @property (nonatomic, copy) NSString *title;                        /*!< 标题 */
@@ -165,12 +165,12 @@ typedef void(^MKActionSheetCustomLayoutBlock)(MASConstraintMaker *make, UIView *
                    selectType:(MKActionSheetSelectType)selectType;
 
 
-- (void)setCustomTitleView:(UIView *)view makeConstraints:(MKActionSheetCustomLayoutBlock)block;
+- (void)setCustomTitleView:(UIView *)view makeConstraints:(MKActionSheetCustomTitleViewLayoutBlock)block;
 - (void)addButtonWithButtonTitle:(NSString *)title;
 - (void)removeButtonWithButtonTitle:(NSString *)title;
 
 - (void)addButtonWithObj:(id)obj;
-- (void)removeButtonWithObj:(id)obj;
+- (void)removeButtonWithObj:(id)model;
 
 - (void)removeButtonWithIndex:(NSInteger)index;
 

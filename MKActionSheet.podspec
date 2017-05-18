@@ -11,4 +11,5 @@ Pod::Spec.new do |s|
   s.source_files      = "MKActionSheet/**/*.{h,m}"
   s.resource          = "MKActionSheet/MKActionSheet.bundle"
   s.requires_arc      = true
+  s.dependency        "Masonry", '~> 1.0.2'
 end

@@ -75,7 +75,7 @@
     
     //init model data array
     self.modelArray = [[NSMutableArray alloc] init];
-    for (NSInteger i = 0; i < 5; i++) {
+    for (NSInteger i = 0; i < 2; i++) {
         InfoModel *model = [[InfoModel alloc] init];
         model.titleStr = [NSString stringWithFormat:@"button%ld", (long)i];
         model.testData = [NSString stringWithFormat:@"test data %ld", (long)i];
@@ -161,6 +161,11 @@
     
 }
 
+- (void)delayTask:(float)time onTimeEnd:(void(^)(void))block {
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(time * NSEC_PER_SEC));
+    dispatch_after(popTime, dispatch_get_main_queue(), block);
+}
+
 #pragma mark - ***** UITableView delegate ******
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -170,13 +175,35 @@
     typeof(self) __weak weakSelf = self;
     //普通样式 delegate
     if ([cellTitle isEqualToString:@"selectType:-common"]) {
-        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"初始化title为nil，将显示不带title样式。this is a longgg gggggggggg ggggggg ggggggggggggggggg ggggggggggg gggggggg ggg ggg ggggg title" buttonTitleArray:@[@"button0", @"button1", @"button2",@"button3",@"button4",@"button4",@"button4",@"button4"]];
+        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"初始化title为nil，将显示不带title样式。this is a longgg gggggggggg ggggggg ggggggggggggggggg ggggggggggg gggggggg ggg ggg ggggg title" buttonTitleArray:@[@"button0", @"button1", @"button2"]];
         sheet.destructiveButtonIndex = 3;
         sheet.currentVC = self;
+        sheet.manualDismiss = YES;
         [sheet showWithBlock:^(MKActionSheet *actionSheet, NSInteger buttonIndex) {
             NSLog(@"buttonIndex:%ld",(long)buttonIndex);
-            [weakSelf.view makeToast:[NSString stringWithFormat:@"button Index : %ld" ,(long)buttonIndex]];
+            if (buttonIndex == 0) {
+                [weakSelf.view makeToast:[NSString stringWithFormat:@"button Index : %ld" ,(long)buttonIndex]];
+                [sheet addButtonWithButtonTitle:[NSString stringWithFormat:@"add from %zd", buttonIndex]];
+            }else if (buttonIndex == 1){
+                [sheet removeButtonWithButtonTitle:@"button2"];
+            }
+            
         }];
+        
+
+        [self delayTask:0.1 onTimeEnd:^{
+            [sheet addButtonWithButtonTitle:[NSString stringWithFormat:@"add after 0.1 second"]];
+        }];
+        [self delayTask:0.5 onTimeEnd:^{
+            [sheet addButtonWithButtonTitle:[NSString stringWithFormat:@"add after 0.5 second"]];
+        }];
+        [self delayTask:1 onTimeEnd:^{
+            [sheet addButtonWithButtonTitle:[NSString stringWithFormat:@"add after 1 second"]];
+        }];
+        [self delayTask:2 onTimeEnd:^{
+            [sheet addButtonWithButtonTitle:[NSString stringWithFormat:@"add after 2 second"]];
+        }];
+
     }
     
     //带默认选中 按钮  样式
@@ -202,9 +229,38 @@
     //带 icon 图片 imageValueType:imageName   block
     else if ([cellTitle isEqualToString:@"imageValueType:imageName、block"]) {
         MKActionSheet *sheet =[[MKActionSheet alloc] initWithTitle:@"imageValueType:imageName 无分割线" objArray:self.modelArray buttonTitleKey:@"titleStr" imageKey:@"imageName" imageValueType:MKActionSheetButtonImageValueType_name selectType:MKActionSheetSelectType_common];
+        InfoModel *model = [[InfoModel alloc] init];
+        model.titleStr = [NSString stringWithFormat:@"add button"];
+        model.testData = [NSString stringWithFormat:@"test data 1"];
+        model.testNum = @(1);
+        model.imageName = [NSString stringWithFormat:@"image_1"];
+        model.image = [UIImage imageNamed:model.imageName];
+        model.imageUrl = [NSString stringWithFormat:@"https://github.com/mk2016/MKActionSheet/raw/MKActionSheet_dev/Resource/image_1@2x.png"];
+        [sheet addButtonWithObj:model];
         [sheet showWithBlock:^(MKActionSheet *actionSheet, NSInteger buttonIndex) {
             NSLog(@"buttonIndex:%ld",(long)buttonIndex);
-            [weakSelf.view makeToast:[NSString stringWithFormat:@"button Index : %ld" ,(long)buttonIndex]];
+            [sheet removeButtonWithObj:self.modelArray[buttonIndex]];
+        }];
+        
+        [self delayTask:0.5 onTimeEnd:^{
+            InfoModel *model = [[InfoModel alloc] init];
+            model.titleStr = [NSString stringWithFormat:@"delay 0.5s"];
+            model.testData = [NSString stringWithFormat:@"test data 1"];
+            model.testNum = @(1);
+            model.imageName = [NSString stringWithFormat:@"image_1"];
+            model.image = [UIImage imageNamed:model.imageName];
+            model.imageUrl = [NSString stringWithFormat:@"https://github.com/mk2016/MKActionSheet/raw/MKActionSheet_dev/Resource/image_1@2x.png"];
+            [sheet addButtonWithObj:model];
+        }];
+        [self delayTask:2 onTimeEnd:^{
+            InfoModel *model = [[InfoModel alloc] init];
+            model.titleStr = [NSString stringWithFormat:@"delay 2s"];
+            model.testData = [NSString stringWithFormat:@"test data 1"];
+            model.testNum = @(1);
+            model.imageName = [NSString stringWithFormat:@"image_1"];
+            model.image = [UIImage imageNamed:model.imageName];
+            model.imageUrl = [NSString stringWithFormat:@"https://github.com/mk2016/MKActionSheet/raw/MKActionSheet_dev/Resource/image_1@2x.png"];
+            [sheet addButtonWithObj:model];
         }];
     }
 

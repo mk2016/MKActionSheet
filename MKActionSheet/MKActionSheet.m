@@ -52,7 +52,9 @@
 @property (nonatomic, assign) CGFloat sheetHeight;
 @property (nonatomic, assign) BOOL isShow;
 
-@property (nonatomic, copy) MKActionSheetCustomLayoutBlock customLayoutBlock;
+@property (nonatomic, copy) MKActionSheetCustomTitleViewLayoutBlock customTitleViewLayoutBlock;
+
+@property (nonatomic, assign) BOOL initSuccess;
 @end
 
 
@@ -124,26 +126,11 @@
     }
 }
 
-- (void)addButtonWithTitle:(NSString *)title{
-    NSAssert(!_paramIsObject, @"以 objArray 初始化时，不能直接添加 title, 请使用 addButtonWithObj:(id)obj");
-    if (!_buttonTitles) {
-        _buttonTitles = [[NSMutableArray alloc] init];
-    }
-    [_buttonTitles addObject:title];
-}
-
-- (void)addButtonWithObj:(id)obj{
-    NSAssert(_paramIsObject, @"不是由 objArray 初始化时，不能直接添加 object, 请使用 addButtonWithTitle:(NSString *)title");
-    if (!_objArray) {
-        _objArray = [[NSMutableArray alloc] init];
-    }
-    [_objArray addObject:obj];
-}
 
 /** init data */
 - (void)initData{
     _windowLevel = MKActionSheet_WindowLevel;
-    _enableBgTap = YES;
+    _enabledForBgTap = YES;
 
     //默认样式
 
@@ -191,16 +178,86 @@
     }
 }
 
+- (void)addButtonWithButtonTitle:(NSString *)title{
+    NSAssert(!_paramIsObject, @"以 objArray 初始化时，不能直接添加 title, 请使用 addButtonWithObj:(id)obj");
+    if (title) {
+        [self.buttonTitles addObject:title];
+        [self updateScrollViewAndLayout];
+    }
+}
 
-- (void)setCustomTitleView:(UIView *)view makeConstraints:(MKActionSheetCustomLayoutBlock)block{
+- (void)removeButtonWithButtonTitle:(NSString *)title{
+    if (title) {
+        MKWEAKSELF
+        [self.buttonTitles enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            if ([obj isEqualToString:title]) {
+                [weakSelf removeButtonWithIndex:idx];
+                return ;
+            }
+        }];
+    }
+}
+
+
+- (void)addButtonWithObj:(id)obj{
+    NSAssert(_paramIsObject, @"不是由 objArray 初始化时，不能直接添加 object, 请使用 addButtonWithButtonTitle:(NSString *)title");
+    if (obj) {
+        id titleValue = [obj valueForKey:_titleKey];
+        if (titleValue && [titleValue isKindOfClass:[NSString class]]) {
+            [self.objArray addObject:obj];
+            [self.buttonTitles addObject:titleValue];
+            [self updateScrollViewAndLayout];
+        }else{
+            NSAssert(NO, @"obj.titleKey 必须为 有效的 NSString");
+        }
+    }
+}
+
+- (void)removeButtonWithObj:(id)model{
+    MKWEAKSELF
+    [self.objArray enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if (obj == model) {
+            [weakSelf removeButtonWithIndex:idx];
+            return ;
+        }
+    }];
+}
+
+- (void)removeButtonWithIndex:(NSInteger)index{
+    if (self.buttonViewsArray.count > index) {
+        [[self.buttonViewsArray objectAtIndex:index] removeFromSuperview];
+    }
+    if (self.buttonTitles.count > index) {
+        [self.buttonTitles removeObjectAtIndex:index];
+    }
+    if (_paramIsObject && self.objArray.count > index) {
+        [self.objArray removeObjectAtIndex:index];
+    }
+    [self updateScrollViewAndLayout];
+}
+
+- (void)updateScrollViewAndLayout{
+    if (self.initSuccess) {
+        [self setupScrollView];
+        [self setNeedsUpdateConstraints];
+        [self updateConstraintsIfNeeded];
+        [self layoutIfNeeded];
+    }
+}
+
+- (void)setCustomTitleView:(UIView *)view makeConstraints:(MKActionSheetCustomTitleViewLayoutBlock)block{
+    if (view == nil) {
+        return;
+    }
     [_customTitleView removeFromSuperview];
     _customTitleView = nil;
     _customTitleView = view;
-    _customLayoutBlock = block;
-    if (_customLayoutBlock == nil) {
+    [self.titleView addSubview:_customTitleView];
+    _customTitleViewLayoutBlock = block;
+    if (_customTitleViewLayoutBlock == nil) {
         CGRect tempFrame = _customTitleView.frame;
         if (tempFrame.origin.x != 0 || tempFrame.origin.y != 0 || tempFrame.size.width != 0 || tempFrame.size.height != 0) {
-            _customLayoutBlock = ^(MASConstraintMaker *make, UIView *superview) {
+            _customTitleViewLayoutBlock = ^(MASConstraintMaker *make, UIView *superview) {
                 make.left.equalTo(superview).offset(tempFrame.origin.x);
                 make.top.equalTo(superview).offset(tempFrame.origin.y);
                 make.width.mas_equalTo(tempFrame.size.width);
@@ -209,9 +266,12 @@
             };
         }
     }
-//    [self setNeedsUpdateConstraints];
-//    [self updateConstraintsIfNeeded];
-//    [self layoutIfNeeded];
+    if (self.initSuccess) {
+        [self setNeedsUpdateConstraints];
+        [self updateConstraintsIfNeeded];
+        [self layoutIfNeeded];
+    }
+    
 }
 
 
@@ -291,8 +351,8 @@
             if (!titleValue || ![titleValue isKindOfClass:[NSString class]]) {
                 NSAssert(NO, @"obj.titleKey 必须为 有效的 NSString");
             }
+            _buttonTitles = [[NSMutableArray alloc] initWithArray:[_objArray valueForKey:_titleKey]];
         }
-        _buttonTitles = [_objArray valueForKey:_titleKey];
     }
     
     if (_blackgroundOpacity < 0.1f) {
@@ -345,20 +405,21 @@
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     if (orientation == UIInterfaceOrientationLandscapeRight || orientation == UIInterfaceOrientationLandscapeLeft){
         NSLog(@"LR");
-        if (self.maxShowButtonCount > 3) {
-            self.maxShowButtonCount = 3;
-        }
+//        if (self.maxShowButtonCount > 3) {
+//            self.maxShowButtonCount = 3;
+//        }
     }if (orientation == UIInterfaceOrientationPortrait){
         NSLog(@"P");
     }
     [self setNeedsUpdateConstraints];
     [self updateConstraintsIfNeeded];
     [self layoutIfNeeded];
+
 }
 
 - (void)setupMainView{
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(statusBarOrientationChange:) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
-
+    
     [self addSubview:self.shadeView];
     [self addSubview:self.sheetView];
     
@@ -371,7 +432,7 @@
     [effectView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(self.blurView);
     }];
-
+    
     [self.sheetView addSubview:self.titleView];
     [self.sheetView addSubview:self.scrollView];
     [self.sheetView addSubview:self.cancelView];
@@ -383,8 +444,46 @@
     }
 
     //UIScrollView
+    [self setupScrollView];
+
+    //title
+    if (self.selectType == MKActionSheetSelectType_multiselect && !self.title) {
+        self.title = @"";
+    }
+
+    if (self.title){
+        [self.titleView addSubview:self.titleLabel];
+        self.titleLabel.text = self.title;
+        
+        if (self.selectType == MKActionSheetSelectType_multiselect) {
+            [self.titleView addSubview:self.confirmButton];
+            UIView *leftLine = [[UIView alloc] init];
+            leftLine.backgroundColor = MKCOLOR_RGBA(0, 0, 0, 0.2);
+            [_confirmButton addSubview:leftLine];
+            
+            [leftLine mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.left.centerY.equalTo(self.confirmButton);
+                make.width.mas_equalTo(1);
+                make.height.mas_equalTo(20);
+            }];
+        }
+    }
+    
+    [self.bgWindow.rootViewController.view addSubview:self];
+    [self mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(self.bgWindow.rootViewController.view);
+    }];
+    [_bgWindow layoutIfNeeded];
+}
+
+- (void)setupScrollView{
+    //UIScrollView
     self.scrollView.contentSize = CGSizeMake(MKSCREEN_WIDTH, self.buttonTitles.count*self.buttonHeight);
-    [self.buttonViewsArray removeAllObjects];
+    if (self.buttonViewsArray.count > 0) {
+        [self.buttonViewsArray makeObjectsPerformSelector:@selector(removeFromSuperview)];
+        [self.buttonViewsArray removeAllObjects];
+    }
+    
     for (NSInteger i = 0; i < self.buttonTitles.count; i++) {
         UIView *view = [[UIView alloc] init];
         view.backgroundColor = [UIColor clearColor];
@@ -403,7 +502,7 @@
         if (i == self.destructiveButtonIndex) {
             [btn setTitleColor:self.destructiveButtonTitleColor forState:UIControlStateNormal];
         }
-
+        
         if (self.selectType != MKActionSheetSelectType_common) {
             UIButton *btnSelect = [self createSelectButton];
             [view addSubview:btnSelect];
@@ -444,7 +543,6 @@
             }
         }
         
-        
         if (self.buttonTitleAlignment == MKActionSheetButtonTitleAlignment_left) {
             btn.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
             [btn setContentEdgeInsets:UIEdgeInsetsMake(0, self.titleMargin, 0, 0)];
@@ -458,7 +556,6 @@
         
         if (self.paramIsObject && self.imageKey && self.imageKey.length > 0 && self.imageValueType) {
             btn.titleEdgeInsets = UIEdgeInsetsMake(0, _buttonImageRightSpace, 0, 0);
-//            btn.titleEdgeInsets = UIEdgeInsetsZero;
             id obj = [self.objArray objectAtIndex:i];
             id imageValue = [obj valueForKey:self.imageKey];
             
@@ -479,40 +576,11 @@
             }
         }
     }
-    
-    //title
-    if (self.selectType == MKActionSheetSelectType_multiselect && !self.title) {
-        self.title = @"";
-    }
 
-    if (self.customTitleView) {
-        [self.titleView addSubview:self.customTitleView];
-    }else if (self.title){
-        [self.titleView addSubview:self.titleLabel];
-        self.titleLabel.text = self.title;
-        
-        if (self.selectType == MKActionSheetSelectType_multiselect) {
-            [self.titleView addSubview:self.confirmButton];
-            UIView *leftLine = [[UIView alloc] init];
-            leftLine.backgroundColor = MKCOLOR_RGBA(0, 0, 0, 0.2);
-            [_confirmButton addSubview:leftLine];
-            
-            [leftLine mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.left.centerY.equalTo(self.confirmButton);
-                make.width.mas_equalTo(1);
-                make.height.mas_equalTo(20);
-            }];
-        }
-    }
-    
-    [self.bgWindow.rootViewController.view addSubview:self];
-    [self mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(self.bgWindow.rootViewController.view);
-    }];
-    [_bgWindow layoutIfNeeded];
 }
 
 - (void)updateConstraints{
+    self.initSuccess = YES;
     
     [self.shadeView mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.left.right.top.equalTo(self);
@@ -536,18 +604,13 @@
     }];
     
     //titleView
-    [self.titleView mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self.titleView mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.left.right.top.equalTo(self.sheetView);
     }];
     
     if (self.customTitleView) {
-        [self.customTitleView mas_makeConstraints:^(MASConstraintMaker *make) {
-//            make.left.right.equalTo(self.titleView);
-//            make.top.equalTo(self.titleView).offset(0);
-//            make.bottom.equalTo(self.titleView).offset(0);
-//            make.edges.equalTo(self.titleView);
-//            make.height.mas_equalTo(100);
-            MKBlockExec(self.customLayoutBlock, make, self.titleView);
+        [self.customTitleView mas_remakeConstraints:^(MASConstraintMaker *make) {
+            MKBlockExec(self.customTitleViewLayoutBlock, make, self.titleView);
         }];
     } else if (self.title){
         if (self.selectType == MKActionSheetSelectType_multiselect) {
@@ -664,7 +727,7 @@
         [_shadeView setBackgroundColor:MKCOLOR_RGBA(0, 0, 0, 1)];
         [_shadeView setUserInteractionEnabled:NO];
         [_shadeView setAlpha:0];
-        if (_enableBgTap) {
+        if (_enabledForBgTap) {
             UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismiss)];
             [_shadeView addGestureRecognizer:tap];
         }
@@ -793,6 +856,19 @@
     return _buttonViewsArray;
 }
 
+- (NSMutableArray *)buttonTitles{
+    if (!_buttonTitles) {
+        _buttonTitles = @[].mutableCopy;
+    }
+    return _buttonTitles;
+}
+
+- (NSMutableArray *)objArray{
+    if (!_objArray) {
+        _objArray = @[].mutableCopy;
+    }
+    return _objArray;
+}
 @end
 
 
