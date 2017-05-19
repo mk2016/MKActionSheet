@@ -26,7 +26,11 @@
 
 #pragma mark - ***** MKActionSheet ******
 @interface MKActionSheet()<UIScrollViewDelegate>
-@property (nonatomic, assign) MKActionSheetSelectType selectType;               /*!< 选择模式：默认、单选(在初始选择的后面会有标示)、多选*/
+@property (nonatomic, assign) MKActionSheetSelectType selectType;                   /*!< 选择模式：默认、单选(在初始选择的后面会有标示)、多选*/
+//object Array
+@property (nonatomic, copy) NSString *titleKey;                                     /*!< 传入为object array 时 指定 title 的字段名 */
+@property (nonatomic, copy) NSString *imageKey;                                     /*!< 传入为object array 时 指定 button image 对应的字段名 */
+@property (nonatomic, assign) MKActionSheetButtonImageValueType imageValueType;     /*!< imageKey对应的类型：image、imageName、imageUrl */
 
 @property (nonatomic, strong) NSMutableArray *buttonTitles;             /*!< button titles array */
 @property (nonatomic, strong) NSMutableArray *objArray;                 /*!< objects array */
@@ -43,17 +47,15 @@
 
 @property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, strong) NSMutableArray *buttonViewsArray;
+
 @property (nonatomic, strong) UIView *cancelView;
 @property (nonatomic, strong) UIButton *cancelButton;
 @property (nonatomic, strong) UIView *cancelSeparatorView;
 
-@property (nonatomic, assign) BOOL paramIsObject;                       /*!< init array is model or dictionary */
-
-@property (nonatomic, assign) CGFloat sheetHeight;
-@property (nonatomic, assign) BOOL isShow;
-
 @property (nonatomic, copy) MKActionSheetCustomTitleViewLayoutBlock customTitleViewLayoutBlock;
 
+@property (nonatomic, assign) BOOL paramIsObject;                       /*!< init array is model or dictionary */
+@property (nonatomic, assign) BOOL isShow;
 @property (nonatomic, assign) BOOL initSuccess;
 @end
 
@@ -61,7 +63,6 @@
 @implementation MKActionSheet
 
 #pragma mark - ***** init method ******
-
 - (instancetype)initWithTitle:(NSString *)title buttonTitleArray:(NSArray *)buttonTitleArray{
     return [self initWithTitle:title buttonTitleArray:buttonTitleArray selectType:MKActionSheetSelectType_common];
 }
@@ -154,8 +155,6 @@
     _blackgroundOpacity = 0.3f;
     _maxShowButtonCount = 5.6;
     _needCancelButton = YES;
-    _showSeparator = YES;
-    _separatorLeftMargin = 0;
     
     _multiselectConfirmButtonTitleColor = MKCOLOR_RGBA(100.0f, 100.0f, 100.0f, 1.0f);
     
@@ -178,6 +177,7 @@
     }
 }
 
+#pragma mark - ***** add & remove *****
 - (void)addButtonWithButtonTitle:(NSString *)title{
     NSAssert(!_paramIsObject, @"以 objArray 初始化时，不能直接添加 title, 请使用 addButtonWithObj:(id)obj");
     if (title) {
@@ -197,7 +197,6 @@
         }];
     }
 }
-
 
 - (void)addButtonWithObj:(id)obj{
     NSAssert(_paramIsObject, @"不是由 objArray 初始化时，不能直接添加 object, 请使用 addButtonWithButtonTitle:(NSString *)title");
@@ -507,19 +506,11 @@
             UIButton *btnSelect = [self createSelectButton];
             [view addSubview:btnSelect];
             
-            btnSelect.translatesAutoresizingMaskIntoConstraints = NO;
-            NSDictionary *views = @{@"btnSelect" : btnSelect};
-            NSArray *btnSelect_vfl_H = [NSLayoutConstraint constraintsWithVisualFormat:@"H:[btnSelect]-16-|"
-                                                                               options:0
-                                                                               metrics:nil
-                                                                                 views:views];
-            NSArray *btnSelect_vfl_V = [NSLayoutConstraint constraintsWithVisualFormat:@"V:|[btnSelect]|"
-                                                                               options:0
-                                                                               metrics:nil
-                                                                                 views:views];
-            [self addConstraints:btnSelect_vfl_H];
-            [self addConstraints:btnSelect_vfl_V];
-            
+            [btnSelect mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.right.equalTo(view).offset(-16);
+                make.centerY.equalTo(view);
+            }];
+        
             if (self.selectType == MKActionSheetSelectType_selected){ //单选
                 if (self.selectedBtnImageName && self.selectedBtnImageName.length > 0) {
                     [btnSelect setImage:[UIImage imageNamed:self.selectedBtnImageName] forState:UIControlStateDisabled];

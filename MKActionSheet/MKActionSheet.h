@@ -16,18 +16,18 @@
 #pragma mark - ***** 枚举 ******
 typedef NS_ENUM(NSInteger, MKActionSheetSelectType) {
     MKActionSheetSelectType_common  = 1,        //default
-    MKActionSheetSelectType_selected,           //默认带有一个 已选择的 选项
-    MKActionSheetSelectType_multiselect,        //多选 样式
+    MKActionSheetSelectType_selected,           //have a selected button
+    MKActionSheetSelectType_multiselect,        //multiselect
 };
 
-/** title button 的对其方式， 如果button 带 icon图片，将自动设置成 left */
+/** Alignment type of button title,default:center  (if button have icon,default:left) */
 typedef NS_ENUM(NSInteger, MKActionSheetButtonTitleAlignment) {
     MKActionSheetButtonTitleAlignment_center    = 1,        //default
     MKActionSheetButtonTitleAlignment_left,
     MKActionSheetButtonTitleAlignment_right,
 };
 
-/** 当带有图片时, 指定 imageKey 对应的类型*/
+/** if button have icon, type for the 'imageKey' */
 typedef NS_ENUM(NSInteger, MKActionSheetButtonImageValueType) {
     MKActionSheetButtonImageValueType_none      = 1,        //default
     MKActionSheetButtonImageValueType_image,
@@ -37,7 +37,7 @@ typedef NS_ENUM(NSInteger, MKActionSheetButtonImageValueType) {
 
 #pragma mark - ***** MKActionSheet Block ******
 /**
- *  单选的 block
+ *  clicked block
  *
  *  @param actionSheet self
  *  @param buttonIndex index with clicked button
@@ -53,11 +53,11 @@ typedef void(^MKActionSheetBlock)(MKActionSheet *actionSheet, NSInteger buttonIn
 typedef void(^MKActionSheetMultiselectBlock)(MKActionSheet *actionSheet, NSArray *array);
 
 /**
- *  imageKey 的类型为 url时，可用 这个block 加载 图片
+ *  when 'imageKey' type is 'url'，use this block load image
  *
  *  @param actionSheet self
- *  @param button      button with need load image by url
- *  @param imageUrl    image URL，即 'imageKey'  对应的值
+ *  @param button      button of need load image
+ *  @param imageUrl    the 'imageKey' value
  */
 typedef void(^MKActionSheetSetButtonImageWithUrlBlock)(MKActionSheet *actionSheet, UIButton *button, NSString *imageUrl);
 
@@ -69,6 +69,12 @@ typedef void(^MKActionSheetCustomTitleViewLayoutBlock)(MASConstraintMaker *make,
  * 此时建议 将 needNewWindow 设置为 YES; 并在项目info.plist 中 新增 “View controller-based status bar appearance” 设置为 NO。
  * 这样也可以让 status bar 不变色
  */
+
+
+@interface MKActionSheetConfig : NSObject
+
+@end
+
 #pragma mark - ***** MKActionSheet ******
 @interface MKActionSheet : UIView
 
@@ -76,11 +82,10 @@ typedef void(^MKActionSheetCustomTitleViewLayoutBlock)(MASConstraintMaker *make,
 @property (nonatomic, copy) MKActionSheetMultiselectBlock multiselectBlock;             /*!< callback for multiselect style, return selected array */
 @property (nonatomic, copy) MKActionSheetSetButtonImageWithUrlBlock buttonImageBlock;   /*!< callback for set button image */
 
-
 /**  custom UI */
-@property (nonatomic, assign) CGFloat windowLevel;
-@property (nonatomic, assign) BOOL enabledForBgTap;                 /*!< 蒙版是否可以点击 收起*/
-@property (nonatomic, weak) UIViewController *currentVC;            /*!< 当前viewController 控制 stabar 保持当前样式 */
+@property (nonatomic, assign) CGFloat windowLevel;                  /*!< default: UIWindowLevelStatusBar - 1 */
+@property (nonatomic, assign) BOOL enabledForBgTap;                 /*!< default: YES */
+@property (nonatomic, weak) UIViewController *currentVC;            /*!< current viewController, for statusBar keep the same style */
 //title
 @property (nonatomic, copy) NSString *title;                        /*!< 标题 */
 @property (nonatomic, strong) UIColor *titleColor;                  /*!< 标题颜色 [default: RGBA(100.0f, 100.0f, 100.0f, 1.0f)]*/
@@ -92,35 +97,32 @@ typedef void(^MKActionSheetCustomTitleViewLayoutBlock)(MASConstraintMaker *make,
 @property (nonatomic, assign) CGFloat buttonOpacity;                /*!< 按钮透明度 [default: 0.6] */
 @property (nonatomic, assign) CGFloat buttonHeight;                 /*!< 按钮高度 [default: 48.0f] */
 @property (nonatomic, assign) CGFloat buttonImageRightSpace;        /*!< 带图片样式 图片右边离 title 的距离 [default: 12.f] */
-@property (nonatomic, assign) MKActionSheetButtonTitleAlignment buttonTitleAlignment;   /*!< button title 对齐方式 [default: center] */
+@property (nonatomic, assign) MKActionSheetButtonTitleAlignment buttonTitleAlignment;   /*!< button title Alignment style [default: center] */
 //destructive Button
-@property (nonatomic, assign) NSInteger destructiveButtonIndex;     /*!< 特殊按钮位置 [default:-1]*/
-@property (nonatomic, strong) UIColor *destructiveButtonTitleColor; /*!< 特殊按钮颜色 [default:RBGA(250.0f, 10.0f, 10.0f, 1.0f)]*/
+@property (nonatomic, assign) NSInteger destructiveButtonIndex;     /*!< [default:-1]*/
+@property (nonatomic, strong) UIColor *destructiveButtonTitleColor; /*!< [default:RBGA(250.0f, 10.0f, 10.0f, 1.0f)]*/
 //cancel Title
-@property (nonatomic, copy) NSString  *cancelTitle;                 /*!< 取消按钮 title [dafault:取消] */
+@property (nonatomic, copy) NSString  *cancelTitle;                 /*!< cancel button title [dafault:取消] */
 //action sheet
-@property (nonatomic, assign) CGFloat titleMargin;                  /*!< title 边距 [default: 20] */
+@property (nonatomic, assign) CGFloat titleMargin;                  /*!< title side spacee [default: 20] */
 @property (nonatomic, assign) CGFloat animationDuration;            /*!< 动画化时间 [default: 0.3f] */
 @property (nonatomic, assign) CGFloat blurOpacity;                  /*!< 毛玻璃透明度 [default: 0.3f] */
 @property (nonatomic, assign) CGFloat blackgroundOpacity;           /*!< 灰色背景透明度 [default: 0.3f] */
-@property (nonatomic, assign,getter=isNeedCancelButton) BOOL needCancelButton;  /*!< 是否需要取消按钮 */
-@property (nonatomic, assign,getter=isShowSeparator) BOOL showSeparator;        /*!< 是否显示分割线 [default: YES]*/
-@property (nonatomic, assign) CGFloat separatorLeftMargin;          /*!< 分割线离左边的边距 [default:0] */
+@property (nonatomic, assign) BOOL needCancelButton;                /*!< 是否需要取消按钮 */
 @property (nonatomic, assign) CGFloat maxShowButtonCount;           /*!< 显示按钮最大个数，支持小数 [default:5.6，全部显示,可设置成 0] */
-//object Array
-@property (nonatomic, copy) NSString *titleKey;                     /*!< 传入为object array 时 指定 title 的字段名 */
-@property (nonatomic, copy) NSString *imageKey;                     /*!< 传入为object array 时 指定button image对应的字段名 */
-@property (nonatomic, assign) MKActionSheetButtonImageValueType imageValueType;   /*!< imageKey对应的类型：image、imageName、imageUrl */
-//set image name
-@property (nonatomic, copy) NSString *selectedBtnImageName;         /*!< 带默认选中模式，选中图片的名字 */
-@property (nonatomic, copy) NSString *selectBtnImageNameNormal;     /*!< 多选模式，选择按钮非选中状态图片 */
-@property (nonatomic, copy) NSString *selectBtnImageNameSelected;   /*!< 多选模式，选择按钮选中状态图片 */
-//selected
-@property (nonatomic, assign) NSInteger selectedIndex;              /*!< 默认选中的button index, 带默认选中样式 */
-//multiselect
-@property (nonatomic, strong) UIColor *multiselectConfirmButtonTitleColor;  /*!< 多选 确定按钮 颜色 */
 
-@property (nonatomic, assign) BOOL manualDismiss;
+//MKActionSheetSelectType_selected
+@property (nonatomic, assign) NSInteger selectedIndex;              /*!< selected button index, (MKActionSheetSelectType_selected) */
+@property (nonatomic, copy) NSString *selectedBtnImageName;         /*!< image name for selected button (MKActionSheetSelectType_selected) */
+
+//MKActionSheetSelectType_multiselect
+@property (nonatomic, copy) NSString *selectBtnImageNameNormal;     /*!< image name for select button normal state (MKActionSheetSelectType_multiselect)  */
+@property (nonatomic, copy) NSString *selectBtnImageNameSelected;   /*!< image name for select button selected state (MKActionSheetSelectType_multiselect )*/
+@property (nonatomic, strong) NSString *multiselectConfirmButtonTitle;      /*!< confirm button title (MKActionSheetSelectType_multiselect) */
+@property (nonatomic, strong) UIColor *multiselectConfirmButtonTitleColor;  /*!< confirm button title color (MKActionSheetSelectType_multiselect) */
+
+
+@property (nonatomic, assign) BOOL manualDismiss;                   /*!< is manual dismiss [default: NO]  if set 'YES', you need calling the method of 'dismiss' to hide actionSheet by manual */
 #pragma mark - ***** init method ******
 /**
  *  init MKActionSheet with buttonTitles array and selectType
@@ -139,30 +141,46 @@ typedef void(^MKActionSheetCustomTitleViewLayoutBlock)(MASConstraintMaker *make,
 - (instancetype)initWithTitle:(NSString *)title
              buttonTitleArray:(NSArray *)buttonTitleArray;
 
-
-- (instancetype)initWithTitle:(NSString *)title
-                     objArray:(NSArray *)objArray
-               buttonTitleKey:(NSString *)buttonTitleKey
-                   selectType:(MKActionSheetSelectType)selectType;
-
-/** selectType default: MKActionSheetSelectType_common */
-- (instancetype)initWithTitle:(NSString *)title
-                     objArray:(NSArray *)objArray
-               buttonTitleKey:(NSString *)buttonTitleKey;
-
-/** selectType default: MKActionSheetSelectType_common */
-- (instancetype)initWithTitle:(NSString *)title
-                     objArray:(NSArray *)objArray
-               buttonTitleKey:(NSString *)buttonTitleKey
-                     imageKey:(NSString *)imageKey
-               imageValueType:(MKActionSheetButtonImageValueType)imageValueType;
-
+/**
+ *  init MKActionSheet with buttonTitles array and selectType
+ *
+ *  @param title            title string
+ *  @param objArray         object array
+ *  @param buttonTitleKey   the button title key in object
+ *  @prram imageKey         the image key in object
+ *  @param imageValueType   the image value type
+ *  @param selectType       the select type
+ *
+ *  @return self
+ */
 - (instancetype)initWithTitle:(NSString *)title
                      objArray:(NSArray *)objArray
                buttonTitleKey:(NSString *)buttonTitleKey
                      imageKey:(NSString *)imageKey
                imageValueType:(MKActionSheetButtonImageValueType)imageValueType
                    selectType:(MKActionSheetSelectType)selectType;
+
+/** init with objArray,  default: MKActionSheetButtonImageValueType_none */
+- (instancetype)initWithTitle:(NSString *)title
+                     objArray:(NSArray *)objArray
+               buttonTitleKey:(NSString *)buttonTitleKey
+                   selectType:(MKActionSheetSelectType)selectType;
+
+/** init with objArray,   default: MKActionSheetSelectType_common */
+- (instancetype)initWithTitle:(NSString *)title
+                     objArray:(NSArray *)objArray
+               buttonTitleKey:(NSString *)buttonTitleKey
+                     imageKey:(NSString *)imageKey
+               imageValueType:(MKActionSheetButtonImageValueType)imageValueType;
+
+/** init with objArray,   default: MKActionSheetSelectType_common MKActionSheetButtonImageValueType_none */
+- (instancetype)initWithTitle:(NSString *)title
+                     objArray:(NSArray *)objArray
+               buttonTitleKey:(NSString *)buttonTitleKey;
+
+
+
+
 
 
 - (void)setCustomTitleView:(UIView *)view makeConstraints:(MKActionSheetCustomTitleViewLayoutBlock)block;
@@ -176,16 +194,16 @@ typedef void(^MKActionSheetCustomTitleViewLayoutBlock)(MASConstraintMaker *make,
 
 /** show method */
 /**
- *  单选模式时用的 block，返回 被选中的 title 或 object
+ *  single select block
  *
  *  @param block call back (MKActionSheet* actionSheet, NSInteger buttonIndex, id obj)
  */
 - (void)showWithBlock:(MKActionSheetBlock)block;
 
 /**
- *  多选模式时用的 block，点击 确定 的回调，返回被选中的 array
+ *  multiselect style block
  *
- *  @param multiselectblock  call back (MKActionSheet* actionSheet, NSInteger buttonIndex, id obj)
+ *  @param multiselectblock  call back (MKActionSheet *actionSheet, NSArray *array)
  */
 - (void)showWithMultiselectBlock:(MKActionSheetMultiselectBlock)multiselectblock;
 
