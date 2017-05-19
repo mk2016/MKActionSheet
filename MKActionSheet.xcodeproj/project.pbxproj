@@ -38,6 +38,7 @@
 		C5A125F01CFEE91900FEA77A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C5A125E81CFEE91900FEA77A /* main.m */; };
 		C5A125F11CFEE91900FEA77A /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C5A125EA1CFEE91900FEA77A /* ViewController.m */; };
 		C5AEE5BD1EB0483C00D3BF3C /* MKActionSheetAdd.m in Sources */ = {isa = PBXBuildFile; fileRef = C5AEE5BC1EB0483C00D3BF3C /* MKActionSheetAdd.m */; };
+		C5BD1B6C1ECEA611007F45DD /* MKASOrientationConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = C5BD1B6B1ECEA611007F45DD /* MKASOrientationConfig.m */; };
 		C5D6C19E1D67674A003598E7 /* MASCompositeConstraint.m in Sources */ = {isa = PBXBuildFile; fileRef = C5D6C1851D67674A003598E7 /* MASCompositeConstraint.m */; };
 		C5D6C19F1D67674A003598E7 /* MASConstraint.m in Sources */ = {isa = PBXBuildFile; fileRef = C5D6C1881D67674A003598E7 /* MASConstraint.m */; };
 		C5D6C1A01D67674A003598E7 /* MASConstraintMaker.m in Sources */ = {isa = PBXBuildFile; fileRef = C5D6C18A1D67674A003598E7 /* MASConstraintMaker.m */; };
@@ -131,6 +132,8 @@
 		C5A125EA1CFEE91900FEA77A /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		C5AEE5BB1EB0483C00D3BF3C /* MKActionSheetAdd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKActionSheetAdd.h; sourceTree = "<group>"; };
 		C5AEE5BC1EB0483C00D3BF3C /* MKActionSheetAdd.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKActionSheetAdd.m; sourceTree = "<group>"; };
+		C5BD1B6A1ECEA611007F45DD /* MKASOrientationConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKASOrientationConfig.h; sourceTree = "<group>"; };
+		C5BD1B6B1ECEA611007F45DD /* MKASOrientationConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKASOrientationConfig.m; sourceTree = "<group>"; };
 		C5D6C1841D67674A003598E7 /* MASCompositeConstraint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASCompositeConstraint.h; sourceTree = "<group>"; };
 		C5D6C1851D67674A003598E7 /* MASCompositeConstraint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASCompositeConstraint.m; sourceTree = "<group>"; };
 		C5D6C1861D67674A003598E7 /* MASConstraint+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MASConstraint+Private.h"; sourceTree = "<group>"; };
@@ -250,6 +253,8 @@
 				C567284D1D9054F2002D0245 /* MKActionSheet.m */,
 				C5AEE5BB1EB0483C00D3BF3C /* MKActionSheetAdd.h */,
 				C5AEE5BC1EB0483C00D3BF3C /* MKActionSheetAdd.m */,
+				C5BD1B6A1ECEA611007F45DD /* MKASOrientationConfig.h */,
+				C5BD1B6B1ECEA611007F45DD /* MKASOrientationConfig.m */,
 				C52062F81EBC218A0005F3D2 /* MKASRootViewController.h */,
 				C52062F91EBC218A0005F3D2 /* MKASRootViewController.m */,
 			);
@@ -521,6 +526,7 @@
 				C5D6C1A51D67674A003598E7 /* NSLayoutConstraint+MASDebugAdditions.m in Sources */,
 				C51FB2321D547DEF00A766E1 /* NSData+ImageContentType.m in Sources */,
 				C5D6C1A11D67674A003598E7 /* MASLayoutConstraint.m in Sources */,
+				C5BD1B6C1ECEA611007F45DD /* MKASOrientationConfig.m in Sources */,
 				C51FB2391D547DEF00A766E1 /* SDWebImagePrefetcher.m in Sources */,
 				C52062FA1EBC218A0005F3D2 /* MKASRootViewController.m in Sources */,
 				C51FB2481D55D9ED00A766E1 /* MKFPSStatus.m in Sources */,

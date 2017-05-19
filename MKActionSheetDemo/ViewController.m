@@ -268,7 +268,6 @@
     else if ([cellTitle isEqualToString:@"imageValueType:image delegate"]) {
         MKActionSheet *sheet =[[MKActionSheet alloc] initWithTitle:@"init with dictionary array,imageValueType:image、delegate. selectType:-selected" objArray:self.dicArray buttonTitleKey:@"titleStr" imageKey:@"image" imageValueType:MKActionSheetButtonImageValueType_image selectType:MKActionSheetSelectType_selected];
         sheet.selectedIndex = 0;
-        sheet.separatorLeftMargin = sheet.titleMargin;
         sheet.needCancelButton = YES;
         [sheet showWithBlock:^(MKActionSheet *actionSheet, NSInteger buttonIndex) {
             
@@ -279,8 +278,6 @@
     else if ([cellTitle isEqualToString:@"imageValueType:imageUrl delegate"]){
         MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"imageValueType:imageUrl、delegate 分割线设置边距" objArray:self.modelArray buttonTitleKey:@"titleStr" imageKey:@"imageUrl" imageValueType:MKActionSheetButtonImageValueType_url selectType:MKActionSheetSelectType_multiselect];
         sheet.needCancelButton = YES;
-        sheet.maxShowButtonCount = 0;
-        sheet.separatorLeftMargin = 60;
         sheet.multiselectConfirmButtonTitleColor = [UIColor redColor];
         sheet.titleColor = [UIColor blueColor];
         
@@ -317,7 +314,6 @@
     //设置最大显示按钮数
     else if ([cellTitle isEqualToString:@"set maxShowButtonCount"]){
         MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"设置 maxShowButtonCount 控制显示 按钮的最大数量，超过将以 tableView 的样式展示" buttonTitleArray:@[@"button0", @"button1", @"button2",@"button3",@"button4",@"button5",@"button6",@"button7",@"button8",@"button9",@"button10"]];
-        sheet.maxShowButtonCount = 6.6;
         [sheet showWithBlock:^(MKActionSheet *actionSheet, NSInteger buttonIndex) {
             NSLog(@"===buttonIndex:%ld",(long)buttonIndex);
             [weakSelf.view makeToast:[NSString stringWithFormat:@"buttonIndex : %ld " ,(long)buttonIndex]];
@@ -395,12 +391,9 @@
         MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"custom UI" buttonTitleArray:@[@"button1", @"button2",@"button3",@"button4", @"button5",@"button6",@"button7"]];
         sheet.titleColor = [UIColor greenColor];
         sheet.titleFont = [UIFont boldSystemFontOfSize:24];
-        sheet.titleAlignment = NSTextAlignmentLeft;
         sheet.buttonTitleColor = [UIColor redColor];
         sheet.buttonTitleFont = [UIFont boldSystemFontOfSize:14];
         sheet.buttonOpacity = 1;
-        sheet.buttonHeight = 40.0f;
-        sheet.buttonTitleAlignment = MKActionSheetButtonTitleAlignment_left;
         sheet.destructiveButtonTitleColor = [UIColor grayColor];
         sheet.destructiveButtonIndex = 2;
         sheet.cancelTitle = @"关闭";
@@ -408,8 +401,6 @@
         sheet.blurOpacity = 0.7f;
         sheet.blackgroundOpacity = 0.6f;
         sheet.needCancelButton = YES;
-        sheet.maxShowButtonCount = 5.6;
-        sheet.separatorLeftMargin = 20;
 //        [sheet addButtonWithTitle:@"button add"];
         [sheet showWithBlock:^(MKActionSheet *actionSheet, NSInteger buttonIndex) {
             NSLog(@"buttonIndex:%ld",(long)buttonIndex);
