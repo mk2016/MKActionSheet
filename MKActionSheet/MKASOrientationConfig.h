@@ -9,7 +9,6 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-#define MKActionSheet_WindowLevel   UIWindowLevelStatusBar - 1
 
 #ifndef MKActionSheetDefine
 #define MKSCREEN_WIDTH     [UIScreen mainScreen].bounds.size.width

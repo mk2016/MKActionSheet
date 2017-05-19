@@ -10,9 +10,7 @@
 #import "MKActionSheetAdd.h"
 #import "MKASRootViewController.h"
 
-
-
-
+#define MKActionSheet_WindowLevel       UIWindowLevelStatusBar - 1
 #define MKAS_BUTTON_SEPARATOR_HEIGHT    (1 / [UIScreen mainScreen].scale)
 #define MKAS_BUTTON_TAG_BASE            100
 #define MKAS_BUTTON_SELECT_TAG          999
@@ -25,13 +23,11 @@
 @property (nonatomic, copy) NSString *imageKey;                                     /*!< 传入为object array 时 指定 button image 对应的字段名 */
 @property (nonatomic, assign) MKActionSheetButtonImageValueType imageValueType;     /*!< imageKey对应的类型：image、imageName、imageUrl */
 
-@property (nonatomic, copy) NSString *title;                                        /*!< 标题 */
+@property (nonatomic, strong) MKASOrientationConfig *configPortrait;    /*!< 竖屏 配置 */
+@property (nonatomic, strong) MKASOrientationConfig *configLandscape;   /*!< 横屏 配置 */
+@property (nonatomic, strong) MKASOrientationConfig *currentConfig;     /*!< 当前配置 */
 
-@property (nonatomic, strong) MKASOrientationConfig *configPortrait;      /*!< 竖屏 配置 */
-@property (nonatomic, strong) MKASOrientationConfig *configLandscape;     /*!< 横屏 配置 */
-@property (nonatomic, strong) MKASOrientationConfig *currentConfig;
-
-
+@property (nonatomic, copy) NSString *title;                            /*!< 标题 */
 @property (nonatomic, strong) NSMutableArray *buttonTitles;             /*!< button titles array */
 @property (nonatomic, strong) NSMutableArray *objArray;                 /*!< objects array */
 
@@ -54,7 +50,7 @@
 
 @property (nonatomic, copy) MKActionSheetCustomTitleViewLayoutBlock customTitleViewLayoutBlock;
 
-@property (nonatomic, assign) BOOL paramIsObject;                       /*!< init array is model or dictionary */
+@property (nonatomic, assign) BOOL paramIsObject;           /*!< init array is model or dictionary */
 @property (nonatomic, assign) BOOL isShow;
 @property (nonatomic, assign) BOOL initSuccess;
 @end
@@ -122,14 +118,15 @@
 - (void)initData{
     _windowLevel = MKActionSheet_WindowLevel;
     _enabledForBgTap = YES;
-    _multiselectConfirmButtonTitleColor = MKCOLOR_RGBA(100.0f, 100.0f, 100.0f, 1.0f);
-
+    _manualDismiss = NO;
+    
     _animationDuration = 0.3f;
     _blurOpacity = 0.3f;
     _blackgroundOpacity = 0.3f;
     
     _titleColor = MKCOLOR_RGBA(100.0f, 100.0f, 100.0f, 1.0f);
     _titleFont = [UIFont systemFontOfSize:14];
+    _titleMargin = 20.0f;
     
     _buttonTitleColor = MKCOLOR_RGBA(51.0f,51.0f,51.0f,1.0f);
     _buttonTitleFont = [UIFont systemFontOfSize:18.0f];
@@ -139,20 +136,22 @@
     _destructiveButtonIndex = -1;
     _destructiveButtonTitleColor = MKCOLOR_RGBA(250.0f, 10.0f, 10.0f, 1.0f);
     
-    _cancelTitle = @"取消";
-
-    _titleMargin = 20.0f;
     _needCancelButton = YES;
+    _cancelTitle = @"取消";
     
+    _selectedIndex = -1;
+    _multiselectConfirmButtonTitle = @"确定";
+    _multiselectConfirmButtonTitleColor = MKCOLOR_RGBA(100.0f, 100.0f, 100.0f, 1.0f);
+
+
     //以 object array 初始化，默认没有取消按钮
     if (_paramIsObject) {
         self.needCancelButton = NO;
     }
     
-    //默认样式
+    // 根据 selectType 和 方向 初始化默认样式
     if (self.configPortrait == nil) {
         self.configPortrait = [[MKASOrientationConfig alloc] init];
-        // 根据 selectType 初始化默认样式
         if (_selectType == MKActionSheetSelectType_multiselect || _selectType == MKActionSheetSelectType_selected) {       //多选 样式， title 默认 居左对齐，无取消按钮
             self.configPortrait.titleAlignment = NSTextAlignmentLeft;
             self.configPortrait.buttonTitleAlignment = MKActionSheetButtonTitleAlignment_left;
@@ -161,18 +160,23 @@
     
     if (self.configLandscape == nil) {
         self.configLandscape = [[MKASOrientationConfig alloc] init];
-        // 根据 selectType 初始化默认样式
         if (_selectType == MKActionSheetSelectType_multiselect || _selectType == MKActionSheetSelectType_selected) {       //多选 样式， title 默认 居左对齐，无取消按钮
             self.configLandscape.titleAlignment = NSTextAlignmentCenter;
             self.configLandscape.buttonTitleAlignment = MKActionSheetButtonTitleAlignment_center;
         }
     }
    
+    [self updateConfitByOrientation];
+}
+
+- (void)updateConfitByOrientation{
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     if (orientation == UIInterfaceOrientationLandscapeRight || orientation == UIInterfaceOrientationLandscapeLeft){
         self.currentConfig = self.configLandscape;
+        self.scrollView.contentSize = CGSizeMake(MKSCREEN_HEIGHT, self.buttonTitles.count*self.currentConfig.buttonHeight);
     }else{
         self.currentConfig = self.configPortrait;
+        self.scrollView.contentSize = CGSizeMake(MKSCREEN_WIDTH, self.buttonTitles.count*self.currentConfig.buttonHeight);
     }
 }
 
@@ -185,7 +189,7 @@
     }
 }
 
-#pragma mark - ***** add & remove *****
+#pragma mark - ***** add & remove & reload *****
 - (void)addButtonWithButtonTitle:(NSString *)title{
     NSAssert(!_paramIsObject, @"以 objArray 初始化时，不能直接添加 title, 请使用 addButtonWithObj:(id)obj");
     if (title) {
@@ -209,14 +213,8 @@
 - (void)addButtonWithObj:(id)obj{
     NSAssert(_paramIsObject, @"不是由 objArray 初始化时，不能直接添加 object, 请使用 addButtonWithButtonTitle:(NSString *)title");
     if (obj) {
-        id titleValue = [obj valueForKey:_titleKey];
-        if (titleValue && [titleValue isKindOfClass:[NSString class]]) {
-            [self.objArray addObject:obj];
-            [self.buttonTitles addObject:titleValue];
-            [self updateScrollViewAndLayout];
-        }else{
-            NSAssert(NO, @"obj.titleKey 必须为 有效的 NSString");
-        }
+        [self.objArray addObject:obj];
+        [self updateScrollViewAndLayout];
     }
 }
 
@@ -241,6 +239,24 @@
         [self.objArray removeObjectAtIndex:index];
     }
     [self updateScrollViewAndLayout];
+}
+
+- (void)reloadWithTitleArray:(NSArray *)titleArray{
+    NSAssert(!_paramIsObject, @"以 objArray 初始化时， 请使用 reloadWithObjArray:");
+    if (titleArray && titleArray.count > 0) {
+        [self.buttonTitles removeAllObjects];
+        [self.buttonTitles addObjectsFromArray:titleArray];
+        [self updateScrollViewAndLayout];
+    }
+}
+
+- (void)reloadWithObjArray:(NSArray *)objArray{
+    NSAssert(_paramIsObject, @"不是由 objArray 初始化时， 请使用 reloadWithTitleArray:");
+    if (objArray && objArray.count > 0) {
+        [self.objArray removeAllObjects];
+        [self.objArray addObjectsFromArray:objArray];
+        [self updateScrollViewAndLayout];
+    }
 }
 
 - (void)updateScrollViewAndLayout{
@@ -282,24 +298,58 @@
 }
 
 
-#pragma mark - ***** show methods******
+#pragma mark - ***** show methods ******
 - (void)showWithBlock:(MKActionSheetBlock)block{
-    NSAssert(_selectType != MKActionSheetSelectType_multiselect, @"多选样式 应该使用 showWithMultiselectBlock: 方法");
+    NSAssert(_selectType != MKActionSheetSelectType_multiselect, @"multiselect style, place use: showWithMultiselectBlock:");
     _block = block;
     [self show];
 }
 
 - (void)showWithMultiselectBlock:(MKActionSheetMultiselectBlock)multiselectblock{
-    NSAssert(_selectType == MKActionSheetSelectType_multiselect, @"非多选模式，应该使用 showWithBlock: 方法");
+    NSAssert(_selectType == MKActionSheetSelectType_multiselect, @"single select style，place use showWithBlock:");
     _multiselectBlock = multiselectblock;
     [self show];
 }
+
+- (void)show{
+    if (_blackgroundOpacity < 0.1f) {
+        _blackgroundOpacity = 0.1f;
+    }
+    
+    [self setupMainView];
+    self.isShow = YES;
+    [self setNeedsUpdateConstraints];
+    [self updateConstraintsIfNeeded];
+    [UIView animateWithDuration:self.animationDuration delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+        self.shadeView.alpha = self.blackgroundOpacity;
+        self.shadeView.userInteractionEnabled = YES;
+        [self layoutIfNeeded];
+    } completion:nil];
+}
+
 
 #pragma mark - ***** dismiss ******
 /** 点击取消按钮 */
 - (void)btnCancelOnclicked:(UIButton *)sender{
     NSInteger index = sender.tag;
     [self dismissWithButtonIndex:index];
+}
+
+/** 单选 点击按钮 */
+- (void)btnClick:(UIButton *)sender{
+    NSInteger index = sender.tag-MKAS_BUTTON_TAG_BASE;
+    if (self.selectType == MKActionSheetSelectType_multiselect){    //多选
+        NSString *title = [self.buttonTitles objectAtIndex:index];
+        title.mkas_selected = !title.mkas_selected;
+        UIView *view = self.buttonViewsArray[index];
+        UIButton *btn = [view viewWithTag:MKAS_BUTTON_SELECT_TAG];
+        btn.selected = title.mkas_selected;
+    }else if(self.selectType == MKActionSheetSelectType_selected){
+        self.selectedIndex = index;
+        [self dismissWithButtonIndex:index];
+    }else{
+        [self dismissWithButtonIndex:index];
+    }
 }
 
 - (void)dismissWithButtonIndex:(NSInteger)index{
@@ -329,52 +379,6 @@
     }
     MKBlockExec(self.multiselectBlock, self, selectedArray);
     [self chekcManualDismiss];
-}
-
-
-- (void)btnClick:(UIButton *)sender{
-    NSInteger index = sender.tag-MKAS_BUTTON_TAG_BASE;
-    if (self.selectType == MKActionSheetSelectType_multiselect){    //多选
-        NSString *title = [self.buttonTitles objectAtIndex:index];
-        title.mkas_selected = !title.mkas_selected;
-        UIView *view = self.buttonViewsArray[index];
-        UIButton *btn = [view viewWithTag:MKAS_BUTTON_SELECT_TAG];
-        btn.selected = title.mkas_selected;
-    }else if(self.selectType == MKActionSheetSelectType_selected){
-        self.selectedIndex = index;
-        [self dismissWithButtonIndex:index];
-    }else{
-        [self dismissWithButtonIndex:index];
-    }
-}
-
-
-- (void)show{
-    if (_paramIsObject) {
-        NSAssert(_titleKey && _titleKey.length > 0, @"titleKey 不能为nil 或者 空, 必须是有效的 NSString");
-        NSAssert(_objArray, @"_objArray 不能为 nil");
-        for (id obj in _objArray) {
-            id titleValue = [obj valueForKey:_titleKey];
-            if (!titleValue || ![titleValue isKindOfClass:[NSString class]]) {
-                NSAssert(NO, @"obj.titleKey 必须为 有效的 NSString");
-            }
-            _buttonTitles = [[NSMutableArray alloc] initWithArray:[_objArray valueForKey:_titleKey]];
-        }
-    }
-    
-    if (_blackgroundOpacity < 0.1f) {
-        _blackgroundOpacity = 0.1f;
-    }
-    
-    [self setupMainView];
-    self.isShow = YES;
-    [self setNeedsUpdateConstraints];
-    [self updateConstraintsIfNeeded];
-    [UIView animateWithDuration:self.animationDuration delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
-        self.shadeView.alpha = self.blackgroundOpacity;
-        self.shadeView.userInteractionEnabled = YES;
-        [self layoutIfNeeded];
-    } completion:nil];
 }
 
 - (void)chekcManualDismiss{
@@ -409,15 +413,7 @@
 
 #pragma mark - ***** setup UI ******
 - (void)statusBarOrientationChange:(NSNotification *)notification{
-    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-    if (orientation == UIInterfaceOrientationLandscapeRight || orientation == UIInterfaceOrientationLandscapeLeft){
-        NSLog(@"LR");
-        self.currentConfig = self.configLandscape;
-    }else{
-        NSLog(@"P");
-        self.currentConfig = self.configPortrait;
-    }
-    
+    [self updateConfitByOrientation];
     [self setNeedsUpdateConstraints];
     [self updateConstraintsIfNeeded];
     [self layoutIfNeeded];
@@ -443,7 +439,6 @@
     [self.sheetView addSubview:self.titleView];
     [self.sheetView addSubview:self.scrollView];
     [self.sheetView addSubview:self.cancelView];
-    
     
     if (self.needCancelButton) {
         [self.cancelView addSubview:self.cancelButton];
@@ -485,6 +480,17 @@
 
 - (void)setupScrollView{
     //UIScrollView
+    if (_paramIsObject) {
+        NSAssert(_titleKey && _titleKey.length > 0, @"titleKey 不能为nil 或者 空, 必须是有效的 NSString");
+        NSAssert(_objArray, @"_objArray 不能为 nil");
+        for (id obj in _objArray) {
+            id titleValue = [obj valueForKey:_titleKey];
+            if (!titleValue || ![titleValue isKindOfClass:[NSString class]]) {
+                NSAssert(NO, @"obj.titleKey 必须为 有效的 NSString");
+            }
+            _buttonTitles = [[NSMutableArray alloc] initWithArray:[_objArray valueForKey:_titleKey]];
+        }
+    }
     self.scrollView.contentSize = CGSizeMake(MKSCREEN_WIDTH, self.buttonTitles.count*self.currentConfig.buttonHeight);
     if (self.buttonViewsArray.count > 0) {
         [self.buttonViewsArray makeObjectsPerformSelector:@selector(removeFromSuperview)];

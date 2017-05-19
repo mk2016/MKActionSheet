@@ -154,10 +154,6 @@ typedef void(^MKActionSheetCustomTitleViewLayoutBlock)(MASConstraintMaker *make,
                buttonTitleKey:(NSString *)buttonTitleKey;
 
 
-
-
-
-
 - (void)setCustomTitleView:(UIView *)view makeConstraints:(MKActionSheetCustomTitleViewLayoutBlock)block;
 - (void)addButtonWithButtonTitle:(NSString *)title;
 - (void)removeButtonWithButtonTitle:(NSString *)title;
@@ -166,6 +162,9 @@ typedef void(^MKActionSheetCustomTitleViewLayoutBlock)(MASConstraintMaker *make,
 - (void)removeButtonWithObj:(id)model;
 
 - (void)removeButtonWithIndex:(NSInteger)index;
+
+- (void)reloadWithTitleArray:(NSArray *)titleArray;
+- (void)reloadWithObjArray:(NSArray *)objArray;
 
 /** show method */
 /**
