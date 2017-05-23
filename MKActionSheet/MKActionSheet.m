@@ -714,7 +714,7 @@
     [self.scrollView mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.left.right.equalTo(self.sheetView);
         make.height.mas_equalTo(viewH);
-        make.top.equalTo(self.titleView.mas_bottom).offset(0.5);
+        make.top.equalTo(self.titleView.mas_bottom).offset(MKAS_BUTTON_SEPARATOR_HEIGHT);
         make.bottom.equalTo(self.cancelView.mas_top);
     }];
     
