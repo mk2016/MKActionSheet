@@ -16,6 +16,8 @@
  * 支持多按钮，可设置最大显示数量（支持小数），超过最大数量滚动
  * 支持 Model 或 NSDictionary 数组初始化
  * 支持 block 
+ * 支持动态添加 button
+ * 支持动态 修改 titleView
  
 #### 先上效果图
  ![image](https://github.com/mk2016/MKActionSheet/raw/master/Screenshots/gif2.gif)
@@ -27,9 +29,10 @@
 
 * Manually (手动导入)  
   只需将 MKActionSheet 文件添加到项目中即可
-* 依赖 
-  "Masonry", '~> 1.0.2'
-  "SDWebImage", '~> 3.8.2'
+  
+* 依赖
+  Masonry ~> 1.0.2   
+  SDWebImage ~> 3.8.2
 
 ## 用法 详细用法参见demo
 ##### 1.4.0 版本之后 化烦为简 去除 delegate 用法, 适配到iOS8。  需要delegate或者想支持iOS7可以使用V1.3.2版本。
