@@ -7,11 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "Masonry.h"
 #import "MKASOrientationConfig.h"
 
 
-@class MKActionSheet;
+
+@class MKActionSheet, MASConstraintMaker;
 #pragma mark - ***** MKActionSheet Block ******
 /**
  *  clicked block
