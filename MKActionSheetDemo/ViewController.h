@@ -13,3 +13,9 @@
 
 @end
 
+
+
+@interface MKCellModel : NSObject
+@property (nonatomic, copy) NSString *title;
+@property (nonatomic, copy) NSString *detail;
+@end

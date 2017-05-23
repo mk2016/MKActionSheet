@@ -9,6 +9,8 @@
 #import "MKActionSheet.h"
 #import "MKActionSheetAdd.h"
 #import "MKASRootViewController.h"
+#import "UIButton+WebCache.h"
+
 
 #define MKActionSheet_WindowLevel       UIWindowLevelStatusBar - 1
 #define MKAS_BUTTON_SEPARATOR_HEIGHT    (1 / [UIScreen mainScreen].scale)
@@ -155,6 +157,7 @@
         if (_selectType == MKActionSheetSelectType_multiselect || _selectType == MKActionSheetSelectType_selected) {       //多选 样式， title 默认 居左对齐，无取消按钮
             self.configPortrait.titleAlignment = NSTextAlignmentLeft;
             self.configPortrait.buttonTitleAlignment = MKActionSheetButtonTitleAlignment_left;
+            self.configPortrait.maxShowButtonCount = 5.6;
         }
     }
     
@@ -166,10 +169,10 @@
         }
     }
    
-    [self updateConfitByOrientation];
+    [self updateConfigByOrientation];
 }
 
-- (void)updateConfitByOrientation{
+- (void)updateConfigByOrientation{
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     if (orientation == UIInterfaceOrientationLandscapeRight || orientation == UIInterfaceOrientationLandscapeLeft){
         self.currentConfig = self.configLandscape;
@@ -181,6 +184,20 @@
 }
 
 #pragma mark - ***** methods ******
+- (void)setPortraitConfig:(MKASOrientationConfig *)config{
+    if (config) {
+        self.configPortrait = config;
+        [self updateConfigByOrientation];
+    }
+}
+
+- (void)setLandscapeConfig:(MKASOrientationConfig *)config{
+    if (config) {
+        self.configLandscape = config;
+        [self updateConfigByOrientation];
+    }
+}
+
 - (void)setSelectedIndex:(NSInteger)selectedIndex{
     if (_selectType == MKActionSheetSelectType_selected) {
         _selectedIndex = selectedIndex;
@@ -413,7 +430,7 @@
 
 #pragma mark - ***** setup UI ******
 - (void)statusBarOrientationChange:(NSNotification *)notification{
-    [self updateConfitByOrientation];
+    [self updateConfigByOrientation];
     [self setNeedsUpdateConstraints];
     [self updateConstraintsIfNeeded];
     [self layoutIfNeeded];
@@ -548,19 +565,9 @@
             }
         }
         
-        if (self.currentConfig.buttonTitleAlignment == MKActionSheetButtonTitleAlignment_left) {
-            btn.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
-            [btn setContentEdgeInsets:UIEdgeInsetsMake(0, self.titleMargin, 0, 0)];
-        }else if (self.currentConfig.buttonTitleAlignment == MKActionSheetButtonTitleAlignment_right){
-            btn.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
-            [btn setContentEdgeInsets:UIEdgeInsetsMake(0, 0, 0, self.titleMargin)];
-        }else if (self.currentConfig.buttonTitleAlignment == MKActionSheetButtonTitleAlignment_center){
-            btn.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
-            [btn setContentEdgeInsets:UIEdgeInsetsZero];
-        }
-        
         if (self.paramIsObject && self.imageKey && self.imageKey.length > 0 && self.imageValueType) {
             btn.titleEdgeInsets = UIEdgeInsetsMake(0, _buttonImageRightSpace, 0, 0);
+            btn.imageEdgeInsets = UIEdgeInsetsMake(0, 0, 0, _buttonImageRightSpace);
             id obj = [self.objArray objectAtIndex:i];
             id imageValue = [obj valueForKey:self.imageKey];
             
@@ -573,15 +580,37 @@
                     [btn setImage:imageValue forState:UIControlStateNormal];
                 }
             }else if (self.imageValueType == MKActionSheetButtonImageValueType_url){
-                //由于加载url图片需要导入 SDWebImage，而且有些人在项目中用的也不一定是SDWebImage, 或用不到此类型，
-                //为了不增加 使用MKActionSheet 的成本，加载url 图片  用一个block 或 delegate 回调出去，根据大家自己的实际情况设置 图片，并设置自己的默认图片。
                 if ([imageValue isKindOfClass:[NSString class]] || [imageValue isKindOfClass:[NSURL class]]) {
-                    MKBlockExec(self.buttonImageBlock, self, btn, imageValue);
+                    NSURL *url = nil;
+                    if ([imageValue isKindOfClass:[NSString class]]) {
+                        url = [NSURL URLWithString:imageValue];
+                    }else if ([imageValue isKindOfClass:[NSURL class]]){
+                        url = imageValue;
+                    }
+                    [btn sd_setImageWithURL:url forState:UIControlStateNormal placeholderImage:self.placeholderImage];
                 }
             }
         }
-    }
+        [self updateButtonConstraints:btn];
 
+    }
+}
+
+- (void)updateButtonConstraints:(UIButton *)btn{
+    if (self.currentConfig.buttonTitleAlignment == MKActionSheetButtonTitleAlignment_left) {
+        btn.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
+        [btn setContentEdgeInsets:UIEdgeInsetsMake(0, self.titleMargin, 0, 0)];
+    }else if (self.currentConfig.buttonTitleAlignment == MKActionSheetButtonTitleAlignment_right){
+        btn.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
+        if (self.selectType == MKActionSheetSelectType_selected || self.selectType == MKActionSheetSelectType_multiselect) {
+            [btn setContentEdgeInsets:UIEdgeInsetsMake(0, 0, 0, self.titleMargin+60)];
+        }else{
+            [btn setContentEdgeInsets:UIEdgeInsetsMake(0, 0, 0, self.titleMargin)];
+        }
+    }else if (self.currentConfig.buttonTitleAlignment == MKActionSheetButtonTitleAlignment_center){
+        btn.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
+        [btn setContentEdgeInsets:UIEdgeInsetsZero];
+    }
 }
 
 - (void)updateConstraints{
@@ -657,6 +686,7 @@
     
     if (self.needCancelButton) {
         self.cancelView.hidden = NO;
+        self.cancelButton.tag = _buttonTitles.count;
         [self.cancelButton mas_remakeConstraints:^(MASConstraintMaker *make) {
             make.left.right.bottom.equalTo(self.cancelView);
             make.height.mas_equalTo(self.currentConfig.buttonHeight);
@@ -694,6 +724,7 @@
         UIButton *btn = [view viewWithTag:i + MKAS_BUTTON_TAG_BASE];
         if (btn) {
             btn.frame = CGRectMake(0, 0, MKSCREEN_WIDTH, self.currentConfig.buttonHeight);
+            [self updateButtonConstraints:btn];
         }
     }
     [super updateConstraints];
@@ -805,7 +836,6 @@
     if (!_cancelButton) {
         _cancelButton = [self createButton];
         [_cancelButton setTitle:_cancelTitle forState:UIControlStateNormal];
-        _cancelButton.tag = _buttonTitles.count;
         [_cancelButton addTarget:self action:@selector(btnCancelOnclicked:) forControlEvents:UIControlEventTouchUpInside];
     }
     return _cancelButton;

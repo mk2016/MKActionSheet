@@ -14,7 +14,7 @@
         _titleAlignment = NSTextAlignmentCenter;
         _buttonTitleAlignment = MKActionSheetButtonTitleAlignment_center;
         _buttonHeight = 48.0f;
-        _maxShowButtonCount = 5.6;
+        _maxShowButtonCount = 4.6;
     }
     return self;
 }

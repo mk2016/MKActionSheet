@@ -12,4 +12,6 @@ Pod::Spec.new do |s|
   s.resource          = "MKActionSheet/MKActionSheet.bundle"
   s.requires_arc      = true
   s.dependency        "Masonry", '~> 1.0.2'
+  s.dependency        "SDWebImage", '~> 3.8.2'
+
 end

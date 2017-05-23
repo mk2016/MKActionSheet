@@ -29,14 +29,7 @@ typedef void(^MKActionSheetBlock)(MKActionSheet *actionSheet, NSInteger buttonIn
  */
 typedef void(^MKActionSheetMultiselectBlock)(MKActionSheet *actionSheet, NSArray *array);
 
-/**
- *  when 'imageKey' type is 'url'，use this block load image
- *
- *  @param actionSheet self
- *  @param button      button of need load image
- *  @param imageUrl    the 'imageKey' value
- */
-typedef void(^MKActionSheetSetButtonImageWithUrlBlock)(MKActionSheet *actionSheet, UIButton *button, NSString *imageUrl);
+
 
 typedef void(^MKActionSheetCustomTitleViewLayoutBlock)(MASConstraintMaker *make, UIView *superview);
 /** 
@@ -45,13 +38,16 @@ typedef void(^MKActionSheetCustomTitleViewLayoutBlock)(MASConstraintMaker *make,
  * 可以将 currentVC 设置为当前 viewController
  */
 
+// default UI setting
+// _selected and multiselect style, default no cancel button, title alignment default: Portrait-left, Landscape-center
+// init with object array ,default no cancel button
+
 #pragma mark - ***** MKActionSheet ******
 @interface MKActionSheet : UIView
 
 /** block */
 @property (nonatomic, copy) MKActionSheetBlock block;                                   /*!< callback for click button  */
 @property (nonatomic, copy) MKActionSheetMultiselectBlock multiselectBlock;             /*!< callback for multiselect style, return selected array */
-@property (nonatomic, copy) MKActionSheetSetButtonImageWithUrlBlock buttonImageBlock;   /*!< callback for set button image */
 
 
 /**  custom UI */
@@ -94,8 +90,7 @@ typedef void(^MKActionSheetCustomTitleViewLayoutBlock)(MASConstraintMaker *make,
 @property (nonatomic, copy) NSString *selectBtnImageNameSelected;   /*!< image name for select button selected state )*/
 @property (nonatomic, strong) NSString *multiselectConfirmButtonTitle;      /*!< confirm button title */
 @property (nonatomic, strong) UIColor *multiselectConfirmButtonTitleColor;  /*!< confirm button title color */
-
-
+@property (nonatomic, strong) UIImage *placeholderImage;
 
 
 #pragma mark - ***** init method ******
@@ -165,6 +160,9 @@ typedef void(^MKActionSheetCustomTitleViewLayoutBlock)(MASConstraintMaker *make,
 
 - (void)reloadWithTitleArray:(NSArray *)titleArray;
 - (void)reloadWithObjArray:(NSArray *)objArray;
+
+- (void)setPortraitConfig:(MKASOrientationConfig *)config;          /*!< set Portrait config  */
+- (void)setLandscapeConfig:(MKASOrientationConfig *)config;         /*!< set Landscape config */
 
 /** show method */
 /**
