@@ -304,6 +304,7 @@
 					C5A125A81CFEE7E700FEA77A = {
 						CreatedOnToolsVersion = 7.3.1;
 						DevelopmentTeam = SU5VNK39CL;
+						ProvisioningStyle = Automatic;
 					};
 					C5A125C11CFEE7E700FEA77A = {
 						CreatedOnToolsVersion = 7.3.1;
@@ -581,6 +582,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.mk.MKActionSheet;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Debug;
 		};
@@ -597,6 +599,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.mk.MKActionSheet;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Release;
 		};

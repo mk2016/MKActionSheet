@@ -176,10 +176,10 @@
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     if (orientation == UIInterfaceOrientationLandscapeRight || orientation == UIInterfaceOrientationLandscapeLeft){
         self.currentConfig = self.configLandscape;
-        self.scrollView.contentSize = CGSizeMake(MKSCREEN_HEIGHT, self.buttonTitles.count*self.currentConfig.buttonHeight);
+        self.scrollView.contentSize = CGSizeMake(MKSCREEN_HEIGHT, self.buttonTitles.count*(self.currentConfig.buttonHeight+MKAS_BUTTON_SEPARATOR_HEIGHT));
     }else{
         self.currentConfig = self.configPortrait;
-        self.scrollView.contentSize = CGSizeMake(MKSCREEN_WIDTH, self.buttonTitles.count*self.currentConfig.buttonHeight);
+        self.scrollView.contentSize = CGSizeMake(MKSCREEN_WIDTH, self.buttonTitles.count*(self.currentConfig.buttonHeight+MKAS_BUTTON_SEPARATOR_HEIGHT));
     }
 }
 
@@ -508,7 +508,7 @@
             _buttonTitles = [[NSMutableArray alloc] initWithArray:[_objArray valueForKey:_titleKey]];
         }
     }
-    self.scrollView.contentSize = CGSizeMake(MKSCREEN_WIDTH, self.buttonTitles.count*self.currentConfig.buttonHeight);
+    self.scrollView.contentSize = CGSizeMake(MKSCREEN_WIDTH, self.buttonTitles.count*(self.currentConfig.buttonHeight+MKAS_BUTTON_SEPARATOR_HEIGHT));
     if (self.buttonViewsArray.count > 0) {
         [self.buttonViewsArray makeObjectsPerformSelector:@selector(removeFromSuperview)];
         [self.buttonViewsArray removeAllObjects];
