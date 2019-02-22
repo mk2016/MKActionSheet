@@ -52,9 +52,10 @@ typedef void(^MKActionSheetCustomTitleViewLayoutBlock)(MASConstraintMaker *make,
 
 /**  custom UI */
 @property (nonatomic, assign) CGFloat windowLevel;          /*!< default: UIWindowLevelStatusBar - 1 */
-@property (nonatomic, weak) UIViewController *currentVC;    /*!< current viewController, for statusBar keep the same style */
+@property (nonatomic, weak) UIViewController *currentVC;    /*!< current viewController, statusBar keep the same style */
 @property (nonatomic, assign) BOOL enabledForBgTap;         /*!< default: YES */
-@property (nonatomic, assign) BOOL manualDismiss;           /**  [default: NO]. if set 'YES', you need calling the method of 'dismiss' to hide actionSheet by manual */
+@property (nonatomic, assign) BOOL manualDismiss;           /*!< default: NO. if set 'YES', you need calling the method of
+                                                             'dismiss' to hide actionSheet by manual */
 
 /** action sheet */
 @property (nonatomic, assign) CGFloat animationDuration;            /*!< 动画化时间 [default: 0.3f] */
@@ -92,6 +93,8 @@ typedef void(^MKActionSheetCustomTitleViewLayoutBlock)(MASConstraintMaker *make,
 @property (nonatomic, strong) UIColor *multiselectConfirmButtonTitleColor;  /*!< confirm button title color */
 @property (nonatomic, strong) UIImage *placeholderImage;
 
+@property (nonatomic, strong) MKASOrientationConfig *portraitConfig;    /*!< 竖屏 配置 */
+@property (nonatomic, strong) MKASOrientationConfig *landscapeConfig;   /*!< 横屏 配置 */
 
 #pragma mark - ***** init method ******
 /**
@@ -150,6 +153,7 @@ typedef void(^MKActionSheetCustomTitleViewLayoutBlock)(MASConstraintMaker *make,
 
 
 - (void)setCustomTitleView:(UIView *)view makeConstraints:(MKActionSheetCustomTitleViewLayoutBlock)block;
+
 - (void)addButtonWithButtonTitle:(NSString *)title;
 - (void)removeButtonWithButtonTitle:(NSString *)title;
 
@@ -161,8 +165,7 @@ typedef void(^MKActionSheetCustomTitleViewLayoutBlock)(MASConstraintMaker *make,
 - (void)reloadWithTitleArray:(NSArray *)titleArray;
 - (void)reloadWithObjArray:(NSArray *)objArray;
 
-- (void)setPortraitConfig:(MKASOrientationConfig *)config;          /*!< set Portrait config  */
-- (void)setLandscapeConfig:(MKASOrientationConfig *)config;         /*!< set Landscape config */
+
 
 /** show method */
 /**

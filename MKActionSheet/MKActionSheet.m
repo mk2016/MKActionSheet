@@ -12,21 +12,19 @@
 #import "UIButton+WebCache.h"
 #import "Masonry.h"
 
-#define MKActionSheet_WindowLevel       UIWindowLevelStatusBar - 1
+#define MKAS_WINDOW_LEVEL               UIWindowLevelStatusBar - 1
 #define MKAS_BUTTON_SEPARATOR_HEIGHT    (1 / [UIScreen mainScreen].scale)
 #define MKAS_BUTTON_TAG_BASE            100
 #define MKAS_BUTTON_SELECT_TAG          999
 
 #pragma mark - ***** MKActionSheet ******
 @interface MKActionSheet()<UIScrollViewDelegate>
-@property (nonatomic, assign) MKActionSheetSelectType selectType;                   /*!< 选择模式：默认、单选(在初始选择的后面会有标示)、多选*/
+@property (nonatomic, assign) MKActionSheetSelectType selectType;   /*!< 选择模式：默认、单选(在初始选择的后面会有标示)、多选*/
 //object Array
-@property (nonatomic, copy) NSString *titleKey;                                     /*!< 传入为object array 时 指定 title 的字段名 */
-@property (nonatomic, copy) NSString *imageKey;                                     /*!< 传入为object array 时 指定 button image 对应的字段名 */
+@property (nonatomic, copy) NSString *titleKey;         /*!< 传入为object array 时 指定 title 的字段名 */
+@property (nonatomic, copy) NSString *imageKey;         /*!< 传入为object array 时 指定 button image 对应的字段名 */
 @property (nonatomic, assign) MKActionSheetButtonImageValueType imageValueType;     /*!< imageKey对应的类型：image、imageName、imageUrl */
 
-@property (nonatomic, strong) MKASOrientationConfig *configPortrait;    /*!< 竖屏 配置 */
-@property (nonatomic, strong) MKASOrientationConfig *configLandscape;   /*!< 横屏 配置 */
 @property (nonatomic, strong) MKASOrientationConfig *currentConfig;     /*!< 当前配置 */
 
 @property (nonatomic, copy) NSString *title;                            /*!< 标题 */
@@ -47,7 +45,8 @@
 @property (nonatomic, strong) NSMutableArray *buttonViewsArray;
 
 @property (nonatomic, strong) UIView *cancelView;
-@property (nonatomic, strong) UIButton *cancelButton;
+@property (nonatomic, strong) UIButton *btnCancel;
+@property (nonatomic, strong) UILabel *labCancel;
 @property (nonatomic, strong) UIView *cancelSeparatorView;
 
 @property (nonatomic, copy) MKActionSheetCustomTitleViewLayoutBlock customTitleViewLayoutBlock;
@@ -55,6 +54,8 @@
 @property (nonatomic, assign) BOOL paramIsObject;           /*!< init array is model or dictionary */
 @property (nonatomic, assign) BOOL isShow;
 @property (nonatomic, assign) BOOL initSuccess;
+
+@property (nonatomic, assign) CGFloat iPhoneXIgnoreBottomH;
 @end
 
 
@@ -66,14 +67,16 @@
     if (self = [super init]) {
         _selectType = selectType;
         _title = title;
-        _buttonTitles = [[NSMutableArray alloc] initWithArray:buttonTitleArray];
+        _buttonTitles = buttonTitleArray.mutableCopy;
         [self initData];
     }
     return self;
 }
 
 - (instancetype)initWithTitle:(NSString *)title buttonTitleArray:(NSArray *)buttonTitleArray{
-    return [self initWithTitle:title buttonTitleArray:buttonTitleArray selectType:MKActionSheetSelectType_common];
+    return [self initWithTitle:title
+              buttonTitleArray:buttonTitleArray
+                    selectType:MKActionSheetSelectType_common];
 }
 
 /** init with objects array */
@@ -88,7 +91,7 @@
         _selectType = selectType;
         _title = title;
         _titleKey = buttonTitleKey;
-        _objArray = [[NSMutableArray alloc] initWithArray:objArray];
+        _objArray = objArray.mutableCopy;
         _paramIsObject = YES;
         _imageKey = imageKey;
         _imageValueType = imageValueType;
@@ -101,11 +104,19 @@
 }
 
 - (instancetype)initWithTitle:(NSString *)title objArray:(NSArray *)objArray buttonTitleKey:(NSString *)buttonTitleKey{
-    return [self initWithTitle:title objArray:objArray buttonTitleKey:buttonTitleKey selectType:MKActionSheetSelectType_common];
+    return [self initWithTitle:title
+                      objArray:objArray
+                buttonTitleKey:buttonTitleKey
+                    selectType:MKActionSheetSelectType_common];
 }
 
 - (instancetype)initWithTitle:(NSString *)title objArray:(NSArray *)objArray buttonTitleKey:(NSString *)buttonTitleKey selectType:(MKActionSheetSelectType)selectType{
-    return [self initWithTitle:title objArray:objArray buttonTitleKey:buttonTitleKey imageKey:nil imageValueType:MKActionSheetButtonImageValueType_none selectType:selectType];
+    return [self initWithTitle:title
+                      objArray:objArray
+                buttonTitleKey:buttonTitleKey
+                      imageKey:nil
+                imageValueType:MKActionSheetButtonImageValueType_none
+                    selectType:selectType];
 }
 
 - (instancetype)initWithTitle:(NSString *)title
@@ -113,12 +124,18 @@
                buttonTitleKey:(NSString *)buttonTitleKey
                      imageKey:(NSString *)imageKey
                imageValueType:(MKActionSheetButtonImageValueType)imageValueType{
-    return [self initWithTitle:title objArray:objArray buttonTitleKey:buttonTitleKey imageKey:imageKey imageValueType:imageValueType selectType:MKActionSheetSelectType_common];
+    return [self initWithTitle:title
+                      objArray:objArray
+                buttonTitleKey:buttonTitleKey
+                      imageKey:imageKey
+                imageValueType:imageValueType
+                    selectType:MKActionSheetSelectType_common];
 }
 
 /** init data */
 - (void)initData{
-    _windowLevel = MKActionSheet_WindowLevel;
+    _iPhoneXIgnoreBottomH = MK_IS_IPHONE_XX ? 34 : 0;
+    _windowLevel = MKAS_WINDOW_LEVEL;
     _enabledForBgTap = YES;
     _manualDismiss = NO;
     
@@ -126,24 +143,24 @@
     _blurOpacity = 0.3f;
     _blackgroundOpacity = 0.3f;
     
-    _titleColor = MKCOLOR_RGBA(100.0f, 100.0f, 100.0f, 1.0f);
+    _titleColor = MK_COLOR_RGBA(100.0f, 100.0f, 100.0f, 1.0f);
     _titleFont = [UIFont systemFontOfSize:14];
     _titleMargin = 20.0f;
     
-    _buttonTitleColor = MKCOLOR_RGBA(51.0f,51.0f,51.0f,1.0f);
+    _buttonTitleColor = MK_COLOR_RGBA(51.0f,51.0f,51.0f,1.0f);
     _buttonTitleFont = [UIFont systemFontOfSize:18.0f];
     _buttonOpacity = 0.6;
     _buttonImageRightSpace = 12.f;
     
     _destructiveButtonIndex = -1;
-    _destructiveButtonTitleColor = MKCOLOR_RGBA(250.0f, 10.0f, 10.0f, 1.0f);
+    _destructiveButtonTitleColor = MK_COLOR_RGBA(250.0f, 10.0f, 10.0f, 1.0f);
     
     _needCancelButton = YES;
     _cancelTitle = @"取消";
     
     _selectedIndex = -1;
     _multiselectConfirmButtonTitle = @"确定";
-    _multiselectConfirmButtonTitleColor = MKCOLOR_RGBA(100.0f, 100.0f, 100.0f, 1.0f);
+    _multiselectConfirmButtonTitleColor = MK_COLOR_RGBA(100.0f, 100.0f, 100.0f, 1.0f);
 
 
     //以 object array 初始化，默认没有取消按钮
@@ -152,20 +169,21 @@
     }
     
     // 根据 selectType 和 方向 初始化默认样式
-    if (self.configPortrait == nil) {
-        self.configPortrait = [[MKASOrientationConfig alloc] init];
+    if (self.portraitConfig == nil) {
+        self.portraitConfig = [[MKASOrientationConfig alloc] init];
         if (_selectType == MKActionSheetSelectType_multiselect || _selectType == MKActionSheetSelectType_selected) {       //多选 样式， title 默认 居左对齐，无取消按钮
-            self.configPortrait.titleAlignment = NSTextAlignmentLeft;
-            self.configPortrait.buttonTitleAlignment = MKActionSheetButtonTitleAlignment_left;
-            self.configPortrait.maxShowButtonCount = 5.6;
+            self.portraitConfig.titleAlignment = NSTextAlignmentLeft;
+            self.portraitConfig.buttonTitleAlignment = MKActionSheetButtonTitleAlignment_left;
+            self.portraitConfig.maxShowButtonCount = 5.6;
         }
     }
     
-    if (self.configLandscape == nil) {
-        self.configLandscape = [[MKASOrientationConfig alloc] init];
+    if (self.landscapeConfig == nil) {
+        self.landscapeConfig = [[MKASOrientationConfig alloc] init];
         if (_selectType == MKActionSheetSelectType_multiselect || _selectType == MKActionSheetSelectType_selected) {       //多选 样式， title 默认 居左对齐，无取消按钮
-            self.configLandscape.titleAlignment = NSTextAlignmentCenter;
-            self.configLandscape.buttonTitleAlignment = MKActionSheetButtonTitleAlignment_center;
+            self.landscapeConfig.titleAlignment = NSTextAlignmentCenter;
+            self.landscapeConfig.buttonTitleAlignment = MKActionSheetButtonTitleAlignment_center;
+            self.landscapeConfig.maxShowButtonCount = 4.6;
         }
     }
    
@@ -174,41 +192,27 @@
 
 - (void)updateConfigByOrientation{
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+    self.currentConfig = self.portraitConfig;
+    CGFloat curScreenH = MK_SCREEN_HEIGHT;
     if (orientation == UIInterfaceOrientationLandscapeRight || orientation == UIInterfaceOrientationLandscapeLeft){
-        self.currentConfig = self.configLandscape;
-        self.scrollView.contentSize = CGSizeMake(MKSCREEN_HEIGHT, self.buttonTitles.count*(self.currentConfig.buttonHeight+MKAS_BUTTON_SEPARATOR_HEIGHT));
-    }else{
-        self.currentConfig = self.configPortrait;
-        self.scrollView.contentSize = CGSizeMake(MKSCREEN_WIDTH, self.buttonTitles.count*(self.currentConfig.buttonHeight+MKAS_BUTTON_SEPARATOR_HEIGHT));
+        self.currentConfig = self.landscapeConfig;
+        curScreenH = MK_SCREEN_WIDTH;
     }
+     self.scrollView.contentSize = CGSizeMake(curScreenH, self.buttonTitles.count*(self.currentConfig.buttonHeight+MKAS_BUTTON_SEPARATOR_HEIGHT)-MKAS_BUTTON_SEPARATOR_HEIGHT);
 }
 
 #pragma mark - ***** methods ******
-- (void)setPortraitConfig:(MKASOrientationConfig *)config{
-    if (config) {
-        self.configPortrait = config;
-        [self updateConfigByOrientation];
-    }
-}
-
-- (void)setLandscapeConfig:(MKASOrientationConfig *)config{
-    if (config) {
-        self.configLandscape = config;
-        [self updateConfigByOrientation];
-    }
-}
-
 - (void)setSelectedIndex:(NSInteger)selectedIndex{
     if (_selectType == MKActionSheetSelectType_selected) {
         _selectedIndex = selectedIndex;
     }else{
-        NSAssert(NO, @"初始化 selectType = MKActionSheetSelectType_selected 时 设置 selectedIndex 才有效");
+        MKASLog(@" selectedIndex availability just when selectType = MKActionSheetSelectType_selected");
     }
 }
 
 #pragma mark - ***** add & remove & reload *****
 - (void)addButtonWithButtonTitle:(NSString *)title{
-    NSAssert(!_paramIsObject, @"以 objArray 初始化时，不能直接添加 title, 请使用 addButtonWithObj:(id)obj");
+    NSAssert(!_paramIsObject, @"can't add title when init with objArray, please use addButtonWithObj:(id)obj");
     if (title) {
         [self.buttonTitles addObject:title];
         [self updateScrollViewAndLayout];
@@ -217,7 +221,7 @@
 
 - (void)removeButtonWithButtonTitle:(NSString *)title{
     if (title) {
-        MKWEAKSELF
+        MK_WEAK_SELF
         [self.buttonTitles enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             if ([obj isEqualToString:title]) {
                 [weakSelf removeButtonWithIndex:idx];
@@ -228,7 +232,7 @@
 }
 
 - (void)addButtonWithObj:(id)obj{
-    NSAssert(_paramIsObject, @"不是由 objArray 初始化时，不能直接添加 object, 请使用 addButtonWithButtonTitle:(NSString *)title");
+    NSAssert(_paramIsObject, @"can't add object when init with titlesArray, please use addButtonWithButtonTitle:(NSString *)title");
     if (obj) {
         [self.objArray addObject:obj];
         [self updateScrollViewAndLayout];
@@ -236,7 +240,7 @@
 }
 
 - (void)removeButtonWithObj:(id)model{
-    MKWEAKSELF
+    MK_WEAK_SELF
     [self.objArray enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         if (obj == model) {
             [weakSelf removeButtonWithIndex:idx];
@@ -259,7 +263,7 @@
 }
 
 - (void)reloadWithTitleArray:(NSArray *)titleArray{
-    NSAssert(!_paramIsObject, @"以 objArray 初始化时， 请使用 reloadWithObjArray:");
+    NSAssert(!_paramIsObject, @"plase use reloadWithObjArray:");
     if (titleArray && titleArray.count > 0) {
         [self.buttonTitles removeAllObjects];
         [self.buttonTitles addObjectsFromArray:titleArray];
@@ -268,7 +272,7 @@
 }
 
 - (void)reloadWithObjArray:(NSArray *)objArray{
-    NSAssert(_paramIsObject, @"不是由 objArray 初始化时， 请使用 reloadWithTitleArray:");
+    NSAssert(_paramIsObject, @"plase use reloadWithTitleArray:");
     if (objArray && objArray.count > 0) {
         [self.objArray removeAllObjects];
         [self.objArray addObjectsFromArray:objArray];
@@ -372,9 +376,9 @@
 - (void)dismissWithButtonIndex:(NSInteger)index{
     if (self.selectType == MKActionSheetSelectType_multiselect) {
         //多选样式下 只有 取消按钮才会走这里
-        MKBlockExec(self.multiselectBlock, self, nil);
+        MK_BLOCK_EXEC(self.multiselectBlock, self, nil);
     }else{
-        MKBlockExec(self.block, self, index)
+        MK_BLOCK_EXEC(self.block, self, index)
     }
     [self chekcManualDismiss];
 }
@@ -394,7 +398,7 @@
             }
         }
     }
-    MKBlockExec(self.multiselectBlock, self, selectedArray);
+    MK_BLOCK_EXEC(self.multiselectBlock, self, selectedArray);
     [self chekcManualDismiss];
 }
 
@@ -443,7 +447,7 @@
     [self addSubview:self.shadeView];
     [self addSubview:self.sheetView];
     
-    self.blurView.backgroundColor = MKCOLOR_RGBA(100, 100, 100, _blurOpacity);
+    self.blurView.backgroundColor = MK_COLOR_RGBA(100, 100, 100, _blurOpacity);
     UIBlurEffect *effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
     UIVisualEffectView *effectView = [[UIVisualEffectView alloc] initWithEffect:effect];
     [self.blurView addSubview:effectView];
@@ -456,10 +460,11 @@
     [self.sheetView addSubview:self.titleView];
     [self.sheetView addSubview:self.scrollView];
     [self.sheetView addSubview:self.cancelView];
-    
+    [self.cancelView addSubview:self.btnCancel];
+    self.btnCancel.userInteractionEnabled = self.needCancelButton;
     if (self.needCancelButton) {
-        [self.cancelView addSubview:self.cancelButton];
-        [self.cancelButton addSubview:self.cancelSeparatorView];
+        [self.cancelView addSubview:self.cancelSeparatorView];
+        [self.cancelView addSubview:self.labCancel];
     }
 
     //UIScrollView
@@ -477,7 +482,7 @@
         if (self.selectType == MKActionSheetSelectType_multiselect) {
             [self.titleView addSubview:self.confirmButton];
             UIView *leftLine = [[UIView alloc] init];
-            leftLine.backgroundColor = MKCOLOR_RGBA(0, 0, 0, 0.2);
+            leftLine.backgroundColor = MK_COLOR_RGBA(0, 0, 0, 0.2);
             [_confirmButton addSubview:leftLine];
             
             [leftLine mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -498,17 +503,17 @@
 - (void)setupScrollView{
     //UIScrollView
     if (_paramIsObject) {
-        NSAssert(_titleKey && _titleKey.length > 0, @"titleKey 不能为nil 或者 空, 必须是有效的 NSString");
-        NSAssert(_objArray, @"_objArray 不能为 nil");
+        NSAssert(_titleKey && _titleKey.length > 0, @"titleKey must is validity string");
+        NSAssert(_objArray, @"_objArray must no nil");
         for (id obj in _objArray) {
             id titleValue = [obj valueForKey:_titleKey];
             if (!titleValue || ![titleValue isKindOfClass:[NSString class]]) {
-                NSAssert(NO, @"obj.titleKey 必须为 有效的 NSString");
+                NSAssert(NO, @"obj.titleKey must is validity string");
             }
             _buttonTitles = [[NSMutableArray alloc] initWithArray:[_objArray valueForKey:_titleKey]];
         }
     }
-    self.scrollView.contentSize = CGSizeMake(MKSCREEN_WIDTH, self.buttonTitles.count*(self.currentConfig.buttonHeight+MKAS_BUTTON_SEPARATOR_HEIGHT));
+    self.scrollView.contentSize = CGSizeMake(MK_SCREEN_WIDTH, self.buttonTitles.count*(self.currentConfig.buttonHeight+MKAS_BUTTON_SEPARATOR_HEIGHT)-MKAS_BUTTON_SEPARATOR_HEIGHT);
     if (self.buttonViewsArray.count > 0) {
         [self.buttonViewsArray makeObjectsPerformSelector:@selector(removeFromSuperview)];
         [self.buttonViewsArray removeAllObjects];
@@ -519,7 +524,7 @@
         view.backgroundColor = [UIColor clearColor];
         [self.scrollView addSubview:view];
         [self.buttonViewsArray addObject:view];
-        CGRect viewFrame = CGRectMake(0, self.currentConfig.buttonHeight*i, MKSCREEN_WIDTH, self.currentConfig.buttonHeight);
+        CGRect viewFrame = CGRectMake(0, self.currentConfig.buttonHeight*i, MK_SCREEN_WIDTH, self.currentConfig.buttonHeight);
         view.frame = viewFrame;
         
         UIButton *btn = [self createButton];
@@ -644,7 +649,7 @@
     
     if (self.customTitleView) {
         [self.customTitleView mas_remakeConstraints:^(MASConstraintMaker *make) {
-            MKBlockExec(self.customTitleViewLayoutBlock, make, self.titleView);
+            MK_BLOCK_EXEC(self.customTitleViewLayoutBlock, make, self.titleView);
         }];
     } else if (self.title){
         self.titleLabel.textAlignment = self.currentConfig.titleAlignment;
@@ -679,31 +684,49 @@
         }];
     }
     
-    
-    [self.cancelView mas_remakeConstraints:^(MASConstraintMaker *make) {
-        make.left.right.bottom.equalTo(self.sheetView);
-    }];
-    
     if (self.needCancelButton) {
         self.cancelView.hidden = NO;
-        self.cancelButton.tag = _buttonTitles.count;
-        [self.cancelButton mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.left.right.bottom.equalTo(self.cancelView);
-            make.height.mas_equalTo(self.currentConfig.buttonHeight);
+        
+        [self.cancelView mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.top.equalTo(self.scrollView.mas_bottom);
+            make.left.right.bottom.equalTo(self.sheetView);
         }];
         
         [self.cancelSeparatorView mas_remakeConstraints:^(MASConstraintMaker *make) {
             make.left.right.top.equalTo(self.cancelView);
-            make.bottom.equalTo(self.cancelButton.mas_top);
             make.height.mas_equalTo(6);
         }];
+
+        self.btnCancel.tag = _buttonTitles.count;
+        [self.btnCancel mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.left.right.bottom.equalTo(self.cancelView);
+            make.top.equalTo(self.cancelSeparatorView.mas_bottom);
+            make.height.mas_equalTo(self.currentConfig.buttonHeight+self.iPhoneXIgnoreBottomH);
+        }];
+        [self.labCancel mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.left.right.equalTo(self.cancelView);
+            make.top.equalTo(self.cancelView).offset(8);
+            make.bottom.equalTo(self.cancelView).offset(-self.iPhoneXIgnoreBottomH);
+//            make.edges.equalTo(self.cancelView);
+        }];
+      
     }else{
-        self.cancelView.hidden = YES;
         [self.cancelView mas_remakeConstraints:^(MASConstraintMaker *make) {
             make.left.right.bottom.equalTo(self.sheetView);
-            make.top.equalTo(self.scrollView.mas_bottom);
-            make.height.mas_equalTo(0.1);
         }];
+        self.btnCancel.userInteractionEnabled = NO;
+        if (MK_IS_IPHONE_XX) {
+            self.cancelView.hidden = NO;
+            [self.btnCancel mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.edges.equalTo(self.cancelView);
+                make.height.mas_equalTo(self.iPhoneXIgnoreBottomH+0.1);
+            }];
+        }else{
+            self.cancelView.hidden = YES;
+        }
+        if (_labCancel) {
+            _labCancel.hidden = YES;
+        }
     }
 
     CGFloat maxCount = self.buttonTitles.count;
@@ -720,10 +743,10 @@
     
     for (NSInteger i = 0; i < self.buttonViewsArray.count; i++) {
         UIView *view = self.buttonViewsArray[i];
-        view.frame = CGRectMake(0, (self.currentConfig.buttonHeight+MKAS_BUTTON_SEPARATOR_HEIGHT)*i, MKSCREEN_WIDTH, self.currentConfig.buttonHeight);
+        view.frame = CGRectMake(0, (self.currentConfig.buttonHeight+MKAS_BUTTON_SEPARATOR_HEIGHT)*i, MK_SCREEN_WIDTH, self.currentConfig.buttonHeight);
         UIButton *btn = [view viewWithTag:i + MKAS_BUTTON_TAG_BASE];
         if (btn) {
-            btn.frame = CGRectMake(0, 0, MKSCREEN_WIDTH, self.currentConfig.buttonHeight);
+            btn.frame = CGRectMake(0, 0, MK_SCREEN_WIDTH, self.currentConfig.buttonHeight);
             [self updateButtonConstraints:btn];
         }
     }
@@ -740,7 +763,7 @@
 #pragma mark - ***** lazy ******
 - (UIWindow *)bgWindow{
     if (!_bgWindow) {
-        _bgWindow = [[UIWindow alloc] initWithFrame:MKSCREEN_BOUNDS];
+        _bgWindow = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
         _bgWindow.windowLevel = _windowLevel;
         _bgWindow.backgroundColor = [UIColor clearColor];
         _bgWindow.hidden = NO;
@@ -756,7 +779,7 @@
 - (UIView *)shadeView{
     if (!_shadeView) {
         _shadeView = [[UIView alloc] init];
-        [_shadeView setBackgroundColor:MKCOLOR_RGBA(0, 0, 0, 1)];
+        [_shadeView setBackgroundColor:MK_COLOR_RGBA(0, 0, 0, 1)];
         [_shadeView setUserInteractionEnabled:NO];
         [_shadeView setAlpha:0];
         if (_enabledForBgTap) {
@@ -785,7 +808,7 @@
 - (UIView *)titleView{
     if (!_titleView) {
         _titleView = [[UIView alloc] init];
-        _titleView.backgroundColor = MKCOLOR_RGBA(255, 255, 255, _buttonOpacity);
+        _titleView.backgroundColor = MK_COLOR_RGBA(255, 255, 255, _buttonOpacity);
     }
     return _titleView;
 }
@@ -832,13 +855,13 @@
     return _cancelView;
 }
 
-- (UIButton *)cancelButton{
-    if (!_cancelButton) {
-        _cancelButton = [self createButton];
-        [_cancelButton setTitle:_cancelTitle forState:UIControlStateNormal];
-        [_cancelButton addTarget:self action:@selector(btnCancelOnclicked:) forControlEvents:UIControlEventTouchUpInside];
+- (UIButton *)btnCancel{
+    if (!_btnCancel) {
+        _btnCancel = [self createButton];
+//        [_cancelButton setTitle:_cancelTitle forState:UIControlStateNormal];
+        [_btnCancel addTarget:self action:@selector(btnCancelOnclicked:) forControlEvents:UIControlEventTouchUpInside];
     }
-    return _cancelButton;
+    return _btnCancel;
 }
 
 - (UIButton *)createButton{
@@ -876,6 +899,17 @@
         _cancelSeparatorView.backgroundColor = [UIColor clearColor];
     }
     return _cancelSeparatorView;
+}
+
+- (UILabel *)labCancel{
+    if (!_labCancel) {
+        _labCancel = [[UILabel alloc] init];
+        _labCancel.text = self.cancelTitle;
+        _labCancel.textColor = self.buttonTitleColor;
+        _labCancel.font = self.buttonTitleFont;
+        _labCancel.textAlignment = NSTextAlignmentCenter;
+    }
+    return _labCancel;
 }
 
 
