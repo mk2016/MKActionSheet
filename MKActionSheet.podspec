@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name              = "MKActionSheet"
-  s.version           = "2.0.4"
+  s.version           = "2.1.0"
   s.summary           = "multi styles and multifunctional actionSheet"
   s.homepage          = "https://github.com/mk2016/MKActionSheet"
   s.license           = "MIT"
@@ -12,6 +12,6 @@ Pod::Spec.new do |s|
   s.resource          = "MKActionSheet/MKActionSheet.bundle"
   s.requires_arc      = true
   s.dependency        "Masonry", '~> 1.1.0'
-  s.dependency        "SDWebImage", '~> 4.1.2'
+  s.dependency        "SDWebImage", '~> 4.4.5'
 
 end
