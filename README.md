@@ -25,14 +25,14 @@
 
 ## 使用
 * cocoapods  
-  pod 'MKActionSheet', '~> 2.0.4'
+  pod 'MKActionSheet', '~> 2.1.0'
 
 * Manually (手动导入)  
   只需将 MKActionSheet 文件添加到项目中即可
   
 * 依赖
   Masonry ~> 1.1.0   
-  SDWebImage ~> 4.1.2
+  SDWebImage ~> 4.4.5
 
 ## 用法 详细用法参见demo
 ##### 1.4.0 版本之后 化烦为简 去除 delegate 用法, 适配到iOS8。  需要delegate或者想支持iOS7可以使用V1.3.2版本。
@@ -175,6 +175,9 @@ MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"load url image" ob
  
  
 ## 版本记录
+
+### V2.1.0
+ * support iPhoneX 、XS、XMAX
 ### V2.0.4
  * 升级依赖
  * Masonry ~> 1.1.0   
