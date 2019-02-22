@@ -178,6 +178,7 @@ MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"load url image" ob
 
 ### V2.1.0
  * support iPhoneX 、XS、XMAX
+ * SDWebImage ~> 4.4.5	
 ### V2.0.4
  * 升级依赖
  * Masonry ~> 1.1.0   
