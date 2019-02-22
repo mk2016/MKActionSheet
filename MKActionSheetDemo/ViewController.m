@@ -21,7 +21,6 @@
 @property (nonatomic, strong) NSMutableArray *sectionTitleArray;
 @property (nonatomic, strong) NSMutableArray *datasArray;
 
-
 @property (nonatomic, strong) NSMutableArray *detailArray;
 @property (nonatomic, strong) NSMutableArray *modelArray;
 @property (nonatomic, strong) NSMutableArray *dicArray;
@@ -62,6 +61,9 @@
     self.tableView.dataSource = self;
     self.tableView.backgroundColor = [UIColor clearColor];
     self.tableView.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"img_bg"]];
+    self.tableView.showsVerticalScrollIndicator = NO;
+    self.tableView.estimatedSectionFooterHeight = 0;
+    self.tableView.estimatedSectionHeaderHeight = 0;
     [self.view addSubview:self.tableView];
     [self.tableView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(self.view);
@@ -231,7 +233,7 @@
     
     MKCellModel *model = self.datasArray[indexPath.section][indexPath.row];
     NSString *cellTitle = model.title;
-    MKWEAKSELF
+    MK_WEAK_SELF
     if ([cellTitle isEqualToString:@"selectType:_common"]) {
         MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"init with longgggggggg gggggggggggggggggggggggggggggggggggg title \n default UI" buttonTitleArray:@[@"button0", @"button1", @"button2"]];
         [sheet showWithBlock:^(MKActionSheet *actionSheet, NSInteger buttonIndex) {
@@ -537,9 +539,9 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
-    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, MKSCREEN_WIDTH, 30)];
-    view.backgroundColor = MKCOLOR_RGBA(255, 255, 255, 0.3);
-    UILabel *lab = [[UILabel alloc] initWithFrame:CGRectMake(16, 0, MKSCREEN_WIDTH-32, 30)];
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, MK_SCREEN_WIDTH, 30)];
+    view.backgroundColor = MK_COLOR_RGBA(255, 255, 255, 0.3);
+    UILabel *lab = [[UILabel alloc] initWithFrame:CGRectMake(16, 0, MK_SCREEN_WIDTH-32, 30)];
     lab.textColor = [UIColor blackColor];
     lab.font = [UIFont systemFontOfSize:14];
     if (section < self.sectionTitleArray.count) {

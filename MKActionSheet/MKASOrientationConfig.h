@@ -9,15 +9,36 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-
-#ifndef MKActionSheetDefine
-#define MKSCREEN_WIDTH     [UIScreen mainScreen].bounds.size.width
-#define MKSCREEN_HEIGHT    [UIScreen mainScreen].bounds.size.height
-#define MKSCREEN_BOUNDS    [UIScreen mainScreen].bounds
-#define MKCOLOR_RGBA(r, g, b, a)    [UIColor colorWithRed:(r/255.0f) green:(g/255.0f) blue:(b/255.0f) alpha:(a)]
-#define MKWEAKSELF typeof(self) __weak weakSelf = self;
-#define MKBlockExec(block, ...) if (block) { block(__VA_ARGS__); };
+#ifndef MK_SCREEN_WIDTH
+#define MK_SCREEN_WIDTH     [UIScreen mainScreen].bounds.size.width
 #endif
+
+#ifndef MK_SCREEN_HEIGHT
+#define MK_SCREEN_HEIGHT    [UIScreen mainScreen].bounds.size.height
+#endif
+
+#ifndef MK_IS_IPHONE_XX
+    #define MK_IS_IPHONE_X_XS   ([UIScreen instancesRespondToSelector:@selector(currentMode)] ?\
+    CGSizeEqualToSize(CGSizeMake(1125, 2436), [[UIScreen mainScreen] currentMode].size) : NO)
+    #define MK_IS_IPHONE_XSMAX  ([UIScreen instancesRespondToSelector:@selector(currentMode)] ?\
+    CGSizeEqualToSize(CGSizeMake(1242, 2688), [[UIScreen mainScreen] currentMode].size) : NO)
+    #define MK_IS_IPHONE_XR     ([UIScreen instancesRespondToSelector:@selector(currentMode)] ?\
+    CGSizeEqualToSize(CGSizeMake(828, 1792), [[UIScreen mainScreen] currentMode].size) : NO)
+    #define MK_IS_IPHONE_XX     MK_IS_IPHONE_X_XS || MK_IS_IPHONE_XSMAX || MK_IS_IPHONE_XR
+#endif
+
+#ifndef MK_WEAK_SELF
+#define MK_WEAK_SELF            __weak typeof(self) weakSelf = self;
+#endif
+
+#ifndef MK_BLOCK_EXEC
+#define MK_BLOCK_EXEC(block, ...) if (block) { block(__VA_ARGS__); };
+#endif
+
+#ifndef MK_COLOR_RGBA
+#define MK_COLOR_RGBA(r, g, b, a)    [UIColor colorWithRed:(r/255.0f) green:(g/255.0f) blue:(b/255.0f) alpha:(a)]
+#endif
+
 
 #pragma mark - ***** 枚举 ******
 typedef NS_ENUM(NSInteger, MKActionSheetSelectType) {
