@@ -827,7 +827,7 @@
 - (UIButton *)confirmButton{
     if (!_confirmButton) {
         _confirmButton = [UIButton buttonWithType:UIButtonTypeSystem];
-        [_confirmButton setTitle:@"确定" forState:UIControlStateNormal];
+        [_confirmButton setTitle:self.multiselectConfirmButtonTitle forState:UIControlStateNormal];
         [_confirmButton setTitleColor:self.multiselectConfirmButtonTitleColor forState:UIControlStateNormal];
         _confirmButton.titleLabel.font = [UIFont systemFontOfSize:16];
         [_confirmButton addTarget:self action:@selector(confirmButtonOnclick:) forControlEvents:UIControlEventTouchUpInside];
