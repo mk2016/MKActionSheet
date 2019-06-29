@@ -316,10 +316,9 @@
 			};
 			buildConfigurationList = C5A125A41CFEE7E700FEA77A /* Build configuration list for PBXProject "MKActionSheet" */;
 			compatibilityVersion = "Xcode 6.3";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				English,
 				en,
 				Base,
 			);
