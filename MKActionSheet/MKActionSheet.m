@@ -763,15 +763,13 @@
 #pragma mark - ***** lazy ******
 - (UIWindow *)bgWindow{
     if (!_bgWindow) {
+        MKASRootViewController *rootVC = [[MKASRootViewController alloc] init];
+        rootVC.vc = _currentVC;
         _bgWindow = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
         _bgWindow.windowLevel = _windowLevel;
         _bgWindow.backgroundColor = [UIColor clearColor];
         _bgWindow.hidden = NO;
-        MKASRootViewController *rootVC = [[MKASRootViewController alloc] init];
         _bgWindow.rootViewController = rootVC;
-        if (_currentVC) {
-            rootVC.vc = _currentVC;
-        }
     }
     return _bgWindow;
 }
