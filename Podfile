@@ -4,5 +4,5 @@ inhibit_all_warnings!
 target 'MKActionSheet' do
 	pod 'MKFPSStatus', '~> 1.0.4'
 	pod 'Masonry', '~> 1.1.0'
-	pod 'SDWebImage', '~> 4.4.5'
+	pod 'SDWebImage', '~> 5.0.6'
 end

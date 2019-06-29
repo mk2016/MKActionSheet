@@ -20,3 +20,4 @@ xcuserdata
 CVS
 MKActionSheet/MKActionSheet.xcodeproj/project.xcworkspace/xcuserdata/xiaomk.xcuserdatad/
 Pods/
+Podfile.lock
