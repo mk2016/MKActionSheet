@@ -176,6 +176,8 @@ MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"load url image" ob
  
 ## 版本记录
 
+### V2.1.1
+ * 'SDWebImage', '~> 5.0.6'
 ### V2.1.0
  * support iPhoneX 、XS、XMAX
  * SDWebImage ~> 4.4.5	
