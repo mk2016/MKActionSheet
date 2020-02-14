@@ -442,6 +442,7 @@
 }
 
 - (void)setupMainView{
+    [self updateConfigByOrientation];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(statusBarOrientationChange:) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
     
     [self addSubview:self.shadeView];
