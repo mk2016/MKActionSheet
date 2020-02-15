@@ -13,5 +13,4 @@ Pod::Spec.new do |s|
   s.requires_arc      = true
   s.dependency        "Masonry", '~> 1.1.0'
   s.dependency        "SDWebImage", '~> 5.5.2'
-
 end
