@@ -8,8 +8,6 @@
 
 #import "AppDelegate.h"
 #import "ViewController.h"
-#import "MKFPSStatus.h"
-
 
 @interface AppDelegate ()
 
@@ -22,7 +20,7 @@
     // Override point for customization after application launch.
     
 #if DEBUG
-    [[MKFPSStatus sharedInstance] open];
+//    [[MKFPSStatus sharedInstance] open];
 #endif
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     
