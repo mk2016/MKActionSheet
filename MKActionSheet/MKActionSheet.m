@@ -161,7 +161,7 @@
     _selectedIndex = -1;
     _multiselectConfirmButtonTitle = @"确定";
     _multiselectConfirmButtonTitleColor = MK_COLOR_RGBA(100.0f, 100.0f, 100.0f, 1.0f);
-
+    _showsVerticalScrollIndicator = NO;
 
     //以 object array 初始化，默认没有取消按钮
     if (_paramIsObject) {
@@ -198,7 +198,8 @@
         self.currentConfig = self.landscapeConfig;
         curScreenH = MK_SCREEN_WIDTH;
     }
-     self.scrollView.contentSize = CGSizeMake(curScreenH, self.buttonTitles.count*(self.currentConfig.buttonHeight+MKAS_BUTTON_SEPARATOR_HEIGHT)-MKAS_BUTTON_SEPARATOR_HEIGHT);
+    self.scrollView.showsVerticalScrollIndicator = self.showsVerticalScrollIndicator;
+    self.scrollView.contentSize = CGSizeMake(curScreenH,   self.buttonTitles.count*(self.currentConfig.buttonHeight+MKAS_BUTTON_SEPARATOR_HEIGHT)-MKAS_BUTTON_SEPARATOR_HEIGHT);
 }
 
 #pragma mark - ***** methods ******
@@ -572,6 +573,7 @@
         }
         
         if (self.paramIsObject && self.imageKey && self.imageKey.length > 0 && self.imageValueType) {
+            btn.imageView.contentMode = UIViewContentModeScaleAspectFit;
             btn.titleEdgeInsets = UIEdgeInsetsMake(0, _buttonImageRightSpace, 0, 0);
             btn.imageEdgeInsets = UIEdgeInsetsMake(0, 0, 0, _buttonImageRightSpace);
             id obj = [self.objArray objectAtIndex:i];
@@ -593,7 +595,11 @@
                     }else if ([imageValue isKindOfClass:[NSURL class]]){
                         url = imageValue;
                     }
-                    [btn sd_setImageWithURL:url forState:UIControlStateNormal placeholderImage:self.placeholderImage];
+                    if (self.placeholderImage) {
+                        [btn setImage:self.placeholderImage forState:UIControlStateNormal];
+                    }
+//                    [btn sd_setImageWithURL:url forState:UIControlStateNormal placeholderImage:self.placeholderImage];
+                    MK_BLOCK_EXEC(self.loadUrlImageblock, self, btn, i, url);
                 }
             }
         }

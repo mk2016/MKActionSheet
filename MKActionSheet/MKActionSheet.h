@@ -29,7 +29,12 @@ typedef void(^MKActionSheetBlock)(MKActionSheet *actionSheet, NSInteger buttonIn
  */
 typedef void(^MKActionSheetMultiselectBlock)(MKActionSheet *actionSheet, NSArray *array);
 
-
+/**
+ * load image block
+ * @param button  need loader button
+ * @param index  button index
+ */
+typedef void(^MKActionSheetLoadImageBlock)(MKActionSheet *actionSheet, UIButton *button, NSInteger index, NSURL *imageUrl);
 
 typedef void(^MKActionSheetCustomTitleViewLayoutBlock)(MASConstraintMaker *make, UIView *superview);
 /** 
@@ -48,7 +53,7 @@ typedef void(^MKActionSheetCustomTitleViewLayoutBlock)(MASConstraintMaker *make,
 /** block */
 @property (nonatomic, copy) MKActionSheetBlock block;                                   /*!< callback for click button  */
 @property (nonatomic, copy) MKActionSheetMultiselectBlock multiselectBlock;             /*!< callback for multiselect style, return selected array */
-
+@property (nonatomic, copy) MKActionSheetLoadImageBlock loadUrlImageblock;
 
 /**  custom UI */
 @property (nonatomic, assign) CGFloat windowLevel;          /*!< default: UIWindowLevelStatusBar - 1 */
@@ -56,6 +61,7 @@ typedef void(^MKActionSheetCustomTitleViewLayoutBlock)(MASConstraintMaker *make,
 @property (nonatomic, assign) BOOL enabledForBgTap;         /*!< default: YES */
 @property (nonatomic, assign) BOOL manualDismiss;           /*!< default: NO. if set 'YES', you need calling the method of
                                                              'dismiss' to hide actionSheet by manual */
+@property (nonatomic, assign) BOOL showsVerticalScrollIndicator;    /*!< default: NO */
 
 /** action sheet */
 @property (nonatomic, assign) CGFloat animationDuration;            /*!< 动画化时间 [default: 0.3f] */

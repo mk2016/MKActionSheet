@@ -83,7 +83,8 @@
         model.testNum = @(i);
         model.imageName = [NSString stringWithFormat:@"image_%ld",(long)i];
         model.image = [UIImage imageNamed:model.imageName];
-        model.imageUrl = [NSString stringWithFormat:@"https://github.com/mk2016/MKActionSheet/raw/MKActionSheet_dev/Resource/image_%ld@2x.png",(long)i];
+//        model.imageUrl = [NSString stringWithFormat:@"https://github.com/mk2016/MKActionSheet/raw/MKActionSheet_dev/Resource/image_%ld@2x.png",(long)i];
+        model.imageUrl = @"http://taoqi-saas-public-prod.oss-cn-shenzhen.aliyuncs.com/saas/default/png/20191120/1574220880064--1016255442.png";
         [self.modelArray addObject:model];
     }
     
@@ -96,7 +97,8 @@
                               @"testNum"    :@(i),
                               @"imageName"  :[NSString stringWithFormat:@"image_%ld",(long)i],
                               @"image"      :[UIImage imageNamed:[NSString stringWithFormat:@"image_%ld",(long)i]],
-                              @"imageUrl"   :[NSString stringWithFormat:@"https://github.com/mk2016/MKActionSheet/raw/MKActionSheet_dev/Resource/image_%ld@2x.png",(long)i],
+                              @"imageUrl"   : @"http://taoqi-saas-public-prod.oss-cn-shenzhen.aliyuncs.com/saas/default/png/20191120/1574220897629-324204560.png"
+//                              @"imageUrl"   :[NSString stringWithFormat:@"https://github.com/mk2016/MKActionSheet/raw/MKActionSheet_dev/Resource/image_%ld@2x.png",(long)i],
                               };
         [self.dicArray addObject:dic];
     }
@@ -276,7 +278,15 @@
     }
     
     else if ([cellTitle isEqualToString:@"selectType:_multiselect & icon"]) {
-        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"load url image" objArray:self.dicArray buttonTitleKey:@"titleStr" imageKey:@"imageUrl" imageValueType:MKActionSheetButtonImageValueType_url selectType:MKActionSheetSelectType_multiselect];
+        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"load url image"
+                                                           objArray:self.dicArray
+                                                     buttonTitleKey:@"titleStr"
+                                                           imageKey:@"imageUrl"
+                                                     imageValueType:MKActionSheetButtonImageValueType_url
+                                                         selectType:MKActionSheetSelectType_multiselect];
+        sheet.loadUrlImageblock = ^(MKActionSheet *actionSheet, UIButton *button, NSInteger index, NSURL *imageUrl) {
+            [button sd_setImageWithURL:imageUrl forState:UIControlStateNormal];
+        };
         [sheet showWithMultiselectBlock:^(MKActionSheet *actionSheet, NSArray *array) {
             NSLog(@"array:%@",array);
             [weakSelf.view makeToast:[NSString stringWithFormat:@"array count : %ld ",(unsigned long)array.count]];
@@ -361,7 +371,7 @@
         model1.testNum = @(3);
         model1.imageName = [NSString stringWithFormat:@"image_3"];
         model1.image = [UIImage imageNamed:model1.imageName];
-        model1.imageUrl = [NSString stringWithFormat:@"https://github.com/mk2016/MKActionSheet/raw/MKActionSheet_dev/Resource/image_3@2x.png"];
+        model1.imageUrl = [NSString stringWithFormat:@"http://taoqi-saas-public-prod.oss-cn-shenzhen.aliyuncs.com/saas/default/png/20191120/1574220909014--1291393306.png"];
         
         InfoModel *model2 = [[InfoModel alloc] init];
         model2.titleStr = [NSString stringWithFormat:@"add button 4"];
@@ -369,12 +379,20 @@
         model2.testNum = @(3);
         model2.imageName = [NSString stringWithFormat:@"image_4"];
         model2.image = [UIImage imageNamed:model2.imageName];
-        model2.imageUrl = [NSString stringWithFormat:@"https://github.com/mk2016/MKActionSheet/raw/MKActionSheet_dev/Resource/image_4@2x.png"];
+        model2.imageUrl = [NSString stringWithFormat:@"http://taoqi-saas-public-prod.oss-cn-shenzhen.aliyuncs.com/saas/default/png/20191120/1574220920214--437715014.png"];
         
         
-        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@" titiititititiit " objArray:self.modelArray buttonTitleKey:@"titleStr" selectType:MKActionSheetSelectType_multiselect];
+        MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@" titiititititiit "
+                                                           objArray:self.modelArray
+                                                     buttonTitleKey:@"titleStr"
+                                                           imageKey:@"imageUrl"
+                                                     imageValueType:MKActionSheetButtonImageValueType_url
+                                                         selectType:MKActionSheetSelectType_multiselect];
         
         [sheet addButtonWithObj:model1];
+        sheet.loadUrlImageblock = ^(MKActionSheet *actionSheet, UIButton *button, NSInteger index, NSURL *imageUrl) {
+            [button sd_setImageWithURL:imageUrl forState:UIControlStateNormal];
+        };
         [sheet showWithMultiselectBlock:^(MKActionSheet *actionSheet, NSArray *array) {
             NSLog(@"actionSheet:%@",actionSheet);
             NSLog(@"array:%@",array);
