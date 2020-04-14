@@ -175,7 +175,10 @@ MKActionSheet *sheet = [[MKActionSheet alloc] initWithTitle:@"load url image" ob
  
  
 ## 版本记录
-
+### V3.0.1
+ * 'SDWebImage' 版本跟新比较频繁，移除 'SDWebImage' 依赖
+ * 新增 loadUrlImageblock 
+ 
 ### V2.1.1
  * 'SDWebImage', '~> 5.0.6'
 ### V2.1.0
