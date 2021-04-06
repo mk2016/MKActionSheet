@@ -380,7 +380,7 @@
     }else{
         MK_BLOCK_EXEC(self.block, self, index)
     }
-    [self chekcManualDismiss];
+    [self checkManualDismiss];
 }
 
 /** 多选确认按钮 */
@@ -399,10 +399,10 @@
         }
     }
     MK_BLOCK_EXEC(self.multiselectBlock, self, selectedArray);
-    [self chekcManualDismiss];
+    [self checkManualDismiss];
 }
 
-- (void)chekcManualDismiss{
+- (void)checkManualDismiss{
     if (self.manualDismiss) {
         return;
     }
